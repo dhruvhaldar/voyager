@@ -7,11 +7,23 @@ async function updateTelemetry() {
         const detailsElement = document.getElementById('packet-details');
 
         if (hexElement && detailsElement) {
-            hexElement.innerText = data.hex;
+            // Hex string split into bytes
+            const bytes = data.hex.split(' ');
+
+            // Reconstruct HTML with classes
+            // Header (6 bytes)
+            let header = bytes.slice(0, 6).map(b => `<span class="hex-byte hex-header">${b}</span>`).join('');
+            // Data (rest - 2)
+            let payload = bytes.slice(6, -2).map(b => `<span class="hex-byte hex-data">${b}</span>`).join('');
+            // CRC (last 2)
+            let crc = bytes.slice(-2).map(b => `<span class="hex-byte hex-crc">${b}</span>`).join('');
+
+            hexElement.innerHTML = header + payload + crc;
+
             detailsElement.innerHTML = `
-                <p>APID: 0x${data.apid.toString(16).toUpperCase()}</p>
-                <p>Sequence Count: ${data.sequence_count}</p>
-                <p>CRC Valid: ${data.valid_crc ? '<span style="color:green">YES</span>' : '<span style="color:red">NO</span>'}</p>
+                <p>APID: <span style="color:#66fcf1">0x${data.apid.toString(16).toUpperCase()}</span></p>
+                <p>Sequence Count: <span style="color:#66fcf1">${data.sequence_count}</span></p>
+                <p>CRC Valid: ${data.valid_crc ? '<span style="color:#45a29e">YES</span>' : '<span style="color:#ff4d4d">NO</span>'}</p>
             `;
         }
 

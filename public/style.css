@@ -1,74 +1,165 @@
 body {
-    font-family: 'Courier New', Courier, monospace;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    background-color: #0b0c10;
+    color: #66fcf1;
     margin: 0;
     padding: 0;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
 }
 
+/* Import a technical font */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
 header {
-    background-color: #333;
-    padding: 1rem;
+    background-color: #1f2833;
+    border-bottom: 2px solid #45a29e;
+    padding: 1rem 2rem;
     display: flex;
-    justify_content: space-between;
+    justify-content: space-between;
     align-items: center;
+    box-shadow: 0 0 15px rgba(69, 162, 158, 0.3);
 }
 
 h1 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px #45a29e;
 }
 
 #status-panel {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.status-item {
+    background: rgba(31, 40, 51, 0.8);
+    padding: 0.5rem 1rem;
+    border: 1px solid #45a29e;
+    border-radius: 4px;
+}
+
+.status-value {
+    color: #fff;
+    font-weight: bold;
 }
 
 button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
+    background-color: #1f2833;
+    color: #66fcf1;
+    border: 1px solid #66fcf1;
+    padding: 0.5rem 1.2rem;
     cursor: pointer;
     font-family: inherit;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 5px rgba(102, 252, 241, 0.2);
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #45a29e;
+    color: #0b0c10;
+    box-shadow: 0 0 15px rgba(102, 252, 241, 0.6);
+}
+
+button:active {
+    transform: scale(0.98);
 }
 
 main {
     padding: 2rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
     gap: 2rem;
+    overflow-y: auto;
 }
 
 section {
-    background-color: #2a2a2a;
-    padding: 1rem;
-    border: 1px solid #444;
+    background-color: #1f2833;
+    padding: 1.5rem;
+    border: 1px solid #45a29e;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+/* Add corner markers for tech look */
+section::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px;
+    width: 20px; height: 20px;
+    border-top: 2px solid #66fcf1;
+    border-left: 2px solid #66fcf1;
+}
+
+section::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; right: -2px;
+    width: 20px; height: 20px;
+    border-bottom: 2px solid #66fcf1;
+    border-right: 2px solid #66fcf1;
+}
+
+h2 {
+    color: #c5c6c7;
+    border-bottom: 1px solid #45a29e;
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+    font-size: 1.4rem;
 }
 
 .hex-dump {
     font-family: 'Consolas', monospace;
     white-space: pre-wrap;
-    background-color: #000;
-    padding: 1rem;
+    background-color: #0b0c10;
+    padding: 1.5rem;
     margin-top: 1rem;
     border-radius: 4px;
-    color: #00ff00;
+    border: 1px solid #333;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    min-height: 100px;
 }
+
+.hex-byte {
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.hex-header { color: #45a29e; }
+.hex-data { color: #fff; }
+.hex-crc { color: #ff9900; }
 
 #bus-vis {
     width: 100%;
     height: 300px;
-    background-color: #000;
+    background-color: #0b0c10;
     margin-top: 1rem;
+    border: 1px solid #333;
+}
+
+#packet-details p {
+    margin: 0.5rem 0;
+    border-left: 3px solid #45a29e;
+    padding-left: 10px;
 }
 
 .caption {
     font-size: 0.8rem;
-    color: #aaa;
+    color: #888;
     text-align: center;
+    margin-top: 10px;
+}
+
+/* Full width for bus analyzer */
+#bus-analyzer {
+    grid-column: 1 / -1;
 }
