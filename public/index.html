@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voyager Avionics Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Voyager Avionics Dashboard</h1>
+        <div id="status-panel">
+            <div class="status-item">Mode: <strong id="obc-mode" class="status-value">--</strong></div>
+            <div class="status-item">Reboots: <strong id="obc-reboots" class="status-value">--</strong></div>
+            <div class="status-item">WDT: <strong id="obc-wdt" class="status-value">--</strong></div>
+        </div>
+        <div id="control-panel">
+            <button onclick="fetch('/api/tick?dt=1.0', {method: 'POST'})">Step +1s</button>
+            <button onclick="fetch('/api/command/freeze', {method: 'POST'})">Freeze OBC</button>
+            <button onclick="fetch('/api/command/reboot', {method: 'POST'})">Reboot OBC</button>
+        </div>
+    </header>
+
+    <main>
+        <section id="packet-inspector">
+            <h2>CCSDS Packet Inspector</h2>
+            <div id="packet-viewer">
+                <p>Waiting for telemetry...</p>
+                <div id="packet-details"></div>
+                <div id="packet-hex" class="hex-dump"></div>
+                <button onclick="updateTelemetry()" style="margin-top: 1rem;">Fetch Latest Packet</button>
+            </div>
+        </section>
+
+        <section id="fdir-panel">
+            <h2>FDIR Status Monitor</h2>
+            <div id="fdir-logs">
+                <p>Monitoring EDAC and Scrubbing events...</p>
+                <!-- Placeholder for future logs -->
+                <div style="background: #111; padding: 10px; border: 1px dashed #333; height: 150px;">
+                    <span style="color: #45a29e;">[INFO]</span> System Normal.<br>
+                    <span style="color: #45a29e;">[INFO]</span> Memory Scrubbing Active.<br>
+                </div>
+            </div>
+        </section>
+
+        <section id="bus-analyzer">
+            <h2>Bus Traffic Analyzer (Logic Analyzer)</h2>
+            <div id="bus-vis"></div>
+            <p class="caption">Figure 2: CAN Bus Arbitration Simulation (Sun Sensor 0x001 vs Camera 0x100)</p>
+        </section>
+    </main>
+
+    <script src="packet_viewer.js"></script>
+    <script src="bus_analyzer.js"></script>
+</body>
+</html>
