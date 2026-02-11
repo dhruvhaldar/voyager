@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voyager Avionics Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Voyager Avionics Dashboard</h1>
+        <div id="status-panel">
+            <span>Mode: <strong id="obc-mode">--</strong></span>
+            <span>Reboots: <strong id="obc-reboots">--</strong></span>
+            <span>WDT: <strong id="obc-wdt">--</strong></span>
+            <button onclick="fetch('/api/tick?dt=1.0', {method: 'POST'})">Step +1s</button>
+            <button onclick="fetch('/api/command/freeze', {method: 'POST'})">Freeze OBC</button>
+            <button onclick="fetch('/api/command/reboot', {method: 'POST'})">Reboot OBC</button>
+        </div>
+    </header>
+
+    <main>
+        <section id="packet-inspector">
+            <h2>CCSDS Packet Inspector</h2>
+            <div id="packet-viewer">
+                <p>Waiting for telemetry...</p>
+                <button onclick="updateTelemetry()">Fetch Telemetry</button>
+                <div id="packet-details"></div>
+                <div id="packet-hex" class="hex-dump"></div>
+            </div>
+        </section>
+
+        <section id="bus-analyzer">
+            <h2>Bus Traffic Analyzer (Logic Analyzer)</h2>
+            <div id="bus-vis"></div>
+            <p class="caption">Figure 2: Bus Arbitration Simulation (D3.js)</p>
+        </section>
+
+        <section id="fdir-panel">
+            <h2>FDIR Status</h2>
+            <p>Memory Scrubbing & EDAC Logs will appear here.</p>
+        </section>
+    </main>
+
+    <script src="packet_viewer.js"></script>
+    <script src="bus_analyzer.js"></script>
+</body>
+</html>
