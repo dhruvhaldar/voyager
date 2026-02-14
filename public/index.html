@@ -16,9 +16,9 @@
             <div class="status-item">WDT: <strong id="obc-wdt" class="status-value">--</strong></div>
         </div>
         <div id="control-panel">
-            <button onclick="fetch('/api/tick?dt=1.0', {method: 'POST'})">Step +1s</button>
-            <button onclick="fetch('/api/command/freeze', {method: 'POST'})">Freeze OBC</button>
-            <button onclick="fetch('/api/command/reboot', {method: 'POST'})">Reboot OBC</button>
+            <button aria-label="Step simulation forward 1 second" onclick="handleButtonAction(this, '/api/tick?dt=1.0', {method: 'POST'})">Step +1s</button>
+            <button aria-label="Freeze On-Board Computer" onclick="handleButtonAction(this, '/api/command/freeze', {method: 'POST'})">Freeze OBC</button>
+            <button aria-label="Reboot On-Board Computer" onclick="handleButtonAction(this, '/api/command/reboot', {method: 'POST'})">Reboot OBC</button>
         </div>
     </header>
 
@@ -29,7 +29,7 @@
                 <p>Waiting for telemetry...</p>
                 <div id="packet-details"></div>
                 <div id="packet-hex" class="hex-dump"></div>
-                <button onclick="updateTelemetry()" style="margin-top: 1rem;">Fetch Latest Packet</button>
+                <button aria-label="Manually fetch latest telemetry packet" onclick="handleManualRefresh(this)" style="margin-top: 1rem;">Fetch Latest Packet</button>
             </div>
         </section>
 
@@ -54,5 +54,6 @@
 
     <script src="packet_viewer.js"></script>
     <script src="bus_analyzer.js"></script>
+    <script src="ui.js"></script>
 </body>
 </html>
