@@ -16,9 +16,9 @@
             <div class="status-item">WDT: <strong id="obc-wdt" class="status-value">--</strong></div>
         </div>
         <div id="control-panel">
-            <button onclick="fetch('/api/tick?dt=1.0', {method: 'POST'})">Step +1s</button>
-            <button onclick="fetch('/api/command/freeze', {method: 'POST'})">Freeze OBC</button>
-            <button onclick="fetch('/api/command/reboot', {method: 'POST'})">Reboot OBC</button>
+            <button onclick="sendCommand('/api/tick?dt=1.0')">Step +1s</button>
+            <button onclick="sendCommand('/api/command/freeze')">Freeze OBC</button>
+            <button onclick="sendCommand('/api/command/reboot')">Reboot OBC</button>
         </div>
     </header>
 
@@ -54,5 +54,42 @@
 
     <script src="packet_viewer.js"></script>
     <script src="bus_analyzer.js"></script>
+    <script>
+        let apiKey = localStorage.getItem('voyager_api_key');
+
+        async function sendCommand(url) {
+            if (!apiKey) {
+                apiKey = prompt("Please enter the API Key to control the satellite:");
+                if (!apiKey) return;
+                localStorage.setItem('voyager_api_key', apiKey);
+            }
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-API-Key': apiKey
+                    }
+                });
+
+                if (res.status === 403) {
+                    alert("Security Error: Unauthorized Access (Invalid API Key). Please try again.");
+                    localStorage.removeItem('voyager_api_key');
+                    apiKey = null;
+                    return;
+                }
+
+                if (!res.ok) {
+                    console.error("Command failed", res.status);
+                    return;
+                }
+
+                const data = await res.json();
+                console.log("Command success:", data);
+            } catch (e) {
+                console.error("Network error:", e);
+            }
+        }
+    </script>
 </body>
 </html>
