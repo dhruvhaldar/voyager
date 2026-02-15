@@ -163,3 +163,14 @@ h2 {
 #bus-analyzer {
     grid-column: 1 / -1;
 }
+
+/* Status Indicators */
+.status-ok { color: #66fcf1; text-shadow: 0 0 8px #66fcf1; }
+.status-err { color: #ff4d4d; text-shadow: 0 0 8px #ff4d4d; }
+
+/* Focus styles for accessibility */
+button:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}

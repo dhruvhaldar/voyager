@@ -34,8 +34,19 @@ async function updateTelemetry() {
         document.getElementById('obc-mode').innerText = status.mode;
         document.getElementById('obc-reboots').innerText = status.reboot_count;
         document.getElementById('obc-wdt').innerText = status.watchdog_timer.toFixed(1) + 's';
+
+        const commStatus = document.getElementById('comm-status');
+        if (commStatus) {
+            commStatus.innerText = "LINK ACTIVE";
+            commStatus.className = "status-value status-ok";
+        }
     } catch (e) {
         console.error("Telemetry update failed:", e);
+        const commStatus = document.getElementById('comm-status');
+        if (commStatus) {
+            commStatus.innerText = "LOS (OFFLINE)";
+            commStatus.className = "status-value status-err";
+        }
     }
 }
 
