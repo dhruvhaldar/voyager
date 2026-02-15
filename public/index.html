@@ -14,6 +14,7 @@
             <div class="status-item">Mode: <strong id="obc-mode" class="status-value">--</strong></div>
             <div class="status-item">Reboots: <strong id="obc-reboots" class="status-value">--</strong></div>
             <div class="status-item">WDT: <strong id="obc-wdt" class="status-value">--</strong></div>
+            <div class="status-item">Comm: <strong id="comm-status" class="status-value" aria-live="polite">WAIT</strong></div>
         </div>
         <div id="control-panel">
             <button aria-label="Step simulation forward 1 second" onclick="handleButtonAction(this, '/api/tick?dt=1.0', {method: 'POST'})">Step +1s</button>
