@@ -9,6 +9,23 @@
 async function handleButtonAction(button, url, options = {}) {
     const originalText = button.innerText;
 
+    // 0. Auth Check
+    let apiKey = localStorage.getItem("voyager_api_key");
+    if (!apiKey) {
+        apiKey = prompt("Please enter the API Key (default: voyager-secret-123):");
+        if (apiKey) {
+            localStorage.setItem("voyager_api_key", apiKey);
+        } else {
+            // User cancelled
+            return;
+        }
+    }
+
+    // Add Header
+    const headers = options.headers || {};
+    headers["X-API-Key"] = apiKey;
+    options.headers = headers;
+
     // 1. Loading State
     button.disabled = true;
     button.innerText = "Processing...";
@@ -19,6 +36,10 @@ async function handleButtonAction(button, url, options = {}) {
         const response = await fetch(url, options);
 
         if (!response.ok) {
+            if (response.status === 401) {
+                localStorage.removeItem("voyager_api_key");
+                alert("Invalid or missing API Key. Please try again.");
+            }
             throw new Error(`HTTP ${response.status}`);
         }
 

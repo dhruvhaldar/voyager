@@ -1,62 +1,19 @@
-INFO:     Started server process [3159]
+INFO:     Started server process [8925]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 OBC Booted into NORMAL mode.
-INFO:     127.0.0.1:33882 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33882 - "GET /style.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33892 - "GET /ui.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33886 - "GET /bus_analyzer.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33882 - "GET /packet_viewer.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33892 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33892 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33892 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33892 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33892 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33892 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60822 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60822 - "GET /style.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60848 - "GET /bus_analyzer.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60832 - "GET /packet_viewer.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60850 - "GET /ui.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60850 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60850 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60850 - "POST /api/tick?dt=1.0 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60850 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60850 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60850 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60850 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60850 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60850 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60850 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60850 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34794 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34794 - "GET /style.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34806 - "GET /packet_viewer.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34820 - "GET /ui.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34818 - "GET /bus_analyzer.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34818 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34818 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34818 - "POST /api/tick?dt=1.0 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34818 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34818 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34818 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34818 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34818 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:34818 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53182 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53182 - "GET /style.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53198 - "GET /packet_viewer.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53208 - "GET /bus_analyzer.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53216 - "GET /ui.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53216 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53216 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53216 - "POST /api/tick?dt=1.0 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53216 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53216 - "GET /api/status HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53216 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53216 - "GET /api/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47512 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47512 - "GET /style.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47514 - "GET /packet_viewer.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47516 - "GET /bus_analyzer.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47518 - "GET /ui.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47518 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47518 - "GET /api/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47518 - "POST /api/command/reboot HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:47518 - "GET /api/telemetry/latest HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47518 - "GET /api/status HTTP/1.1" 200 OK
 INFO:     Shutting down
 INFO:     Waiting for application shutdown.
 INFO:     Application shutdown complete.
-INFO:     Finished server process [3159]
+INFO:     Finished server process [8925]

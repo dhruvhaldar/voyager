@@ -3,13 +3,32 @@ import os
 # Add project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException, status, Depends
 from fastapi.staticfiles import StaticFiles
 from voyager.obc import OnBoardComputer
 from voyager.ccsds import TelemetryPacket
 import time
+import secrets
 
 app = FastAPI()
+
+def verify_api_key(x_api_key: str = Header(None, alias="X-API-Key")):
+    """
+    Validates the API Key provided in the header.
+    Default key is 'voyager-secret-123'.
+    """
+    if x_api_key is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing API Key",
+        )
+
+    expected_key = os.getenv("VOYAGER_API_KEY", "voyager-secret-123")
+    if not secrets.compare_digest(x_api_key, expected_key):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid API Key",
+        )
 
 # Global OBC instance
 obc = OnBoardComputer()
@@ -24,17 +43,17 @@ def get_status():
         "frozen": obc.frozen
     }
 
-@app.post("/api/command/reboot")
+@app.post("/api/command/reboot", dependencies=[Depends(verify_api_key)])
 def command_reboot():
     obc.reboot()
     return {"message": "OBC Rebooted"}
 
-@app.post("/api/command/freeze")
+@app.post("/api/command/freeze", dependencies=[Depends(verify_api_key)])
 def command_freeze():
     obc.freeze()
     return {"message": "OBC Frozen"}
 
-@app.post("/api/tick")
+@app.post("/api/tick", dependencies=[Depends(verify_api_key)])
 def tick_simulation(dt: float = 1.0):
     obc.tick(dt)
     return {"message": f"Simulation advanced by {dt}s", "status": get_status()}
