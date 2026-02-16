@@ -12,10 +12,18 @@ import secrets
 
 app = FastAPI()
 
+# SECURITY: Load API Key from environment or generate a secure one.
+# This prevents hardcoded secrets and ensures a unique key per instance if not configured.
+API_KEY = os.getenv("VOYAGER_API_KEY")
+if not API_KEY:
+    API_KEY = secrets.token_urlsafe(32)
+    print(f"\n{'='*60}\nWARNING: VOYAGER_API_KEY not set. Using generated key:\n{API_KEY}\n{'='*60}\n")
+else:
+    print(f"VOYAGER_API_KEY loaded from environment.")
+
 def verify_api_key(x_api_key: str = Header(None, alias="X-API-Key")):
     """
     Validates the API Key provided in the header.
-    Default key is 'voyager-secret-123'.
     """
     if x_api_key is None:
         raise HTTPException(
@@ -23,8 +31,7 @@ def verify_api_key(x_api_key: str = Header(None, alias="X-API-Key")):
             detail="Missing API Key",
         )
 
-    expected_key = os.getenv("VOYAGER_API_KEY", "voyager-secret-123")
-    if not secrets.compare_digest(x_api_key, expected_key):
+    if not secrets.compare_digest(x_api_key, API_KEY):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid API Key",
