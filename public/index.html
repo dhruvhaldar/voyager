@@ -8,6 +8,7 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <header>
         <h1>Voyager Avionics Dashboard</h1>
         <div id="status-panel">
@@ -23,13 +24,16 @@
         </div>
     </header>
 
-    <main>
+    <main id="main-content">
         <section id="packet-inspector">
             <h2>CCSDS Packet Inspector</h2>
             <div id="packet-viewer">
-                <p>Waiting for telemetry...</p>
+                <p id="telemetry-status">Waiting for telemetry...</p>
                 <div id="packet-details"></div>
-                <div id="packet-hex" class="hex-dump"></div>
+                <div class="hex-wrapper" style="position: relative;">
+                    <button id="copy-hex-btn" class="copy-btn" onclick="copyHexToClipboard()" aria-label="Copy hex dump to clipboard">COPY</button>
+                    <div id="packet-hex" class="hex-dump"></div>
+                </div>
                 <button aria-label="Manually fetch latest telemetry packet" onclick="handleManualRefresh(this)" style="margin-top: 1rem;">Fetch Latest Packet</button>
             </div>
         </section>

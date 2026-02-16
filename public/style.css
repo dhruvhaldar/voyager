@@ -174,3 +174,64 @@ button:focus-visible {
     outline-offset: 2px;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
+
+/* Accessibility: Skip Link */
+.skip-link {
+    position: absolute;
+    top: -50px;
+    left: 1rem;
+    background: #45a29e;
+    color: #0b0c10;
+    padding: 0.5rem 1rem;
+    z-index: 1000;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 0 0 4px 4px;
+    transition: top 0.2s;
+}
+
+.skip-link:focus {
+    top: 0;
+    outline: 2px solid #fff;
+}
+
+/* Utility */
+.hidden {
+    display: none !important;
+}
+
+/* Hex Dump Copy Button */
+.hex-wrapper {
+    position: relative;
+    margin-top: 1rem;
+}
+
+.hex-wrapper .hex-dump {
+    margin-top: 0;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    background: rgba(11, 12, 16, 0.8);
+    border: 1px solid #333;
+    color: #888;
+    box-shadow: none;
+    border-radius: 4px;
+    z-index: 10;
+}
+
+.copy-btn:hover {
+    background: #1f2833;
+    color: #45a29e;
+    border-color: #45a29e;
+    box-shadow: 0 0 5px rgba(69, 162, 158, 0.3);
+}
+
+.copy-btn:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
