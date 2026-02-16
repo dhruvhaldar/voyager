@@ -25,6 +25,9 @@ async function updateTelemetry() {
                 <p>Sequence Count: <span style="color:#66fcf1">${data.sequence_count}</span></p>
                 <p>CRC Valid: ${data.valid_crc ? '<span style="color:#45a29e">YES</span>' : '<span style="color:#ff4d4d">NO</span>'}</p>
             `;
+
+            const statusElement = document.getElementById('telemetry-status');
+            if (statusElement) statusElement.classList.add('hidden');
         }
 
         // Also update status
@@ -47,7 +50,36 @@ async function updateTelemetry() {
             commStatus.innerText = "LOS (OFFLINE)";
             commStatus.className = "status-value status-err";
         }
+
+        const statusElement = document.getElementById('telemetry-status');
+        if (statusElement) {
+            statusElement.classList.remove('hidden');
+            statusElement.innerText = "Connection Lost. Retrying...";
+            statusElement.style.color = "#ff4d4d";
+        }
     }
+}
+
+function copyHexToClipboard() {
+    const hexElement = document.getElementById('packet-hex');
+    if (!hexElement) return;
+
+    const text = hexElement.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copy-hex-btn');
+        const originalText = btn.innerText;
+        btn.innerText = "COPIED!";
+        btn.style.color = "#66fcf1";
+        btn.style.borderColor = "#66fcf1";
+
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.color = "";
+            btn.style.borderColor = "";
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
 }
 
 // Initial fetch
