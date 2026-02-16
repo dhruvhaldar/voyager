@@ -55,3 +55,25 @@ def test_memory_double_flip():
     # This is expected behavior for simple Hamming SEC.
     # Just verify it doesn't crash.
     assert status in ["OK", "CORRECTED_SINGLE_BIT_ERROR"]
+
+def test_edac_out_of_bounds():
+    # Test out of bounds input handling (should be masked)
+
+    # Encode > 255
+    # 0x1FF (511) -> should be treated as 0xFF (255)
+    byte_val = 0x1FF
+    encoded = EDAC.encode(byte_val)
+    # Check that it matches encode(0xFF)
+    assert encoded == EDAC.encode(0xFF)
+
+    # Decode > 4095
+    # 0x1000 | encoded -> should be treated as encoded
+    # Let's take a valid encoded value
+    valid_encoded = EDAC.encode(0xAB)
+    large_encoded = valid_encoded | 0xF000
+
+    decoded, status = EDAC.decode(large_encoded)
+    expected_decoded, expected_status = EDAC.decode(valid_encoded)
+
+    assert decoded == expected_decoded
+    assert status == expected_status
