@@ -12,7 +12,7 @@ async function handleButtonAction(button, url, options = {}) {
     // 0. Auth Check
     let apiKey = localStorage.getItem("voyager_api_key");
     if (!apiKey) {
-        apiKey = prompt("Please enter the API Key (default: voyager-secret-123):");
+        apiKey = prompt("Please enter the API Key:");
         if (apiKey) {
             localStorage.setItem("voyager_api_key", apiKey);
         } else {
