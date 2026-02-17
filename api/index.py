@@ -3,7 +3,7 @@ import os
 # Add project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from fastapi import FastAPI, Header, HTTPException, status, Depends
+from fastapi import FastAPI, Header, HTTPException, status, Depends, Query
 from fastapi.staticfiles import StaticFiles
 from voyager.obc import OnBoardComputer
 from voyager.ccsds import TelemetryPacket
@@ -61,7 +61,7 @@ def command_freeze():
     return {"message": "OBC Frozen"}
 
 @app.post("/api/tick", dependencies=[Depends(verify_api_key)])
-def tick_simulation(dt: float = 1.0):
+def tick_simulation(dt: float = Query(1.0, ge=0)):
     obc.tick(dt)
     return {"message": f"Simulation advanced by {dt}s", "status": get_status()}
 
