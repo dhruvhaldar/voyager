@@ -1,7 +1,16 @@
 async function updateTelemetry() {
     try {
-        const res = await fetch('/api/telemetry/latest');
-        const data = await res.json();
+        // OPTIMIZATION: Fetch telemetry and status in parallel to reduce total latency.
+        // This is especially beneficial when network RTT is high.
+        const [telemetryRes, statusRes] = await Promise.all([
+            fetch('/api/telemetry/latest'),
+            fetch('/api/status')
+        ]);
+
+        const [data, status] = await Promise.all([
+            telemetryRes.json(),
+            statusRes.json()
+        ]);
 
         const hexElement = document.getElementById('packet-hex');
         const detailsElement = document.getElementById('packet-details');
@@ -30,10 +39,7 @@ async function updateTelemetry() {
             if (statusElement) statusElement.classList.add('hidden');
         }
 
-        // Also update status
-        const statusRes = await fetch('/api/status');
-        const status = await statusRes.json();
-
+        // Update Status Panel
         document.getElementById('obc-mode').innerText = status.mode;
         document.getElementById('obc-reboots').innerText = status.reboot_count;
         document.getElementById('obc-wdt').innerText = status.watchdog_timer.toFixed(1) + 's';
