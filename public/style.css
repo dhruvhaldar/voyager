@@ -235,3 +235,35 @@ button:focus-visible {
     outline: 2px solid #fff;
     outline-offset: 2px;
 }
+
+/* FDIR Log Styles */
+#fdir-logs-container {
+    background: #0b0c10;
+    padding: 1rem;
+    border: 1px solid #333;
+    height: 150px;
+    overflow-y: auto;
+    font-family: 'Share Tech Mono', monospace;
+    scroll-behavior: smooth;
+    margin-top: 10px;
+}
+
+#fdir-logs-container:focus-visible {
+    outline: 2px solid #66fcf1;
+    outline-offset: -2px;
+}
+
+.log-entry {
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #1f2833;
+    padding-bottom: 0.2rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.log-time { color: #666; font-size: 0.9em; }
+.log-level { font-weight: bold; }
+.log-info { color: #45a29e; }
+.log-warn { color: #ff9900; }
+.log-err { color: #ff4d4d; }
+.log-message { color: #ccc; }
