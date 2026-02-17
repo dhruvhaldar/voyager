@@ -25,6 +25,9 @@ class OnBoardComputer:
         """
         Advances the state of the OBC by dt seconds.
         """
+        if dt < 0:
+            raise ValueError("Time step must be non-negative")
+
         if self.mode == "OFF":
             return
 
