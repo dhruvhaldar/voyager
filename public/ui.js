@@ -8,6 +8,7 @@
  */
 async function handleButtonAction(button, url, options = {}) {
     const originalText = button.innerText;
+    const originalContent = button.innerHTML;
 
     // 0. Auth Check
     let apiKey = localStorage.getItem("voyager_api_key");
@@ -57,7 +58,7 @@ async function handleButtonAction(button, url, options = {}) {
 
         // 3. Reset
         setTimeout(() => {
-            resetButton(button, originalText);
+            resetButton(button, originalContent);
         }, 1000);
 
     } catch (error) {
@@ -70,7 +71,7 @@ async function handleButtonAction(button, url, options = {}) {
         addFdirLog('ERROR', `Command '${originalText}' failed: ${error.message}`);
 
         setTimeout(() => {
-            resetButton(button, originalText);
+            resetButton(button, originalContent);
         }, 2000);
     }
 }
@@ -80,7 +81,7 @@ async function handleButtonAction(button, url, options = {}) {
  * @param {HTMLButtonElement} button
  */
 async function handleManualRefresh(button) {
-    const originalText = button.innerText;
+    const originalContent = button.innerHTML;
 
     button.disabled = true;
     button.innerText = "Fetching...";
@@ -96,19 +97,19 @@ async function handleManualRefresh(button) {
         }
 
         setTimeout(() => {
-            resetButton(button, originalText);
+            resetButton(button, originalContent);
         }, 1000);
     } catch (e) {
         button.innerText = "Error";
         addFdirLog('ERROR', "Manual refresh failed.");
         setTimeout(() => {
-            resetButton(button, originalText);
+            resetButton(button, originalContent);
         }, 2000);
     }
 }
 
-function resetButton(button, text) {
-    button.innerText = text;
+function resetButton(button, content) {
+    button.innerHTML = content;
     button.disabled = false;
     button.removeAttribute("aria-busy");
     button.style.cursor = "pointer";
@@ -164,4 +165,23 @@ document.addEventListener('DOMContentLoaded', () => {
         addFdirLog('INFO', 'System Normal.');
         addFdirLog('INFO', 'Memory Scrubbing Active.');
     }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        // Ignore if user is typing in an input
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return; // Ignore combinations
+
+        switch(e.key.toLowerCase()) {
+            case 's':
+                document.getElementById('btn-step')?.click();
+                break;
+            case 'f':
+                document.getElementById('btn-freeze')?.click();
+                break;
+            case 'r':
+                document.getElementById('btn-reboot')?.click();
+                break;
+        }
+    });
 });
