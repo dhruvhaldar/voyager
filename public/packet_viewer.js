@@ -23,6 +23,10 @@ async function updateTelemetry() {
             // Clear existing content
             hexElement.innerHTML = '';
 
+            // OPTIMIZATION: Use DocumentFragment to batch DOM insertions.
+            // This prevents N reflows (where N is packet length) and causes only 1 reflow.
+            const fragment = document.createDocumentFragment();
+
             // Reconstruct HTML with classes safely
             bytes.forEach((byte, index) => {
                 const span = document.createElement('span');
@@ -38,12 +42,16 @@ async function updateTelemetry() {
                 }
 
                 span.textContent = byte;
-                hexElement.appendChild(span);
+                fragment.appendChild(span);
             });
+
+            hexElement.appendChild(fragment);
 
             // SECURITY: Use textContent and document.createElement to prevent XSS.
             // Clear existing content
             detailsElement.innerHTML = '';
+
+            const detailsFragment = document.createDocumentFragment();
 
             // Create APID element
             const pApid = document.createElement('p');
@@ -52,7 +60,7 @@ async function updateTelemetry() {
             spanApid.style.color = '#66fcf1';
             spanApid.textContent = '0x' + data.apid.toString(16).toUpperCase();
             pApid.appendChild(spanApid);
-            detailsElement.appendChild(pApid);
+            detailsFragment.appendChild(pApid);
 
             // Create Sequence Count element
             const pSeq = document.createElement('p');
@@ -61,7 +69,7 @@ async function updateTelemetry() {
             spanSeq.style.color = '#66fcf1';
             spanSeq.textContent = data.sequence_count;
             pSeq.appendChild(spanSeq);
-            detailsElement.appendChild(pSeq);
+            detailsFragment.appendChild(pSeq);
 
             // Create CRC Valid element
             const pCrc = document.createElement('p');
@@ -75,7 +83,9 @@ async function updateTelemetry() {
                 spanCrc.textContent = 'NO';
             }
             pCrc.appendChild(spanCrc);
-            detailsElement.appendChild(pCrc);
+            detailsFragment.appendChild(pCrc);
+
+            detailsElement.appendChild(detailsFragment);
 
             const statusElement = document.getElementById('telemetry-status');
             if (statusElement) statusElement.classList.add('hidden');
