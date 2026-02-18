@@ -19,21 +19,63 @@ async function updateTelemetry() {
             // Hex string split into bytes
             const bytes = data.hex.split(' ');
 
-            // Reconstruct HTML with classes
-            // Header (6 bytes)
-            let header = bytes.slice(0, 6).map(b => `<span class="hex-byte hex-header">${b}</span>`).join('');
-            // Data (rest - 2)
-            let payload = bytes.slice(6, -2).map(b => `<span class="hex-byte hex-data">${b}</span>`).join('');
-            // CRC (last 2)
-            let crc = bytes.slice(-2).map(b => `<span class="hex-byte hex-crc">${b}</span>`).join('');
+            // SECURITY: Use textContent and document.createElement to prevent XSS.
+            // Clear existing content
+            hexElement.innerHTML = '';
 
-            hexElement.innerHTML = header + payload + crc;
+            // Reconstruct HTML with classes safely
+            bytes.forEach((byte, index) => {
+                const span = document.createElement('span');
+                span.className = 'hex-byte';
 
-            detailsElement.innerHTML = `
-                <p>APID: <span style="color:#66fcf1">0x${data.apid.toString(16).toUpperCase()}</span></p>
-                <p>Sequence Count: <span style="color:#66fcf1">${data.sequence_count}</span></p>
-                <p>CRC Valid: ${data.valid_crc ? '<span style="color:#45a29e">YES</span>' : '<span style="color:#ff4d4d">NO</span>'}</p>
-            `;
+                // Determine type based on index
+                if (index < 6) {
+                    span.classList.add('hex-header');
+                } else if (index >= bytes.length - 2) {
+                    span.classList.add('hex-crc');
+                } else {
+                    span.classList.add('hex-data');
+                }
+
+                span.textContent = byte;
+                hexElement.appendChild(span);
+            });
+
+            // SECURITY: Use textContent and document.createElement to prevent XSS.
+            // Clear existing content
+            detailsElement.innerHTML = '';
+
+            // Create APID element
+            const pApid = document.createElement('p');
+            pApid.textContent = 'APID: ';
+            const spanApid = document.createElement('span');
+            spanApid.style.color = '#66fcf1';
+            spanApid.textContent = '0x' + data.apid.toString(16).toUpperCase();
+            pApid.appendChild(spanApid);
+            detailsElement.appendChild(pApid);
+
+            // Create Sequence Count element
+            const pSeq = document.createElement('p');
+            pSeq.textContent = 'Sequence Count: ';
+            const spanSeq = document.createElement('span');
+            spanSeq.style.color = '#66fcf1';
+            spanSeq.textContent = data.sequence_count;
+            pSeq.appendChild(spanSeq);
+            detailsElement.appendChild(pSeq);
+
+            // Create CRC Valid element
+            const pCrc = document.createElement('p');
+            pCrc.textContent = 'CRC Valid: ';
+            const spanCrc = document.createElement('span');
+            if (data.valid_crc) {
+                spanCrc.style.color = '#45a29e';
+                spanCrc.textContent = 'YES';
+            } else {
+                spanCrc.style.color = '#ff4d4d';
+                spanCrc.textContent = 'NO';
+            }
+            pCrc.appendChild(spanCrc);
+            detailsElement.appendChild(pCrc);
 
             const statusElement = document.getElementById('telemetry-status');
             if (statusElement) statusElement.classList.add('hidden');
