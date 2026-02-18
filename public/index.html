@@ -18,9 +18,9 @@
             <div class="status-item">Comm: <strong id="comm-status" class="status-value" aria-live="polite">WAIT</strong></div>
         </div>
         <div id="control-panel">
-            <button aria-label="Step simulation forward 1 second" onclick="handleButtonAction(this, '/api/tick?dt=1.0', {method: 'POST'})">Step +1s</button>
-            <button aria-label="Freeze On-Board Computer" onclick="handleButtonAction(this, '/api/command/freeze', {method: 'POST'})">Freeze OBC</button>
-            <button aria-label="Reboot On-Board Computer" onclick="handleButtonAction(this, '/api/command/reboot', {method: 'POST'})">Reboot OBC</button>
+            <button id="btn-step" aria-keyshortcuts="s" aria-label="Step simulation forward 1 second" onclick="handleButtonAction(this, '/api/tick?dt=1.0', {method: 'POST'})">Step +1s <span class="kbd">S</span></button>
+            <button id="btn-freeze" aria-keyshortcuts="f" aria-label="Freeze On-Board Computer" onclick="handleButtonAction(this, '/api/command/freeze', {method: 'POST'})">Freeze OBC <span class="kbd">F</span></button>
+            <button id="btn-reboot" aria-keyshortcuts="r" aria-label="Reboot On-Board Computer" onclick="handleButtonAction(this, '/api/command/reboot', {method: 'POST'})">Reboot OBC <span class="kbd">R</span></button>
         </div>
     </header>
 

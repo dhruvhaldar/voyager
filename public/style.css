@@ -267,3 +267,16 @@ button:focus-visible {
 .log-warn { color: #ff9900; }
 .log-err { color: #ff4d4d; }
 .log-message { color: #ccc; }
+
+/* Keyboard Shortcut Hint */
+.kbd {
+    display: inline-block;
+    padding: 0 5px;
+    margin-left: 8px;
+    font-size: 0.75em;
+    border: 1px solid rgba(102, 252, 241, 0.4);
+    border-radius: 3px;
+    background: rgba(11, 12, 16, 0.5);
+    color: rgba(102, 252, 241, 0.8);
+    vertical-align: middle;
+}
