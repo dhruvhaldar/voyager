@@ -92,8 +92,8 @@ async function updateTelemetry() {
         }
 
         // Update Status Panel
-        document.getElementById('obc-mode').innerText = status.mode;
-        document.getElementById('obc-reboots').innerText = status.reboot_count;
+        updateStatusValue('obc-mode', status.mode);
+        updateStatusValue('obc-reboots', status.reboot_count);
         document.getElementById('obc-wdt').innerText = status.watchdog_timer.toFixed(1) + 's';
 
         const commStatus = document.getElementById('comm-status');
@@ -138,6 +138,36 @@ function copyHexToClipboard() {
     }).catch(err => {
         console.error('Failed to copy: ', err);
     });
+}
+
+/**
+ * Updates a status element and triggers a flash animation if changed.
+ * @param {string} elementId - ID of the element
+ * @param {string|number} newValue - The new value to display
+ */
+function updateStatusValue(elementId, newValue) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    // Convert to string for comparison
+    const strValue = String(newValue);
+
+    if (element.innerText !== strValue) {
+        element.innerText = strValue;
+
+        // Remove class if it exists to restart animation
+        element.classList.remove('status-changed');
+
+        // Force reflow
+        void element.offsetWidth;
+
+        element.classList.add('status-changed');
+
+        // Clean up class after animation (optional, but keeps DOM clean)
+        setTimeout(() => {
+            element.classList.remove('status-changed');
+        }, 500); // Matches CSS duration
+    }
 }
 
 // Initial fetch
