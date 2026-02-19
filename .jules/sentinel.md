@@ -11,3 +11,10 @@
 **Prevention:**
 1. Refactored `updateTelemetry` in `public/packet_viewer.js` to use `textContent` and `document.createElement` for safe DOM manipulation.
 2. Ensure future frontend components avoid `innerHTML` when displaying data from external sources.
+
+## 2026-02-19 - Unauthenticated Telemetry Exposure
+**Vulnerability:** The `/api/status` and `/api/telemetry/latest` endpoints were accessible without authentication, exposing critical satellite state (OBC mode, watchdog timer) and raw telemetry data to any network observer.
+**Learning:** Developers often assume "read-only" data is non-sensitive or that internal APIs are hidden. However, information disclosure can aid attackers in reconnaissance (e.g., monitoring watchdog timers to time an attack).
+**Prevention:**
+1. Applied `Depends(verify_api_key)` to all API endpoints, including GET requests.
+2. Updated frontend `fetch` logic to include `X-API-Key` headers for background polling.
