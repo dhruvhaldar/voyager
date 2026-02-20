@@ -12,3 +12,7 @@
 ## 2026-02-18 - Micro-UX: Status Change Feedback
 **Learning:** Static values updating in a dashboard are often missed by users (both sighted and blind). Combining `aria-live="polite"` with a subtle CSS flash animation ensures critical state changes (like Mode or Reboots) are noticed without being intrusive.
 **Action:** Use a reusable `updateStatusValue()` helper that diffs values and applies a temporary `.status-changed` class for visual feedback, while `aria-live` handles the screen reader announcement.
+
+## 2026-02-19 - Robust Button Feedback
+**Learning:** Rapid interaction with feedback buttons often leads to race conditions (stuck state) if naive timeouts are used. Screen readers also miss visual text changes on buttons unless `aria-label` is updated.
+**Action:** Always debounce state resets, use `data-*` attributes to store original state safely, and update `aria-label` temporarily to ensure accessible feedback.
