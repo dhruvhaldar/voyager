@@ -41,7 +41,7 @@ def verify_api_key(x_api_key: str = Header(None, alias="X-API-Key")):
 obc = OnBoardComputer()
 obc.boot()
 
-@app.get("/api/status")
+@app.get("/api/status", dependencies=[Depends(verify_api_key)])
 def get_status():
     return {
         "mode": obc.mode,
@@ -65,7 +65,7 @@ def tick_simulation(dt: float = Query(1.0, ge=0)):
     obc.tick(dt)
     return {"message": f"Simulation advanced by {dt}s", "status": get_status()}
 
-@app.get("/api/telemetry/latest")
+@app.get("/api/telemetry/latest", dependencies=[Depends(verify_api_key)])
 def get_telemetry():
     # Simulate generating a packet
     # Sequence count could be based on time or internal counter
