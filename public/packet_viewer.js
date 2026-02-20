@@ -133,6 +133,9 @@ async function updateTelemetry() {
     }
 }
 
+// Global timeout for debouncing copy feedback
+let copyTimeout;
+
 function copyHexToClipboard() {
     const hexElement = document.getElementById('packet-hex');
     if (!hexElement) return;
@@ -140,15 +143,37 @@ function copyHexToClipboard() {
     const text = hexElement.innerText;
     navigator.clipboard.writeText(text).then(() => {
         const btn = document.getElementById('copy-hex-btn');
-        const originalText = btn.innerText;
+
+        // Clear previous timeout to prevent race conditions (e.g. rapid clicks)
+        if (copyTimeout) {
+            clearTimeout(copyTimeout);
+            copyTimeout = null;
+        }
+
+        // Store original state on first click
+        if (!btn.hasAttribute('data-original-text')) {
+            btn.setAttribute('data-original-text', btn.innerText);
+            btn.setAttribute('data-original-label', btn.getAttribute('aria-label') || "");
+        }
+
+        // Update UI & Accessibility
         btn.innerText = "COPIED!";
         btn.style.color = "#66fcf1";
         btn.style.borderColor = "#66fcf1";
+        btn.setAttribute('aria-label', "Copied to clipboard");
 
-        setTimeout(() => {
-            btn.innerText = originalText;
+        // Reset after 2 seconds
+        copyTimeout = setTimeout(() => {
+            btn.innerText = btn.getAttribute('data-original-text');
+            const originalLabel = btn.getAttribute('data-original-label');
+            if (originalLabel) {
+                btn.setAttribute('aria-label', originalLabel);
+            } else {
+                btn.removeAttribute('aria-label');
+            }
             btn.style.color = "";
             btn.style.borderColor = "";
+            copyTimeout = null;
         }, 2000);
     }).catch(err => {
         console.error('Failed to copy: ', err);
