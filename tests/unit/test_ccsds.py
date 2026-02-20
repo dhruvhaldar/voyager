@@ -33,6 +33,26 @@ def test_packet_creation():
     assert raw_bytes[7] == 0xFF
     assert raw_bytes[8] == 0xA2
 
+def test_hex_dump_format():
+    """Verifies that hex_dump returns uppercase, space-separated hex bytes."""
+    packet = TelemetryPacket(
+        apid=0x10,
+        sequence_count=42,
+        data=bytes([0x01, 0xFF, 0xA2])
+    )
+
+    # Expected: 08 10 C0 2A 00 04 01 FF A2 [CRC_HI] [CRC_LO]
+    # We don't check CRC values here as they depend on calc, but we check format.
+    dump = packet.hex_dump()
+
+    # Check it contains spaces
+    assert " " in dump
+    # Check it is uppercase
+    assert dump.isupper()
+    # Check length (11 bytes * 3 chars - 1 space = 32 chars)
+    # 08 10 C0 2A 00 04 01 FF A2 XX XX
+    assert len(dump.split(' ')) == 11
+
 def test_crc_validation():
     """Verifies that the Packet Error Control field correctly detects corruption."""
     pkt = TelemetryPacket(apid=10, sequence_count=1, data=b'Hello')

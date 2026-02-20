@@ -74,7 +74,7 @@ class TelemetryPacket:
     def hex_dump(self):
         b = self.to_bytes()
         # Format as hex string
-        return ' '.join(f'{x:02X}' for x in b)
+        return b.hex(sep=' ').upper()
 
     @staticmethod
     def validate_crc(raw_bytes):
