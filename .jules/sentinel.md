@@ -18,3 +18,11 @@
 **Prevention:**
 1. Applied `Depends(verify_api_key)` to all API endpoints, including GET requests.
 2. Updated frontend `fetch` logic to include `X-API-Key` headers for background polling.
+
+## 2026-05-25 - Content Security Policy Constraints
+**Vulnerability:** The application was vulnerable to XSS and clickjacking due to missing HTTP security headers.
+**Learning:** Implementing a strict CSP was blocked by the use of inline event handlers (e.g., `onclick="..."`) in the vanilla JS frontend. Refactoring to `addEventListener` was out of scope for a quick fix.
+**Prevention:**
+1. Implemented a transitional CSP allowing `'unsafe-inline'` for scripts and styles.
+2. Added `X-Frame-Options: DENY` and `X-Content-Type-Options: nosniff` for immediate protection.
+3. Future work should refactor inline handlers to enable a strict CSP.

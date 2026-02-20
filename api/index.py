@@ -3,7 +3,7 @@ import os
 # Add project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from fastapi import FastAPI, Header, HTTPException, status, Depends, Query
+from fastapi import FastAPI, Header, HTTPException, status, Depends, Query, Request
 from fastapi.staticfiles import StaticFiles
 from voyager.obc import OnBoardComputer
 from voyager.ccsds import TelemetryPacket
@@ -11,6 +11,16 @@ import time
 import secrets
 
 app = FastAPI()
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://d3js.org; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'"
+    return response
 
 # SECURITY: Load API Key from environment or generate a secure one.
 # This prevents hardcoded secrets and ensures a unique key per instance if not configured.
