@@ -17,7 +17,7 @@ async function updateTelemetry() {
             if (statusElement) {
                 statusElement.classList.remove('hidden');
                 statusElement.innerText = "Auth Required (Click a Command)";
-                statusElement.style.color = "#ffcc00";
+                statusElement.className = "status-warn";
             }
             return;
         }
@@ -72,7 +72,7 @@ async function updateTelemetry() {
             const pApid = document.createElement('p');
             pApid.textContent = 'APID: ';
             const spanApid = document.createElement('span');
-            spanApid.style.color = '#66fcf1';
+            spanApid.className = 'val-highlight';
             spanApid.textContent = '0x' + data.apid.toString(16).toUpperCase();
             pApid.appendChild(spanApid);
             detailsFragment.appendChild(pApid);
@@ -81,7 +81,7 @@ async function updateTelemetry() {
             const pSeq = document.createElement('p');
             pSeq.textContent = 'Sequence Count: ';
             const spanSeq = document.createElement('span');
-            spanSeq.style.color = '#66fcf1';
+            spanSeq.className = 'val-highlight';
             spanSeq.textContent = data.sequence_count;
             pSeq.appendChild(spanSeq);
             detailsFragment.appendChild(pSeq);
@@ -91,10 +91,10 @@ async function updateTelemetry() {
             pCrc.textContent = 'CRC Valid: ';
             const spanCrc = document.createElement('span');
             if (data.valid_crc) {
-                spanCrc.style.color = '#45a29e';
+                spanCrc.className = 'status-ok';
                 spanCrc.textContent = 'YES';
             } else {
-                spanCrc.style.color = '#ff4d4d';
+                spanCrc.className = 'status-err';
                 spanCrc.textContent = 'NO';
             }
             pCrc.appendChild(spanCrc);
@@ -128,7 +128,7 @@ async function updateTelemetry() {
         if (statusElement) {
             statusElement.classList.remove('hidden');
             statusElement.innerText = "Connection Lost. Retrying...";
-            statusElement.style.color = "#ff4d4d";
+            statusElement.className = "status-err";
         }
     }
 }

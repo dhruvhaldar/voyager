@@ -46,7 +46,7 @@ async function handleButtonAction(button, url, options = {}) {
 
         // 2. Success State
         button.innerText = "Done!";
-        button.style.borderColor = "#66fcf1"; // reinforce success color
+        button.classList.add('status-ok');
 
         // Refresh telemetry immediately if available
         if (typeof updateTelemetry === 'function') {
@@ -66,7 +66,7 @@ async function handleButtonAction(button, url, options = {}) {
 
         // 4. Error State
         button.innerText = "Error";
-        button.style.borderColor = "#ff4d4d";
+        button.classList.add('status-err');
 
         addFdirLog('ERROR', `Command '${originalText}' failed: ${error.message}`);
 
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
         if (e.metaKey || e.ctrlKey || e.altKey) return; // Ignore combinations
 
-        switch(e.key.toLowerCase()) {
+        switch (e.key.toLowerCase()) {
             case 's':
                 document.getElementById('btn-step')?.click();
                 break;

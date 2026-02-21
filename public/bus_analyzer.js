@@ -26,41 +26,33 @@ feMerge.append("feMergeNode").attr("in", "SourceGraphic");
 
 // Scales
 const x = d3.scaleLinear().range([0, width - margin.left - margin.right]);
-const y = d3.scaleStep().range([height - margin.top - margin.bottom, 0]);
+const y = d3.scaleLinear().range([height - margin.top - margin.bottom, 0]);
 
 // Axes
 const xAxis = d3.axisBottom(x).ticks(20).tickFormat(d => d + "ms");
 const yAxis = d3.axisLeft(y).ticks(2).tickFormat(d => d === 1 ? "REC (1)" : "DOM (0)");
 
 svg.append("g")
-    .attr("class", "x-axis")
+    .attr("class", "x-axis axis-label")
     .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
-    .call(xAxis)
-    .style("color", "#45a29e")
-    .style("font-family", "Share Tech Mono");
+    .call(xAxis);
 
 svg.append("g")
-    .attr("class", "y-axis")
-    .call(yAxis)
-    .style("color", "#45a29e")
-    .style("font-family", "Share Tech Mono");
+    .attr("class", "y-axis axis-label")
+    .call(yAxis);
 
 // Grid lines
 function make_x_gridlines() { return d3.axisBottom(x).ticks(20) }
 function make_y_gridlines() { return d3.axisLeft(y).ticks(2) }
 
 svg.append("g")
-    .attr("class", "grid")
+    .attr("class", "grid grid-line")
     .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
-    .call(make_x_gridlines().tickSize(-(height - margin.top - margin.bottom)).tickFormat(""))
-    .style("stroke", "#333")
-    .style("stroke-opacity", "0.2");
+    .call(make_x_gridlines().tickSize(-(height - margin.top - margin.bottom)).tickFormat(""));
 
 svg.append("g")
-    .attr("class", "grid")
-    .call(make_y_gridlines().tickSize(-(width - margin.left - margin.right)).tickFormat(""))
-    .style("stroke", "#333")
-    .style("stroke-opacity", "0.2");
+    .attr("class", "grid grid-line")
+    .call(make_y_gridlines().tickSize(-(width - margin.left - margin.right)).tickFormat(""));
 
 // Data generator (Same logic, better structure)
 function generateBusData() {
@@ -109,18 +101,12 @@ const line = d3.line()
 // Add path with glow
 svg.append("path")
     .datum(data)
-    .attr("fill", "none")
-    .attr("stroke", "#66fcf1")
-    .attr("stroke-width", 2)
-    .attr("d", line)
-    .style("filter", "url(#glow)");
+    .attr("class", "bus-path")
+    .attr("d", line);
 
 // Add labels
 svg.append("text")
+    .attr("class", "bus-title")
     .attr("x", (width - margin.left - margin.right) / 2)
     .attr("y", -5)
-    .style("text-anchor", "middle")
-    .style("fill", "#66fcf1")
-    .style("font-family", "Share Tech Mono")
-    .style("text-shadow", "0 0 5px #66fcf1")
     .text("CAN BUS ARBITRATION TIMELINE");
