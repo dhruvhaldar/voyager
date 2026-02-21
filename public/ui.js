@@ -185,3 +185,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// Security Enhancement: Event Listeners (Replaces inline onclick)
+document.addEventListener('DOMContentLoaded', () => {
+    // Control Panel Buttons
+    const btnStep = document.getElementById('btn-step');
+    if (btnStep) {
+        btnStep.addEventListener('click', (e) => {
+            handleButtonAction(e.currentTarget, '/api/tick?dt=1.0', { method: 'POST' });
+        });
+    }
+
+    const btnFreeze = document.getElementById('btn-freeze');
+    if (btnFreeze) {
+        btnFreeze.addEventListener('click', (e) => {
+            handleButtonAction(e.currentTarget, '/api/command/freeze', { method: 'POST' });
+        });
+    }
+
+    const btnReboot = document.getElementById('btn-reboot');
+    if (btnReboot) {
+        btnReboot.addEventListener('click', (e) => {
+            handleButtonAction(e.currentTarget, '/api/command/reboot', { method: 'POST' });
+        });
+    }
+
+    // Copy Hex Button
+    const btnCopy = document.getElementById('copy-hex-btn');
+    if (btnCopy) {
+        btnCopy.addEventListener('click', () => {
+            if (typeof copyHexToClipboard === 'function') {
+                copyHexToClipboard();
+            }
+        });
+    }
+
+    // Fetch Telemetry Button
+    const btnFetch = document.getElementById('btn-fetch-telemetry');
+    if (btnFetch) {
+        btnFetch.addEventListener('click', (e) => {
+            handleManualRefresh(e.currentTarget);
+        });
+    }
+});

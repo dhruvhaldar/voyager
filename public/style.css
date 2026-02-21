@@ -296,3 +296,8 @@ button:focus-visible {
 .status-changed {
     animation: status-flash 0.5s ease-out;
 }
+
+/* Security Enhancement: Replaced inline style */
+#btn-fetch-telemetry {
+    margin-top: 1rem;
+}
