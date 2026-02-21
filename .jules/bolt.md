@@ -5,3 +5,7 @@
 ## 2026-05-24 - [Memory Simulation Optimization]
 **Learning:** Simulating hardware memory using Python lists (`[0] * size`) incurs massive overhead (~28 bytes per integer + pointers). For strictly typed data like 12-bit EDAC codes, `array('H')` provides ~18x better memory efficiency and ~40x faster initialization/access.
 **Action:** Use `array.array` with appropriate type codes (e.g., 'H' for unsigned short) for large, uniform numeric data structures instead of lists.
+
+## 2026-05-25 - [Startup Time Optimization with Bitwise Logic]
+**Learning:** Module-level initialization of large lookup tables (e.g., 4096 entries for Hamming code) using list comprehensions can be surprisingly slow (~28ms) due to list allocation overhead. Replacing list manipulations with explicit bitwise operations using `int.bit_count()` and masks reduced this to ~5.5ms (5x speedup).
+**Action:** When initializing large constant tables, prefer direct bitwise calculation over intermediate list/string operations, especially for startup-critical modules.

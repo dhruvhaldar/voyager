@@ -24,91 +24,86 @@ class EDAC:
 
     @staticmethod
     def _compute_encode(byte_val):
-        """Encodes an 8-bit byte into a 12-bit Hamming code."""
-        d = [
-            (byte_val >> 0) & 1, # d1 (pos 3) - LSB of input
-            (byte_val >> 1) & 1, # d2 (pos 5)
-            (byte_val >> 2) & 1, # d3 (pos 6)
-            (byte_val >> 3) & 1, # d4 (pos 7)
-            (byte_val >> 4) & 1, # d5 (pos 9)
-            (byte_val >> 5) & 1, # d6 (pos 10)
-            (byte_val >> 6) & 1, # d7 (pos 11)
-            (byte_val >> 7) & 1, # d8 (pos 12) - MSB
-        ]
+        """Encodes an 8-bit byte into a 12-bit Hamming code using bitwise operations."""
+        # Calculate parity bits directly from byte_val using masks
 
-        # Calculate parity bits
-        # p1 (pos 1): check 1, 3, 5, 7, 9, 11
-        p1 = d[0] ^ d[1] ^ d[3] ^ d[4] ^ d[6]
+        # p1 (pos 1): checks 1, 3, 5, 7, 9, 11 (1-based)
+        # Data bits at 3, 5, 7, 9, 11 map to input bits 0, 1, 3, 4, 6
+        # Mask: (1<<0)|(1<<1)|(1<<3)|(1<<4)|(1<<6) = 0x5B (0101 1011)
+        p1 = (byte_val & 0x5B).bit_count() & 1
 
-        # p2 (pos 2): check 2, 3, 6, 7, 10, 11
-        p2 = d[0] ^ d[2] ^ d[3] ^ d[5] ^ d[6]
+        # p2 (pos 2): checks 2, 3, 6, 7, 10, 11
+        # Data bits at 3, 6, 7, 10, 11 map to input bits 0, 2, 3, 5, 6
+        # Mask: (1<<0)|(1<<2)|(1<<3)|(1<<5)|(1<<6) = 0x6D (0110 1101)
+        p2 = (byte_val & 0x6D).bit_count() & 1
 
-        # p4 (pos 4): check 4, 5, 6, 7, 12
-        p4 = d[1] ^ d[2] ^ d[3] ^ d[7]
+        # p4 (pos 4): checks 4, 5, 6, 7, 12
+        # Data bits at 5, 6, 7, 12 map to input bits 1, 2, 3, 7
+        # Mask: (1<<1)|(1<<2)|(1<<3)|(1<<7) = 0x8E (1000 1110)
+        p4 = (byte_val & 0x8E).bit_count() & 1
 
-        # p8 (pos 8): check 8, 9, 10, 11, 12
-        p8 = d[4] ^ d[5] ^ d[6] ^ d[7]
+        # p8 (pos 8): checks 8, 9, 10, 11, 12
+        # Data bits at 9, 10, 11, 12 map to input bits 4, 5, 6, 7
+        # Mask: (1<<4)|(1<<5)|(1<<6)|(1<<7) = 0xF0 (1111 0000)
+        p8 = (byte_val & 0xF0).bit_count() & 1
 
         # Construct 12-bit word
-        # p1 p2 d1 p4 d2 d3 d4 p8 d5 d6 d7 d8
-        encoded = (p1 << 0) | (p2 << 1) | (d[0] << 2) | (p4 << 3) | \
-                  (d[1] << 4) | (d[2] << 5) | (d[3] << 6) | (p8 << 7) | \
-                  (d[4] << 8) | (d[5] << 9) | (d[6] << 10) | (d[7] << 11)
+        # p1(0), p2(1), d1(2), p4(3), d2(4), d3(5), d4(6), p8(7), d5(8), d6(9), d7(10), d8(11)
+        # Input bits mapping to output positions:
+        # bit 0 -> pos 2 (<<2)
+        # bits 1-3 -> pos 4-6 (<<3)
+        # bits 4-7 -> pos 8-11 (<<4)
+
+        encoded = p1 | (p2 << 1) | ((byte_val & 1) << 2) | (p4 << 3) | \
+                  ((byte_val & 0x0E) << 3) | (p8 << 7) | ((byte_val & 0xF0) << 4)
 
         return encoded
 
     @staticmethod
     def _compute_decode(encoded_val):
         """
-        Decodes a 12-bit Hamming code.
+        Decodes a 12-bit Hamming code using optimized bitwise operations.
         Returns (decoded_byte, status_code).
         Status code: 0 (OK), 1 (CORRECTED)
         """
-        # Extract bits
-        bits = [(encoded_val >> i) & 1 for i in range(12)]
-        # Positions are 1-based in Hamming theory, but 0-based index here.
-        # pos 1 -> bits[0], pos 2 -> bits[1], etc.
+        # Calculate parity bits using bit_count on masked values
+        # This avoids creating a list of 12 bits and iterating multiple times.
 
-        # Recalculate parity
-        # c1 checks 1, 3, 5, 7, 9, 11
-        c1 = bits[0] ^ bits[2] ^ bits[4] ^ bits[6] ^ bits[8] ^ bits[10]
+        # c1 checks 1, 3, 5, 7, 9, 11 (1-based) -> indices 0, 2, 4, 6, 8, 10
+        # Mask: 0x555 (0101 0101 0101)
+        c1 = (encoded_val & 0x555).bit_count() & 1
 
-        # c2 checks 2, 3, 6, 7, 10, 11
-        c2 = bits[1] ^ bits[2] ^ bits[5] ^ bits[6] ^ bits[9] ^ bits[10]
+        # c2 checks 2, 3, 6, 7, 10, 11 (1-based) -> indices 1, 2, 5, 6, 9, 10
+        # Mask: 0x666 (0110 0110 0110)
+        c2 = (encoded_val & 0x666).bit_count() & 1
 
-        # c4 checks 4, 5, 6, 7, 12
-        c4 = bits[3] ^ bits[4] ^ bits[5] ^ bits[6] ^ bits[11]
+        # c4 checks 4, 5, 6, 7, 12 (1-based) -> indices 3, 4, 5, 6, 11
+        # Mask: 0x878 (1000 0111 1000)
+        c4 = (encoded_val & 0x878).bit_count() & 1
 
-        # c8 checks 8, 9, 10, 11, 12
-        c8 = bits[7] ^ bits[8] ^ bits[9] ^ bits[10] ^ bits[11]
+        # c8 checks 8, 9, 10, 11, 12 (1-based) -> indices 7, 8, 9, 10, 11
+        # Mask: 0xF80 (1111 1000 0000)
+        c8 = (encoded_val & 0xF80).bit_count() & 1
 
         syndrome = c1 | (c2 << 1) | (c4 << 2) | (c8 << 3)
 
         status_code = EDAC._STATUS_OK
         if syndrome != 0:
-            # Single bit error at position 'syndrome'
             status_code = EDAC._STATUS_CORRECTED
-
-            # Flip the bit
-            # syndrome is 1-based index
+            # Flip the error bit
             encoded_val ^= (1 << (syndrome - 1))
 
-            # Re-extract bits after correction
-            bits = [(encoded_val >> i) & 1 for i in range(12)]
+        # Extract data bits from (potentially corrected) encoded_val
+        # d1..d8 -> pos 3, 5, 6, 7, 9, 10, 11, 12 (1-based)
+        # indices 2, 4, 5, 6, 8, 9, 10, 11 (0-based)
 
-        # Extract data bits
-        # d1..d8 -> pos 3, 5, 6, 7, 9, 10, 11, 12
-        # indices 2, 4, 5, 6, 8, 9, 10, 11
+        # d1 (bit 2) -> output bit 0 (>>2)
+        # d2-d4 (bits 4-6) -> output bits 1-3 (>>3)
+        # d5-d8 (bits 8-11) -> output bits 4-7 (>>4)
 
-        d = 0
-        d |= bits[2] << 0
-        d |= bits[4] << 1
-        d |= bits[5] << 2
-        d |= bits[6] << 3
-        d |= bits[8] << 4
-        d |= bits[9] << 5
-        d |= bits[10] << 6
-        d |= bits[11] << 7
+        d = ((encoded_val >> 2) & 1) | \
+            ((encoded_val >> 3) & 0x0E) | \
+            ((encoded_val >> 4) & 0xF0)
 
         return d, status_code
 
