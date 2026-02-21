@@ -18,9 +18,9 @@
             <div class="status-item">Comm: <strong id="comm-status" class="status-value" aria-live="polite" aria-atomic="true">WAIT</strong></div>
         </div>
         <div id="control-panel">
-            <button id="btn-step" aria-keyshortcuts="s" aria-label="Step simulation forward 1 second" onclick="handleButtonAction(this, '/api/tick?dt=1.0', {method: 'POST'})">Step +1s <span class="kbd">S</span></button>
-            <button id="btn-freeze" aria-keyshortcuts="f" aria-label="Freeze On-Board Computer" onclick="handleButtonAction(this, '/api/command/freeze', {method: 'POST'})">Freeze OBC <span class="kbd">F</span></button>
-            <button id="btn-reboot" aria-keyshortcuts="r" aria-label="Reboot On-Board Computer" onclick="handleButtonAction(this, '/api/command/reboot', {method: 'POST'})">Reboot OBC <span class="kbd">R</span></button>
+            <button id="btn-step" aria-keyshortcuts="s" aria-label="Step simulation forward 1 second">Step +1s <span class="kbd">S</span></button>
+            <button id="btn-freeze" aria-keyshortcuts="f" aria-label="Freeze On-Board Computer">Freeze OBC <span class="kbd">F</span></button>
+            <button id="btn-reboot" aria-keyshortcuts="r" aria-label="Reboot On-Board Computer">Reboot OBC <span class="kbd">R</span></button>
         </div>
     </header>
 
@@ -30,11 +30,11 @@
             <div id="packet-viewer">
                 <p id="telemetry-status">Waiting for telemetry...</p>
                 <div id="packet-details"></div>
-                <div class="hex-wrapper" style="position: relative;">
-                    <button id="copy-hex-btn" class="copy-btn" onclick="copyHexToClipboard()" aria-label="Copy hex dump to clipboard">COPY</button>
+                <div class="hex-wrapper">
+                    <button id="copy-hex-btn" class="copy-btn" aria-label="Copy hex dump to clipboard">COPY</button>
                     <div id="packet-hex" class="hex-dump"></div>
                 </div>
-                <button aria-label="Manually fetch latest telemetry packet" onclick="handleManualRefresh(this)" style="margin-top: 1rem;">Fetch Latest Packet</button>
+                <button id="btn-fetch-telemetry" aria-label="Manually fetch latest telemetry packet">Fetch Latest Packet</button>
             </div>
         </section>
 
