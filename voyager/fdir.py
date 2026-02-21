@@ -30,22 +30,23 @@ class EDAC:
         # p1 (pos 1): checks 1, 3, 5, 7, 9, 11 (1-based)
         # Data bits at 3, 5, 7, 9, 11 map to input bits 0, 1, 3, 4, 6
         # Mask: (1<<0)|(1<<1)|(1<<3)|(1<<4)|(1<<6) = 0x5B (0101 1011)
-        p1 = (byte_val & 0x5B).bit_count() & 1
+        # Use bin().count('1') for compatibility with Python < 3.10
+        p1 = bin(byte_val & 0x5B).count('1') & 1
 
         # p2 (pos 2): checks 2, 3, 6, 7, 10, 11
         # Data bits at 3, 6, 7, 10, 11 map to input bits 0, 2, 3, 5, 6
         # Mask: (1<<0)|(1<<2)|(1<<3)|(1<<5)|(1<<6) = 0x6D (0110 1101)
-        p2 = (byte_val & 0x6D).bit_count() & 1
+        p2 = bin(byte_val & 0x6D).count('1') & 1
 
         # p4 (pos 4): checks 4, 5, 6, 7, 12
         # Data bits at 5, 6, 7, 12 map to input bits 1, 2, 3, 7
         # Mask: (1<<1)|(1<<2)|(1<<3)|(1<<7) = 0x8E (1000 1110)
-        p4 = (byte_val & 0x8E).bit_count() & 1
+        p4 = bin(byte_val & 0x8E).count('1') & 1
 
         # p8 (pos 8): checks 8, 9, 10, 11, 12
         # Data bits at 9, 10, 11, 12 map to input bits 4, 5, 6, 7
         # Mask: (1<<4)|(1<<5)|(1<<6)|(1<<7) = 0xF0 (1111 0000)
-        p8 = (byte_val & 0xF0).bit_count() & 1
+        p8 = bin(byte_val & 0xF0).count('1') & 1
 
         # Construct 12-bit word
         # p1(0), p2(1), d1(2), p4(3), d2(4), d3(5), d4(6), p8(7), d5(8), d6(9), d7(10), d8(11)
@@ -71,19 +72,19 @@ class EDAC:
 
         # c1 checks 1, 3, 5, 7, 9, 11 (1-based) -> indices 0, 2, 4, 6, 8, 10
         # Mask: 0x555 (0101 0101 0101)
-        c1 = (encoded_val & 0x555).bit_count() & 1
+        c1 = bin(encoded_val & 0x555).count('1') & 1
 
         # c2 checks 2, 3, 6, 7, 10, 11 (1-based) -> indices 1, 2, 5, 6, 9, 10
         # Mask: 0x666 (0110 0110 0110)
-        c2 = (encoded_val & 0x666).bit_count() & 1
+        c2 = bin(encoded_val & 0x666).count('1') & 1
 
         # c4 checks 4, 5, 6, 7, 12 (1-based) -> indices 3, 4, 5, 6, 11
         # Mask: 0x878 (1000 0111 1000)
-        c4 = (encoded_val & 0x878).bit_count() & 1
+        c4 = bin(encoded_val & 0x878).count('1') & 1
 
         # c8 checks 8, 9, 10, 11, 12 (1-based) -> indices 7, 8, 9, 10, 11
         # Mask: 0xF80 (1111 1000 0000)
-        c8 = (encoded_val & 0xF80).bit_count() & 1
+        c8 = bin(encoded_val & 0xF80).count('1') & 1
 
         syndrome = c1 | (c2 << 1) | (c4 << 2) | (c8 << 3)
 

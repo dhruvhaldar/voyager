@@ -1,3 +1,6 @@
+// UX: Cache last packet hex to prevent DOM thrashing and text selection loss
+let lastPacketHex = null;
+
 async function updateTelemetry() {
     try {
         // OPTIMIZATION: Fetch telemetry and status in parallel to reduce total latency.
@@ -31,77 +34,83 @@ async function updateTelemetry() {
         const detailsElement = document.getElementById('packet-details');
 
         if (hexElement && detailsElement) {
-            // Hex string split into bytes
-            const bytes = data.hex.split(' ');
+            // UX: Only update DOM if content has changed (preserves text selection)
+            if (data.hex !== lastPacketHex) {
+                lastPacketHex = data.hex;
 
-            // SECURITY: Use textContent and document.createElement to prevent XSS.
-            // Clear existing content
-            hexElement.innerHTML = '';
+                // Hex string split into bytes
+                const bytes = data.hex.split(' ');
 
-            // OPTIMIZATION: Use DocumentFragment to batch DOM insertions.
-            // This prevents N reflows (where N is packet length) and causes only 1 reflow.
-            const fragment = document.createDocumentFragment();
+                // SECURITY: Use textContent and document.createElement to prevent XSS.
+                // Clear existing content
+                hexElement.innerHTML = '';
 
-            // Reconstruct HTML with classes safely
-            bytes.forEach((byte, index) => {
-                const span = document.createElement('span');
-                span.className = 'hex-byte';
+                // OPTIMIZATION: Use DocumentFragment to batch DOM insertions.
+                // This prevents N reflows (where N is packet length) and causes only 1 reflow.
+                const fragment = document.createDocumentFragment();
 
-                // Determine type based on index
-                if (index < 6) {
-                    span.classList.add('hex-header');
-                } else if (index >= bytes.length - 2) {
-                    span.classList.add('hex-crc');
+                // Reconstruct HTML with classes safely
+                bytes.forEach((byte, index) => {
+                    const span = document.createElement('span');
+                    span.className = 'hex-byte';
+
+                    // Determine type based on index
+                    if (index < 6) {
+                        span.classList.add('hex-header');
+                    } else if (index >= bytes.length - 2) {
+                        span.classList.add('hex-crc');
+                    } else {
+                        span.classList.add('hex-data');
+                    }
+
+                    span.textContent = byte;
+                    fragment.appendChild(span);
+                });
+
+                hexElement.appendChild(fragment);
+
+                // SECURITY: Use textContent and document.createElement to prevent XSS.
+                // Clear existing content
+                detailsElement.innerHTML = '';
+
+                const detailsFragment = document.createDocumentFragment();
+
+                // Create APID element
+                const pApid = document.createElement('p');
+                pApid.textContent = 'APID: ';
+                const spanApid = document.createElement('span');
+                spanApid.className = 'val-highlight';
+                spanApid.textContent = '0x' + data.apid.toString(16).toUpperCase();
+                pApid.appendChild(spanApid);
+                detailsFragment.appendChild(pApid);
+
+                // Create Sequence Count element
+                const pSeq = document.createElement('p');
+                pSeq.textContent = 'Sequence Count: ';
+                const spanSeq = document.createElement('span');
+                spanSeq.className = 'val-highlight';
+                spanSeq.textContent = data.sequence_count;
+                pSeq.appendChild(spanSeq);
+                detailsFragment.appendChild(pSeq);
+
+                // Create CRC Valid element
+                const pCrc = document.createElement('p');
+                pCrc.textContent = 'CRC Valid: ';
+                const spanCrc = document.createElement('span');
+                if (data.valid_crc) {
+                    spanCrc.className = 'status-ok';
+                    spanCrc.textContent = 'YES';
                 } else {
-                    span.classList.add('hex-data');
+                    spanCrc.className = 'status-err';
+                    spanCrc.textContent = 'NO';
                 }
+                pCrc.appendChild(spanCrc);
+                detailsFragment.appendChild(pCrc);
 
-                span.textContent = byte;
-                fragment.appendChild(span);
-            });
-
-            hexElement.appendChild(fragment);
-
-            // SECURITY: Use textContent and document.createElement to prevent XSS.
-            // Clear existing content
-            detailsElement.innerHTML = '';
-
-            const detailsFragment = document.createDocumentFragment();
-
-            // Create APID element
-            const pApid = document.createElement('p');
-            pApid.textContent = 'APID: ';
-            const spanApid = document.createElement('span');
-            spanApid.className = 'val-highlight';
-            spanApid.textContent = '0x' + data.apid.toString(16).toUpperCase();
-            pApid.appendChild(spanApid);
-            detailsFragment.appendChild(pApid);
-
-            // Create Sequence Count element
-            const pSeq = document.createElement('p');
-            pSeq.textContent = 'Sequence Count: ';
-            const spanSeq = document.createElement('span');
-            spanSeq.className = 'val-highlight';
-            spanSeq.textContent = data.sequence_count;
-            pSeq.appendChild(spanSeq);
-            detailsFragment.appendChild(pSeq);
-
-            // Create CRC Valid element
-            const pCrc = document.createElement('p');
-            pCrc.textContent = 'CRC Valid: ';
-            const spanCrc = document.createElement('span');
-            if (data.valid_crc) {
-                spanCrc.className = 'status-ok';
-                spanCrc.textContent = 'YES';
-            } else {
-                spanCrc.className = 'status-err';
-                spanCrc.textContent = 'NO';
+                detailsElement.appendChild(detailsFragment);
             }
-            pCrc.appendChild(spanCrc);
-            detailsFragment.appendChild(pCrc);
 
-            detailsElement.appendChild(detailsFragment);
-
+            // Always hide status if we have valid data (idempotent)
             const statusElement = document.getElementById('telemetry-status');
             if (statusElement) statusElement.classList.add('hidden');
         }
