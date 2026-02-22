@@ -27,6 +27,38 @@ async def add_security_headers(request: Request, call_next):
 obc = OnBoardComputer()
 obc.boot()
 
+# Resilient path discovery for Vercel
+def find_static_file(filename: str) -> Path:
+    # Potential locations relative to this file (api/index.py)
+    search_paths = [
+        Path(__file__).parent.parent / "public" / filename,  # Local/Standard
+        Path(__file__).parent.parent / filename,           # Flattened
+        Path.cwd() / "public" / filename,                  # CWD based
+        Path.cwd() / filename,                             # Root based
+    ]
+    for path in search_paths:
+        if path.exists():
+            return path
+    return None
+
+@app.get("/", include_in_schema=False)
+async def read_root():
+    from fastapi.responses import FileResponse
+    path = find_static_file("index.html")
+    if path:
+        return FileResponse(path)
+    # If not found, list directory to help debug (or just 404)
+    raise HTTPException(status_code=404, detail=f"index.html not found. CWD: {os.getcwd()}")
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    from fastapi.responses import FileResponse
+    path = find_static_file("favicon.ico")
+    if path:
+        return FileResponse(path)
+    from fastapi import Response
+    return Response(status_code=204)
+
 # API Routes
 @app.get("/api/status")
 def get_status():
@@ -68,9 +100,10 @@ def get_telemetry():
         "valid_crc": True 
     }
 
-# Serve static files for frontend (public folder)
+# Serve static files for frontend fallback
 base_dir = Path(__file__).resolve().parent.parent
 public_dir = base_dir / "public"
+if not public_dir.exists():
+    public_dir = base_dir # Hard fallback to root
 
-if public_dir.exists():
-    app.mount("/", StaticFiles(directory=str(public_dir), html=True), name="public")
+app.mount("/", StaticFiles(directory=str(public_dir), html=True), name="public")
