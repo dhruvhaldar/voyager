@@ -6,7 +6,7 @@ async function updateTelemetry() {
         // OPTIMIZATION: Fetch telemetry and status in parallel to reduce total latency.
         // This is especially beneficial when network RTT is high.
         // SECURITY: Retrieve API Key and add to headers
-        const apiKey = localStorage.getItem("voyager_api_key");
+        const apiKey = localStorage.getItem("VOYAGER_API_KEY");
         const headers = apiKey ? { "X-API-Key": apiKey } : {};
 
         const [telemetryRes, statusRes] = await Promise.all([

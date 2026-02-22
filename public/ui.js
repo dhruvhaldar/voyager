@@ -11,11 +11,11 @@ async function handleButtonAction(button, url, options = {}) {
     const originalContent = button.innerHTML;
 
     // 0. Auth Check
-    let apiKey = localStorage.getItem("voyager_api_key");
+    let apiKey = localStorage.getItem("VOYAGER_API_KEY");
     if (!apiKey) {
         apiKey = prompt("Please enter the API Key:");
         if (apiKey) {
-            localStorage.setItem("voyager_api_key", apiKey);
+            localStorage.setItem("VOYAGER_API_KEY", apiKey);
         } else {
             // User cancelled
             return;
@@ -38,7 +38,7 @@ async function handleButtonAction(button, url, options = {}) {
 
         if (!response.ok) {
             if (response.status === 401) {
-                localStorage.removeItem("voyager_api_key");
+                localStorage.removeItem("VOYAGER_API_KEY");
                 alert("Invalid or missing API Key. Please try again.");
             }
             throw new Error(`HTTP ${response.status}`);
