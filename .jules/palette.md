@@ -16,3 +16,7 @@
 ## 2026-02-19 - Robust Button Feedback
 **Learning:** Rapid interaction with feedback buttons often leads to race conditions (stuck state) if naive timeouts are used. Screen readers also miss visual text changes on buttons unless `aria-label` is updated.
 **Action:** Always debounce state resets, use `data-*` attributes to store original state safely, and update `aria-label` temporarily to ensure accessible feedback.
+
+## 2026-02-22 - CSS-First Design System
+**Learning:** Injecting "glow" and status effects via JavaScript creates fragile code and violates strict CSPs.
+**Action:** Migrated all visual feedback and SVG effects (like the CAN BUS glow) into a centralized CSS class system (`.bus-path`, `.val-highlight`). This ensures a premium aesthetic remains consistent and secure across all deployment environments.

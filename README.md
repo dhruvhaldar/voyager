@@ -8,21 +8,26 @@ The tool focuses on the "Software-in-the-Loop" aspect of OBDH (On-Board Data Han
 
 This project strictly adheres to the course learning outcomes:
 
-| Module | Syllabus Topic | Implemented Features |
-| :--- | :--- | :--- |
-| **Architecture** | Functions and components | Simulation of OBC, Mass Memory (SSR), and Payload interactions. |
-| **Interfaces** | UART, I2C, SPI, CAN, Spacewire | Protocol-level simulation of bus arbitration, addressing, and throughput limits. |
-| **Standards** | CCSDS | Full implementation of CCSDS Space Packet Protocol (headers, secondary headers, CRC). |
-| **Reliability** | Error detection (FDIR) | EDAC (Error Detection and Correction) simulation for memory, Watchdog timers, and Redundancy switching. |
-| **Physics** | Electrophysical aspects | Simulation of EMI-induced bit flips (Single Event Upsets) and transmission line noise. |
+| Module           | Syllabus Topic                 | Implemented Features                                                                                    |
+| :--------------- | :----------------------------- | :------------------------------------------------------------------------------------------------------ |
+| **Architecture** | Functions and components       | Simulation of OBC, Mass Memory (SSR), and Payload interactions.                                         |
+| **Interfaces**   | UART, I2C, SPI, CAN, Spacewire | Protocol-level simulation of bus arbitration, addressing, and throughput limits.                        |
+| **Standards**    | CCSDS                          | Full implementation of CCSDS Space Packet Protocol (headers, secondary headers, CRC).                   |
+| **Reliability**  | Error detection (FDIR)         | EDAC (Error Detection and Correction) simulation for memory, Watchdog timers, and Redundancy switching. |
+| **Physics**      | Electrophysical aspects        | Simulation of EMI-induced bit flips (Single Event Upsets) and transmission line noise.                  |
 
 ## 🚀 Deployment (Vercel)
 
 Voyager runs as a serverless avionics testbed.
 
-1.  Fork this repository.
-2.  Deploy to Vercel (the `api/` folder is detected automatically).
-3.  Access the Avionics Dashboard at `https://your-voyager.vercel.app`.
+1.  **Fork** this repository.
+2.  **Deploy** to Vercel (the `api/` folder is detected automatically).
+3.  **Configure Environment Variables**:
+    - In Vercel Project Settings, add `VOYAGER_API_KEY`.
+    - Set it to a secure string (e.g., `my-secure-avionics-key`).
+    - *Note: If not set, a random key is generated on every request, which will cause 401 errors.*
+4.  **Access** the Avionics Dashboard at `https://your-voyager.vercel.app`.
+5.  **Authenticate**: Enter your chosen key when prompted by the dashboard.
 
 ## 📊 Artifacts & Avionics Analysis
 

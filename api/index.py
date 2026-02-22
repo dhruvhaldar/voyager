@@ -19,7 +19,7 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' https://d3js.org; style-src 'self'; img-src 'self' data:; object-src 'none'"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' https://d3js.org; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'"
     return response
 
 # SECURITY: Load API Key from environment or generate a secure one.
@@ -50,6 +50,16 @@ def verify_api_key(x_api_key: str = Header(None, alias="X-API-Key")):
 # Global OBC instance
 obc = OnBoardComputer()
 obc.boot()
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    from fastapi.responses import FileResponse
+    favicon_path = "public/favicon.ico"
+    if os.path.exists(favicon_path):
+        return FileResponse(favicon_path)
+    # Return 204 No Content for a dummy response if file doesn't exist
+    from fastapi import Response
+    return Response(status_code=204)
 
 @app.get("/api/status", dependencies=[Depends(verify_api_key)])
 def get_status():

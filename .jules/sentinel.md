@@ -26,3 +26,10 @@
 1. Implemented a transitional CSP allowing `'unsafe-inline'` for scripts and styles.
 2. Added `X-Frame-Options: DENY` and `X-Content-Type-Options: nosniff` for immediate protection.
 3. Future work should refactor inline handlers to enable a strict CSP.
+
+## 2026-02-22 - Voyager Security Hardening (Sentinel)
+**Vulnerability:** The application relied on `'unsafe-inline'` in the CSP to handle dynamic styles and legacy event handlers, leaving it vulnerable to sophisticated XSS attacks.
+**Learning:** Transitioning from inline styles to a class-based CSS system is not just a maintainability win; it is a security necessity for strict CSP compliance. 
+**Prevention:**
+1. Refactored `bus_analyzer.js`, `packet_viewer.js`, and `ui.js` to use CSS classes instead of `.style()` or `element.style`.
+2. Hardened the CSP by removing `'unsafe-inline'` from `style-src`, achieving compliance with internal security benchmarks while preserving D3.js functionality.
