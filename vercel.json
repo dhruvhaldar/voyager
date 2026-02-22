@@ -5,8 +5,8 @@
       "destination": "/api/index.py"
     },
     {
-      "source": "/",
-      "destination": "/api/index.py"
+      "source": "/(.*)",
+      "destination": "/public/$1"
     }
   ]
 }
