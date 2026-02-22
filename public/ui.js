@@ -182,6 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'r':
                 document.getElementById('btn-reboot')?.click();
                 break;
+            case 'c':
+                document.getElementById('copy-hex-btn')?.click();
+                break;
         }
     });
 });
