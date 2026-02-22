@@ -22,12 +22,8 @@ Voyager runs as a serverless avionics testbed.
 
 1.  **Fork** this repository.
 2.  **Deploy** to Vercel (the `api/` folder is detected automatically).
-3.  **Configure Environment Variables**:
-    - In Vercel Project Settings, add `VOYAGER_API_KEY`.
-    - Set it to a secure string (e.g., `my-secure-avionics-key`).
-    - *Note: If not set, a random key is generated on every request, which will cause 401 errors.*
-4.  **Access** the Avionics Dashboard at `https://your-voyager.vercel.app`.
-5.  **Authenticate**: Enter your chosen key when prompted by the dashboard.
+The project is configured for automated deployment to Vercel. Static files in `public/` and API endpoints in `api/` are handled seamlessly.
+3.  **Access** the Avionics Dashboard at `https://your-voyager.vercel.app`.
 
 ## 📊 Artifacts & Avionics Analysis
 

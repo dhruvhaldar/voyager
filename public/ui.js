@@ -10,22 +10,7 @@ async function handleButtonAction(button, url, options = {}) {
     const originalText = button.innerText;
     const originalContent = button.innerHTML;
 
-    // 0. Auth Check
-    let apiKey = localStorage.getItem("VOYAGER_API_KEY");
-    if (!apiKey) {
-        apiKey = prompt("Please enter the API Key:");
-        if (apiKey) {
-            localStorage.setItem("VOYAGER_API_KEY", apiKey);
-        } else {
-            // User cancelled
-            return;
-        }
-    }
-
-    // Add Header
-    const headers = options.headers || {};
-    headers["X-API-Key"] = apiKey;
-    options.headers = headers;
+    // 0. Loading State
 
     // 1. Loading State
     button.disabled = true;
@@ -37,10 +22,6 @@ async function handleButtonAction(button, url, options = {}) {
         const response = await fetch(url, options);
 
         if (!response.ok) {
-            if (response.status === 401) {
-                localStorage.removeItem("VOYAGER_API_KEY");
-                alert("Invalid or missing API Key. Please try again.");
-            }
             throw new Error(`HTTP ${response.status}`);
         }
 

@@ -1,15 +1,9 @@
 import pytest
 from fastapi.testclient import TestClient
-from api.index import app, verify_api_key
+from api.index import app
 from voyager.obc import OnBoardComputer
 
 client = TestClient(app)
-
-# Override the API key verification dependency
-def override_verify_api_key():
-    return True
-
-app.dependency_overrides[verify_api_key] = override_verify_api_key
 
 def test_tick_negative_dt_api():
     """

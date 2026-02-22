@@ -5,25 +5,10 @@ async function updateTelemetry() {
     try {
         // OPTIMIZATION: Fetch telemetry and status in parallel to reduce total latency.
         // This is especially beneficial when network RTT is high.
-        // SECURITY: Retrieve API Key and add to headers
-        const apiKey = localStorage.getItem("VOYAGER_API_KEY");
-        const headers = apiKey ? { "X-API-Key": apiKey } : {};
-
         const [telemetryRes, statusRes] = await Promise.all([
-            fetch('/api/telemetry/latest', { headers }),
-            fetch('/api/status', { headers })
+            fetch('/api/telemetry/latest'),
+            fetch('/api/status')
         ]);
-
-        // SECURITY: Handle Authentication Failure
-        if (telemetryRes.status === 401 || statusRes.status === 401) {
-            const statusElement = document.getElementById('telemetry-status');
-            if (statusElement) {
-                statusElement.classList.remove('hidden');
-                statusElement.innerText = "Auth Required (Click a Command)";
-                statusElement.className = "status-warn";
-            }
-            return;
-        }
 
         const [data, status] = await Promise.all([
             telemetryRes.json(),
