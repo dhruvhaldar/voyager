@@ -9,6 +9,8 @@ from voyager.obc import OnBoardComputer
 from voyager.ccsds import TelemetryPacket
 import time
 
+from pathlib import Path
+
 app = FastAPI()
 
 @app.middleware("http")
@@ -25,38 +27,7 @@ async def add_security_headers(request: Request, call_next):
 obc = OnBoardComputer()
 obc.boot()
 
-# Helper to find static files
-def get_static_path(filename):
-    # Try relative to CWD and project root
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    paths = [
-        os.path.join(base_dir, "public", filename),
-        os.path.join(base_dir, filename),
-        os.path.join("public", filename),
-        filename
-    ]
-    for p in paths:
-        if os.path.exists(p):
-            return p
-    return None
-
-@app.get("/", include_in_schema=False)
-async def read_root():
-    from fastapi.responses import FileResponse
-    path = get_static_path("index.html")
-    if path:
-        return FileResponse(path)
-    raise HTTPException(status_code=404, detail="index.html not found")
-
-@app.get("/favicon.ico", include_in_schema=False)
-async def favicon():
-    from fastapi.responses import FileResponse
-    path = get_static_path("favicon.ico")
-    if path:
-        return FileResponse(path)
-    from fastapi import Response
-    return Response(status_code=204)
-
+# API Routes
 @app.get("/api/status")
 def get_status():
     return {
@@ -98,5 +69,8 @@ def get_telemetry():
     }
 
 # Serve static files for frontend (public folder)
-if os.path.exists("public"):
-    app.mount("/", StaticFiles(directory="public", html=True), name="public")
+base_dir = Path(__file__).resolve().parent.parent
+public_dir = base_dir / "public"
+
+if public_dir.exists():
+    app.mount("/", StaticFiles(directory=str(public_dir), html=True), name="public")
