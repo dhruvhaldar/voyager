@@ -145,8 +145,8 @@ function copyHexToClipboard() {
         }
 
         // Store original state on first click
-        if (!btn.hasAttribute('data-original-text')) {
-            btn.setAttribute('data-original-text', btn.innerText);
+        if (!btn.hasAttribute('data-original-html')) {
+            btn.setAttribute('data-original-html', btn.innerHTML);
             btn.setAttribute('data-original-label', btn.getAttribute('aria-label') || "");
         }
 
@@ -158,7 +158,7 @@ function copyHexToClipboard() {
 
         // Reset after 2 seconds
         copyTimeout = setTimeout(() => {
-            btn.innerText = btn.getAttribute('data-original-text');
+            btn.innerHTML = btn.getAttribute('data-original-html');
             const originalLabel = btn.getAttribute('data-original-label');
             if (originalLabel) {
                 btn.setAttribute('aria-label', originalLabel);
