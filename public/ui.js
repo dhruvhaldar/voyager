@@ -19,7 +19,26 @@ async function handleButtonAction(button, url, options = {}) {
     button.style.cursor = "wait";
 
     try {
-        const response = await fetch(url, options);
+        // SECURITY: Inject API Key if available
+        const apiKey = localStorage.getItem('voyager_api_key');
+        if (apiKey) {
+            options.headers = options.headers || {};
+            options.headers['X-API-Key'] = apiKey;
+        }
+
+        let response = await fetch(url, options);
+
+        // SECURITY: Handle Authentication Challenge
+        if (response.status === 401) {
+            const key = prompt("Authentication Required: Please enter the API Key (check server logs):");
+            if (key) {
+                localStorage.setItem('voyager_api_key', key);
+                // Retry with new key
+                options.headers = options.headers || {};
+                options.headers['X-API-Key'] = key;
+                response = await fetch(url, options);
+            }
+        }
 
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
