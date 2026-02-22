@@ -17,3 +17,7 @@
 ## 2026-02-22 - [D3.js Scale Correction]
 **Learning:** Incorrect D3 scale functions (e.g., `scaleStep` for continuous data) cause silent rendering failures. `scaleLinear` ensures valid SVG path coordinates for time-series data.
 **Action:** Corrected `bus_analyzer.js` scaling to fix the Logic Analyzer graph.
+
+## 2026-02-23 - [CAN Bus Arbitration Optimization]
+**Learning:** Bitwise simulation of hardware protocols (like CAN arbitration) in Python loops is extremely slow compared to mathematical equivalents (e.g., `min()`). When the intermediate simulation steps are not observable, replace with the high-level equivalent.
+**Action:** Identify loops that simulate physical processes bit-by-bit and replace them with algorithmic equivalents if possible.
