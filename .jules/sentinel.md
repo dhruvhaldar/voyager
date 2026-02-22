@@ -33,3 +33,10 @@
 **Prevention:**
 1. Refactored `bus_analyzer.js`, `packet_viewer.js`, and `ui.js` to use CSS classes instead of `.style()` or `element.style`.
 2. Hardened the CSP by removing `'unsafe-inline'` from `style-src`, achieving compliance with internal security benchmarks while preserving D3.js functionality.
+
+## 2026-02-22 - Unauthenticated Command Injection
+**Vulnerability:** Critical simulation control endpoints (`/api/command/reboot`, `/api/command/freeze`) were exposed without authentication, allowing unprivileged users to disrupt the avionics testbed.
+**Learning:** In "serverless" or micro-frontend architectures, developers may overlook securing API routes that are intended for internal use but are actually public.
+**Prevention:**
+1. Enforced API Key authentication using FastAPI's `Security` dependency on all state-changing endpoints.
+2. Implemented a secure-by-default generated key mechanism for local development.
