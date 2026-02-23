@@ -19,7 +19,14 @@ VOYAGER_API_KEY = os.environ.get("VOYAGER_API_KEY")
 if not VOYAGER_API_KEY:
     # Generate a secure random key if not provided
     VOYAGER_API_KEY = secrets.token_urlsafe(32)
-    print(f"SECURITY WARNING: VOYAGER_API_KEY not set. Using generated key: {VOYAGER_API_KEY}")
+    # SENTINEL: Fix CWE-532 (Information Exposure in Logs)
+    # Only print the full key if explicitly requested (e.g. for local dev).
+    # Default to secure behavior (hiding the key).
+    if os.environ.get("VOYAGER_SHOW_KEY") == "1":
+        print(f"SECURITY WARNING: VOYAGER_API_KEY not set. Using generated key: {VOYAGER_API_KEY}")
+    else:
+        print("SECURITY WARNING: VOYAGER_API_KEY not set. Using random key.")
+        print("To see the key, set VOYAGER_SHOW_KEY=1 or configure VOYAGER_API_KEY in environment.")
 
 async def get_api_key(api_key_header: str = Security(api_key_header)):
     """Validates the API Key from the request header."""
