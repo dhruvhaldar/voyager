@@ -8,13 +8,13 @@ class EDAC:
     _ENCODE_TABLE = []
     _DECODE_TABLE = []
 
-    # Internal status codes
-    _STATUS_OK = 0
-    _STATUS_CORRECTED = 1
+    # Status codes
+    STATUS_OK = 0
+    STATUS_CORRECTED = 1
 
     _STATUS_MAP = {
-        _STATUS_OK: "OK",
-        _STATUS_CORRECTED: "CORRECTED_SINGLE_BIT_ERROR"
+        STATUS_OK: "OK",
+        STATUS_CORRECTED: "CORRECTED_SINGLE_BIT_ERROR"
     }
 
     # We will use a simple Hamming scheme.
@@ -88,9 +88,9 @@ class EDAC:
 
         syndrome = c1 | (c2 << 1) | (c4 << 2) | (c8 << 3)
 
-        status_code = EDAC._STATUS_OK
+        status_code = EDAC.STATUS_OK
         if syndrome != 0:
-            status_code = EDAC._STATUS_CORRECTED
+            status_code = EDAC.STATUS_CORRECTED
             # Flip the error bit
             encoded_val ^= (1 << (syndrome - 1))
 
@@ -125,14 +125,22 @@ class EDAC:
         return EDAC._ENCODE_TABLE[byte_val & 0xFF]
 
     @staticmethod
-    def decode(encoded_val):
+    def decode_fast(encoded_val):
         """
         Decodes a 12-bit Hamming code using lookup table.
-        Returns (decoded_byte, status).
+        Returns (decoded_byte, status_code_int).
         """
         # Use table for O(1) performance
         # Mask input to 12 bits to match original behavior and prevent IndexError
-        val, status_code = EDAC._DECODE_TABLE[encoded_val & 0xFFF]
+        return EDAC._DECODE_TABLE[encoded_val & 0xFFF]
+
+    @staticmethod
+    def decode(encoded_val):
+        """
+        Decodes a 12-bit Hamming code using lookup table.
+        Returns (decoded_byte, status_string).
+        """
+        val, status_code = EDAC.decode_fast(encoded_val)
         return val, EDAC._STATUS_MAP[status_code]
 
 # Initialize tables on module import

@@ -26,7 +26,8 @@ class MemoryBank:
         val = self.memory[addr]
         if self.protected:
             # On standard read, EDAC corrects on the fly but doesn't scrub (write back)
-            decoded, status = EDAC.decode(val)
+            # Optimization: Use decode_fast to avoid status string lookup overhead
+            decoded, _ = EDAC.decode_fast(val)
             return decoded
         else:
             return val
