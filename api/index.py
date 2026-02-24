@@ -29,6 +29,12 @@ async def add_security_headers(request: Request, call_next):
 obc = OnBoardComputer()
 obc.boot()
 
+# Health Check
+@app.get("/api/health")
+def health_check():
+    return {"status": "ok", "timestamp": time.time()}
+
+
 # API Routes
 @app.get("/api/status")
 def get_status():
@@ -76,8 +82,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 public_path = BASE_DIR / "public"
 
 if public_path.exists():
+    print(f"Mounting static files from {public_path}")
     app.mount("/", StaticFiles(directory=str(public_path), html=True), name="public")
 else:
-    # Fallback for environments where the structure might be different
-    app.mount("/", StaticFiles(directory="public", html=True), name="public")
+    # On Vercel, static files are usually served by the edge, so they might not 
+    # be present in the Python runtime environment. We skip mounting to avoid RuntimeError.
+    print(f"Note: Static directory {public_path} not found. Skipping mount.")
+
 
