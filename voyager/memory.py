@@ -7,8 +7,11 @@ class MemoryBank:
         self.protected = protected
         # Optimization: Use array for memory efficiency and faster access.
         # 'H' is unsigned short (2 bytes), which fits 12-bit EDAC codes perfectly.
-        # This is ~18x more memory efficient and ~40x faster than a list of integers.
-        self.memory = array('H', [0]) * size
+        # 'B' is unsigned char (1 byte), which is 2x more efficient for unprotected 8-bit memory.
+        if self.protected:
+            self.memory = array('H', [0]) * size
+        else:
+            self.memory = array('B', [0]) * size
 
     def write(self, addr, data):
         if addr < 0 or addr >= self.size:
@@ -54,4 +57,13 @@ class MemoryBank:
             raise IndexError("Memory access out of bounds")
 
         # Flips the bit at 'bit' index of the stored word.
+        # Check bit index against storage width to prevent OverflowError.
+
+        if self.memory.typecode == 'B': # Unprotected, 8-bit
+            if bit >= 8:
+                raise ValueError(f"Bit index {bit} out of range for 8-bit memory")
+        elif self.memory.typecode == 'H': # Protected, 16-bit
+            if bit >= 16:
+                raise ValueError(f"Bit index {bit} out of range for 16-bit memory")
+
         self.memory[addr] ^= (1 << bit)
