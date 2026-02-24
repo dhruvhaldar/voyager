@@ -21,3 +21,7 @@
 ## 2026-02-23 - [CAN Bus Arbitration Optimization]
 **Learning:** Bitwise simulation of hardware protocols (like CAN arbitration) in Python loops is extremely slow compared to mathematical equivalents (e.g., `min()`). When the intermediate simulation steps are not observable, replace with the high-level equivalent.
 **Action:** Identify loops that simulate physical processes bit-by-bit and replace them with algorithmic equivalents if possible.
+
+## 2026-02-23 - [Avoid String Creation in High-Frequency Loops]
+**Learning:** `MemoryBank.read` was creating a new status string via dict lookup for every read, even when the status was ignored. This added ~0.08µs overhead per call (18% slowdown).
+**Action:** When a method returns multiple values (e.g., value + status), provide a "fast" variant returning primitive types (integers) to avoid object creation overhead in critical loops.
