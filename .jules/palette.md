@@ -20,3 +20,7 @@
 ## 2026-02-22 - CSS-First Design System
 **Learning:** Injecting "glow" and status effects via JavaScript creates fragile code and violates strict CSPs.
 **Action:** Migrated all visual feedback and SVG effects (like the CAN BUS glow) into a centralized CSS class system (`.bus-path`, `.val-highlight`). This ensures a premium aesthetic remains consistent and secure across all deployment environments.
+
+## 2026-03-01 - Destructive Action Safety
+**Learning:** Reusing generic async button handlers for multi-step confirmations (like "Are you sure?") requires careful state management to prevent data loss (original label/text) and accessibility issues (stale aria-labels).
+**Action:** Enhance generic handlers to support optional `restoreContent` and `restoreLabel` parameters, allowing complex interactions to piggyback on standard loading/error states without rewriting the wheel.
