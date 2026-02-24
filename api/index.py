@@ -72,4 +72,12 @@ def get_telemetry():
 
 # Serve static files from the 'public' directory
 # Mount this LAST so it doesn't shadow API routes
-app.mount("/", StaticFiles(directory="public", html=True), name="public")
+BASE_DIR = Path(__file__).resolve().parent.parent
+public_path = BASE_DIR / "public"
+
+if public_path.exists():
+    app.mount("/", StaticFiles(directory=str(public_path), html=True), name="public")
+else:
+    # Fallback for environments where the structure might be different
+    app.mount("/", StaticFiles(directory="public", html=True), name="public")
+
