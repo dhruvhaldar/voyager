@@ -25,3 +25,7 @@
 ## 2026-02-23 - [Avoid String Creation in High-Frequency Loops]
 **Learning:** `MemoryBank.read` was creating a new status string via dict lookup for every read, even when the status was ignored. This added ~0.08µs overhead per call (18% slowdown).
 **Action:** When a method returns multiple values (e.g., value + status), provide a "fast" variant returning primitive types (integers) to avoid object creation overhead in critical loops.
+
+## 2026-06-01 - [Optimized Unprotected Memory Storage]
+**Learning:** `array('H')` (unsigned short) was used for all memory storage, but unprotected memory only stores 8-bit data. Switching to `array('B')` (unsigned char) for unprotected memory reduces memory usage by 50% for large simulated components like Mass Memory.
+**Action:** Always check if the data structure fits the actual data width. Use `array` typecodes appropriately to save memory.
