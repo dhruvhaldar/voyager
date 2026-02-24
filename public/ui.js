@@ -8,7 +8,9 @@
  */
 async function handleButtonAction(button, url, options = {}) {
     const originalText = button.innerText;
-    const originalContent = button.innerHTML;
+    // Enhanced: Allow overriding the restore content/label (e.g., for confirmation buttons)
+    const originalContent = options.restoreContent || button.innerHTML;
+    const originalLabel = options.restoreLabel || button.getAttribute('aria-label');
 
     // 0. Loading State
 
@@ -58,7 +60,7 @@ async function handleButtonAction(button, url, options = {}) {
 
         // 3. Reset
         setTimeout(() => {
-            resetButton(button, originalContent);
+            resetButton(button, originalContent, originalLabel);
         }, 1000);
 
     } catch (error) {
@@ -71,7 +73,7 @@ async function handleButtonAction(button, url, options = {}) {
         addFdirLog('ERROR', `Command '${originalText}' failed: ${error.message}`);
 
         setTimeout(() => {
-            resetButton(button, originalContent);
+            resetButton(button, originalContent, originalLabel);
         }, 2000);
     }
 }
@@ -82,6 +84,7 @@ async function handleButtonAction(button, url, options = {}) {
  */
 async function handleManualRefresh(button) {
     const originalContent = button.innerHTML;
+    // Note: Manual refresh doesn't currently change aria-label, so passing null is fine.
 
     button.disabled = true;
     button.innerText = "Fetching...";
@@ -108,8 +111,11 @@ async function handleManualRefresh(button) {
     }
 }
 
-function resetButton(button, content) {
+function resetButton(button, content, label = null) {
     button.innerHTML = content;
+    if (label !== null) {
+        button.setAttribute('aria-label', label);
+    }
     button.disabled = false;
     button.removeAttribute("aria-busy");
     button.style.cursor = "pointer";
@@ -208,8 +214,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const btnReboot = document.getElementById('btn-reboot');
     if (btnReboot) {
+        let confirmTimeout;
         btnReboot.addEventListener('click', (e) => {
-            handleButtonAction(e.currentTarget, '/api/command/reboot', { method: 'POST' });
+            const btn = e.currentTarget;
+
+            // Palette: Confirmation Interaction
+            if (btn.dataset.state === 'confirm') {
+                // CONFIRMED: Execute Action
+                clearTimeout(confirmTimeout);
+                btn.dataset.state = '';
+                btn.classList.remove('status-warn');
+
+                // Retrieve original state
+                const restoreHtml = btn.dataset.originalHtml;
+                const restoreLabel = btn.dataset.originalLabel;
+
+                // Call API with instructions to restore the ORIGINAL content, not the current "Confirm?" text
+                handleButtonAction(btn, '/api/command/reboot', {
+                    method: 'POST',
+                    restoreContent: restoreHtml,
+                    restoreLabel: restoreLabel
+                });
+            } else {
+                // FIRST CLICK: Ask for Confirmation
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                // Store original state
+                btn.dataset.originalHtml = btn.innerHTML;
+                btn.dataset.originalLabel = btn.getAttribute('aria-label');
+
+                // Set Confirm State
+                btn.dataset.state = 'confirm';
+                btn.innerHTML = 'Confirm? <span class="kbd">R</span>';
+                btn.setAttribute('aria-label', 'Confirm Reboot? Press again to execute.');
+                btn.classList.add('status-warn');
+
+                // Auto-revert if not confirmed
+                confirmTimeout = setTimeout(() => {
+                    btn.dataset.state = '';
+                    btn.innerHTML = btn.dataset.originalHtml;
+                    btn.setAttribute('aria-label', btn.dataset.originalLabel);
+                    btn.classList.remove('status-warn');
+                }, 3000);
+            }
         });
     }
 
