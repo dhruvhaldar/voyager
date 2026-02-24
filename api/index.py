@@ -4,44 +4,14 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import FastAPI, HTTPException, status, Query, Request, Security, Depends
-from fastapi.security import APIKeyHeader
+from fastapi.staticfiles import StaticFiles
 from voyager.obc import OnBoardComputer
 from voyager.ccsds import TelemetryPacket
 import time
 import secrets
 from pathlib import Path
 
-# Security Configuration
-API_KEY_NAME = "X-API-Key"
-api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
-
-VOYAGER_API_KEY = os.environ.get("VOYAGER_API_KEY")
-if not VOYAGER_API_KEY:
-    # Generate a secure random key if not provided
-    VOYAGER_API_KEY = secrets.token_urlsafe(32)
-    # SENTINEL: Fix CWE-532 (Information Exposure in Logs)
-    # Only print the full key if explicitly requested (e.g. for local dev).
-    # Default to secure behavior (hiding the key).
-    if os.environ.get("VOYAGER_SHOW_KEY") == "1":
-        print(f"SECURITY WARNING: VOYAGER_API_KEY not set. Using generated key: {VOYAGER_API_KEY}")
-    else:
-        print("SECURITY WARNING: VOYAGER_API_KEY not set. Using random key.")
-        print("To see the key, set VOYAGER_SHOW_KEY=1 or configure VOYAGER_API_KEY in environment.")
-
-async def get_api_key(api_key_header: str = Security(api_key_header)):
-    """Validates the API Key from the request header."""
-    if not api_key_header:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing API Key",
-        )
-    # constant-time comparison to prevent timing attacks
-    if not secrets.compare_digest(api_key_header, VOYAGER_API_KEY):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid API Key",
-        )
-    return api_key_header
+# Security Configuration removed (keyless mode)
 
 app = FastAPI()
 
@@ -69,17 +39,17 @@ def get_status():
         "frozen": obc.frozen
     }
 
-@app.post("/api/command/reboot", dependencies=[Depends(get_api_key)])
+@app.post("/api/command/reboot")
 def command_reboot():
     obc.reboot()
     return {"message": "OBC Rebooted"}
 
-@app.post("/api/command/freeze", dependencies=[Depends(get_api_key)])
+@app.post("/api/command/freeze")
 def command_freeze():
     obc.freeze()
     return {"message": "OBC Frozen"}
 
-@app.post("/api/tick", dependencies=[Depends(get_api_key)])
+@app.post("/api/tick")
 def tick_simulation(dt: float = Query(1.0, ge=0)):
     obc.tick(dt)
     return {"message": f"Simulation advanced by {dt}s", "status": get_status()}
@@ -99,3 +69,7 @@ def get_telemetry():
         "sequence_count": packet.sequence_count,
         "valid_crc": True 
     }
+
+# Serve static files from the 'public' directory
+# Mount this LAST so it doesn't shadow API routes
+app.mount("/", StaticFiles(directory="public", html=True), name="public")

@@ -1,0 +1,15 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-9.0.2, pluggy-1.6.0
+rootdir: E:\Misc\voyager
+plugins: anyio-4.12.1, base-url-2.1.0, playwright-0.7.2
+collected 16 items
+
+tests\e2e\test_safe_mode.py .                                            [  6%]
+tests\test_csp_enhancement.py .                                          [ 12%]
+tests\test_security_headers.py .                                         [ 18%]
+tests\test_security_time.py ..                                           [ 31%]
+tests\unit\test_buses.py ...                                             [ 50%]
+tests\unit\test_ccsds.py ....                                            [ 75%]
+tests\unit\test_edac.py ....                                             [100%]
+
+============================= 16 passed in 0.88s ==============================
