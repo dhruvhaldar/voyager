@@ -306,12 +306,31 @@ button:focus-visible {
     outline-offset: -2px;
 }
 
+/* Palette: Log Entry Animation */
+@keyframes log-entry-slide {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 .log-entry {
     margin-bottom: 0.5rem;
     border-bottom: 1px solid #1f2833;
     padding-bottom: 0.2rem;
     display: flex;
     gap: 0.5rem;
+    animation: log-entry-slide 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .log-entry {
+        animation: none;
+    }
 }
 
 .log-time {
