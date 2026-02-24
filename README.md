@@ -16,6 +16,9 @@ This project strictly adheres to the course learning outcomes:
 | **Reliability**  | Error detection (FDIR)         | EDAC (Error Detection and Correction) simulation for memory, Watchdog timers, and Redundancy switching. |
 | **Physics**      | Electrophysical aspects        | Simulation of EMI-induced bit flips (Single Event Upsets) and transmission line noise.                  |
 
+## Build
+See [build.md](build.md) for detailed build instructions.
+
 ## 🚀 Deployment (Vercel)
 
 Voyager runs as a serverless avionics testbed.
