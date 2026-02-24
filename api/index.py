@@ -4,6 +4,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import FastAPI, HTTPException, status, Query, Request, Security, Depends
+from fastapi.security import APIKeyHeader
 from fastapi.staticfiles import StaticFiles
 from voyager.obc import OnBoardComputer
 from voyager.ccsds import TelemetryPacket
@@ -11,7 +12,32 @@ import time
 import secrets
 from pathlib import Path
 
-# Security Configuration removed (keyless mode)
+# Security Configuration
+API_KEY_NAME = "X-API-Key"
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
+def get_api_key():
+    key = os.environ.get("VOYAGER_API_KEY")
+    if not key:
+        key = secrets.token_hex(32)
+        # Log only if explicitly requested, otherwise secure default
+        if os.environ.get("VOYAGER_SHOW_KEY") == "1":
+            print(f"WARNING: VOYAGER_API_KEY not set. Generated key: {key}")
+        else:
+            print("WARNING: VOYAGER_API_KEY not set. Generated secure key (hidden). Set VOYAGER_SHOW_KEY=1 to see it.")
+        os.environ["VOYAGER_API_KEY"] = key
+    return key
+
+# Initialize key once
+VOYAGER_API_KEY = get_api_key()
+
+async def verify_api_key(api_key: str = Security(api_key_header)):
+    if not api_key or not secrets.compare_digest(api_key, VOYAGER_API_KEY):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing API Key",
+        )
+    return api_key
 
 app = FastAPI()
 
@@ -36,7 +62,7 @@ def health_check():
 
 
 # API Routes
-@app.get("/api/status")
+@app.get("/api/status", dependencies=[Depends(verify_api_key)])
 def get_status():
     return {
         "mode": obc.mode,
@@ -45,22 +71,22 @@ def get_status():
         "frozen": obc.frozen
     }
 
-@app.post("/api/command/reboot")
+@app.post("/api/command/reboot", dependencies=[Depends(verify_api_key)])
 def command_reboot():
     obc.reboot()
     return {"message": "OBC Rebooted"}
 
-@app.post("/api/command/freeze")
+@app.post("/api/command/freeze", dependencies=[Depends(verify_api_key)])
 def command_freeze():
     obc.freeze()
     return {"message": "OBC Frozen"}
 
-@app.post("/api/tick")
+@app.post("/api/tick", dependencies=[Depends(verify_api_key)])
 def tick_simulation(dt: float = Query(1.0, ge=0)):
     obc.tick(dt)
     return {"message": f"Simulation advanced by {dt}s", "status": get_status()}
 
-@app.get("/api/telemetry/latest")
+@app.get("/api/telemetry/latest", dependencies=[Depends(verify_api_key)])
 def get_telemetry():
     # Simulate generating a packet
     packet = TelemetryPacket(

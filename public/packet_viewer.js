@@ -3,11 +3,15 @@ let lastPacketHex = null;
 
 async function updateTelemetry() {
     try {
+        // SECURITY: Inject API Key if available
+        const apiKey = localStorage.getItem('voyager_api_key');
+        const headers = apiKey ? { 'X-API-Key': apiKey } : {};
+
         // OPTIMIZATION: Fetch telemetry and status in parallel to reduce total latency.
         // This is especially beneficial when network RTT is high.
         const [telemetryRes, statusRes] = await Promise.all([
-            fetch('/api/telemetry/latest'),
-            fetch('/api/status')
+            fetch('/api/telemetry/latest', { headers }),
+            fetch('/api/status', { headers })
         ]);
 
         const [data, status] = await Promise.all([
