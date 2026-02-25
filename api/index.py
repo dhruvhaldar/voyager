@@ -39,6 +39,37 @@ async def verify_api_key(api_key: str = Security(api_key_header)):
         )
     return api_key
 
+# Rate Limiting Logic
+class RateLimiter:
+    def __init__(self, calls: int, period: float):
+        self.calls = calls
+        self.period = period
+        self.history = {}  # ip -> [timestamps]
+
+    async def __call__(self, request: Request):
+        client_ip = request.client.host if request.client else "unknown"
+        now = time.time()
+
+        # Initialize history for new IP
+        if client_ip not in self.history:
+            self.history[client_ip] = []
+
+        # Filter timestamps to keep only those within the rolling window
+        self.history[client_ip] = [t for t in self.history[client_ip] if now - t < self.period]
+
+        # Check limit
+        if len(self.history[client_ip]) >= self.calls:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Rate limit exceeded"
+            )
+
+        # Log new request
+        self.history[client_ip].append(now)
+
+# Security: Limit sensitive state-changing commands to prevent abuse/DoS
+limit_sensitive = RateLimiter(calls=10, period=60.0)
+
 app = FastAPI()
 
 @app.middleware("http")
@@ -71,12 +102,12 @@ def get_status():
         "frozen": obc.frozen
     }
 
-@app.post("/api/command/reboot", dependencies=[Depends(verify_api_key)])
+@app.post("/api/command/reboot", dependencies=[Depends(verify_api_key), Depends(limit_sensitive)])
 def command_reboot():
     obc.reboot()
     return {"message": "OBC Rebooted"}
 
-@app.post("/api/command/freeze", dependencies=[Depends(verify_api_key)])
+@app.post("/api/command/freeze", dependencies=[Depends(verify_api_key), Depends(limit_sensitive)])
 def command_freeze():
     obc.freeze()
     return {"message": "OBC Frozen"}
