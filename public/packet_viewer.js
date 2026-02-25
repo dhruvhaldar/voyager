@@ -27,6 +27,10 @@ async function updateTelemetry() {
             if (data.hex !== lastPacketHex) {
                 lastPacketHex = data.hex;
 
+                // Palette: Enable copy button
+                const btnCopy = document.getElementById('copy-hex-btn');
+                if (btnCopy) btnCopy.disabled = false;
+
                 // Hex string split into bytes
                 const bytes = data.hex.split(' ');
 
@@ -155,7 +159,7 @@ function copyHexToClipboard() {
         }
 
         // Update UI & Accessibility
-        btn.innerText = "COPIED!";
+        btn.innerHTML = 'COPIED! <span class="kbd">C</span>';
         btn.style.color = "#66fcf1";
         btn.style.borderColor = "#66fcf1";
         btn.setAttribute('aria-label', "Copied to clipboard");

@@ -392,3 +392,20 @@ button:focus-visible {
 #btn-fetch-telemetry {
     margin-top: 1rem;
 }
+/* Palette: Disabled State Improvements */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+button:disabled:active {
+    transform: none;
+}
+
+/* Ensure feedback states remain visible even when disabled */
+button:disabled.status-ok,
+button:disabled.status-err {
+    opacity: 1;
+    cursor: default;
+}
