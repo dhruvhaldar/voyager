@@ -43,14 +43,15 @@ class MemoryBank:
             raise IndexError("Memory access out of bounds")
 
         val = self.memory[addr]
-        decoded, status = EDAC.decode(val)
+        # Optimization: Use decode_fast to avoid intermediate tuple creation and string comparison
+        decoded, status_code = EDAC.decode_fast(val)
 
-        if status == "CORRECTED_SINGLE_BIT_ERROR":
+        if status_code == EDAC.STATUS_CORRECTED:
             # Scrub: write back corrected value
             # We re-encode the corrected data to ensure parity bits are also correct
             self.memory[addr] = EDAC.encode(decoded)
 
-        return decoded, status
+        return decoded, EDAC.STATUS_MAP[status_code]
 
     def inject_seu(self, addr, bit):
         if addr < 0 or addr >= self.size:

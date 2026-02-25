@@ -12,7 +12,7 @@ class EDAC:
     STATUS_OK = 0
     STATUS_CORRECTED = 1
 
-    _STATUS_MAP = {
+    STATUS_MAP = {
         STATUS_OK: "OK",
         STATUS_CORRECTED: "CORRECTED_SINGLE_BIT_ERROR"
     }
@@ -141,7 +141,7 @@ class EDAC:
         Returns (decoded_byte, status_string).
         """
         val, status_code = EDAC.decode_fast(encoded_val)
-        return val, EDAC._STATUS_MAP[status_code]
+        return val, EDAC.STATUS_MAP[status_code]
 
 # Initialize tables on module import
 EDAC._init_tables()
