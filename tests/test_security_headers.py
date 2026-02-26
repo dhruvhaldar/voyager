@@ -37,3 +37,15 @@ def test_security_headers_present():
     assert "default-src 'self'" in csp
     assert "script-src" in csp
     assert "object-src 'none'" in csp
+
+    # Permissions-Policy
+    assert headers.get("Permissions-Policy") == "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+
+def test_api_cache_control():
+    """
+    Test that API endpoints have strict cache control.
+    """
+    response = client.get("/api/health")
+    headers = response.headers
+
+    assert headers.get("Cache-Control") == "no-store"
