@@ -29,9 +29,9 @@ class MemoryBank:
         val = self.memory[addr]
         if self.protected:
             # On standard read, EDAC corrects on the fly but doesn't scrub (write back)
-            # Optimization: Use decode_fast to avoid status string lookup overhead
-            decoded, _ = EDAC.decode_fast(val)
-            return decoded
+            # Optimization: Use decode_data_only to avoid tuple creation and status lookup
+            # This is significantly faster for the hot path where status is ignored.
+            return EDAC.decode_data_only(val)
         else:
             return val
 
