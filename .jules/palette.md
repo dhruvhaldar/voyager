@@ -24,3 +24,7 @@
 ## 2026-03-01 - Destructive Action Safety
 **Learning:** Reusing generic async button handlers for multi-step confirmations (like "Are you sure?") requires careful state management to prevent data loss (original label/text) and accessibility issues (stale aria-labels).
 **Action:** Enhance generic handlers to support optional `restoreContent` and `restoreLabel` parameters, allowing complex interactions to piggyback on standard loading/error states without rewriting the wheel.
+
+## 2026-03-02 - Smart Auto-Scrolling for Logs
+**Learning:** Forcing auto-scroll on log containers interrupts users who are reading history to debug issues.
+**Action:** Implement "Smart Auto-Scroll" that only scrolls to the bottom if the user was already at the bottom (within a small tolerance).

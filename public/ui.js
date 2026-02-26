@@ -160,8 +160,15 @@ function addFdirLog(level, message) {
     entry.appendChild(document.createTextNode(' '));
     entry.appendChild(messageSpan);
 
+    // Palette: Smart Auto-Scroll
+    // Only scroll to bottom if user is already at the bottom (within 10px tolerance)
+    const isAtBottom = Math.abs(container.scrollHeight - container.clientHeight - container.scrollTop) < 10;
+
     container.appendChild(entry);
-    container.scrollTop = container.scrollHeight;
+
+    if (isAtBottom) {
+        container.scrollTop = container.scrollHeight;
+    }
 }
 
 // Initialize logs
