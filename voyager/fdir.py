@@ -1,3 +1,5 @@
+from array import array
+
 class EDAC:
     """
     Error Detection and Correction using Hamming Code.
@@ -7,6 +9,7 @@ class EDAC:
     # Lookup tables for performance
     _ENCODE_TABLE = []
     _DECODE_TABLE = []
+    _DECODE_DATA_TABLE = None # Will be array('B')
 
     # Status codes
     STATUS_OK = 0
@@ -117,6 +120,13 @@ class EDAC:
         # Decode table (0-4095)
         cls._DECODE_TABLE = [cls._compute_decode(i) for i in range(4096)]
 
+        # Optimized Decode Data Table (no status codes, byte array)
+        cls._DECODE_DATA_TABLE = array('B', [0] * 4096)
+        for i in range(4096):
+            # Extract just the data part from the existing compute logic
+            d, _ = cls._compute_decode(i)
+            cls._DECODE_DATA_TABLE[i] = d
+
     @staticmethod
     def encode(byte_val):
         """Encodes an 8-bit byte into a 12-bit Hamming code using lookup table."""
@@ -133,6 +143,15 @@ class EDAC:
         # Use table for O(1) performance
         # Mask input to 12 bits to match original behavior and prevent IndexError
         return EDAC._DECODE_TABLE[encoded_val & 0xFFF]
+
+    @staticmethod
+    def decode_data_only(encoded_val):
+        """
+        Decodes a 12-bit Hamming code using optimized array lookup.
+        Returns only the decoded byte.
+        Faster than decode_fast as it avoids tuple creation and unpacking.
+        """
+        return EDAC._DECODE_DATA_TABLE[encoded_val & 0xFFF]
 
     @staticmethod
     def decode(encoded_val):
