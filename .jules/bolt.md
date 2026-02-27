@@ -29,3 +29,7 @@
 ## 2026-06-01 - [Optimized Unprotected Memory Storage]
 **Learning:** `array('H')` (unsigned short) was used for all memory storage, but unprotected memory only stores 8-bit data. Switching to `array('B')` (unsigned char) for unprotected memory reduces memory usage by 50% for large simulated components like Mass Memory.
 **Action:** Always check if the data structure fits the actual data width. Use `array` typecodes appropriately to save memory.
+
+## 2026-06-15 - [Loop Fusion in Table Initialization]
+**Learning:** Initializing multiple parallel lookup tables using separate list comprehensions iterates over the same range multiple times and incurs list resizing overhead. Pre-allocating the target structures and populating them in a single loop reduced initialization time by ~50% (from ~22ms to ~10ms).
+**Action:** When initializing related lookup tables, fuse the loops and pre-allocate memory to improve startup performance.
