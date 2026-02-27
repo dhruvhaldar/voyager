@@ -27,3 +27,15 @@ def test_tick_negative_dt_internal():
 
     with pytest.raises(ValueError, match="Time step must be non-negative"):
         obc.tick(-1.0)
+
+def test_tick_invalid_dt_internal():
+    """
+    Test that calling obc.tick() with a NaN or Inf dt raises a ValueError.
+    """
+    obc = OnBoardComputer()
+    obc.boot()
+
+    with pytest.raises(ValueError, match="Time step must be finite"):
+        obc.tick(float('inf'))
+    with pytest.raises(ValueError, match="Time step must be finite"):
+        obc.tick(float('nan'))
