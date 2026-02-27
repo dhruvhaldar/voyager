@@ -118,14 +118,17 @@ class EDAC:
         cls._ENCODE_TABLE = [cls._compute_encode(i) for i in range(256)]
 
         # Decode table (0-4095)
-        cls._DECODE_TABLE = [cls._compute_decode(i) for i in range(4096)]
+        cls._DECODE_TABLE = [None] * 4096
 
         # Optimized Decode Data Table (no status codes, byte array)
         cls._DECODE_DATA_TABLE = array('B', [0] * 4096)
+
         for i in range(4096):
-            # Extract just the data part from the existing compute logic
-            d, _ = cls._compute_decode(i)
-            cls._DECODE_DATA_TABLE[i] = d
+            # Optimization: Compute decode once and populate both tables
+            # This avoids redundant computation and list resizing overhead
+            res = cls._compute_decode(i)
+            cls._DECODE_TABLE[i] = res
+            cls._DECODE_DATA_TABLE[i] = res[0]
 
     @staticmethod
     def encode(byte_val):
