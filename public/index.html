@@ -11,11 +11,11 @@
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <header>
         <h1>Voyager Avionics Dashboard</h1>
-        <div id="status-panel" aria-label="System Status">
-            <div class="status-item">Mode: <strong id="obc-mode" class="status-value" aria-live="polite" aria-atomic="true">--</strong></div>
-            <div class="status-item">Reboots: <strong id="obc-reboots" class="status-value" aria-live="polite" aria-atomic="true">--</strong></div>
-            <div class="status-item">WDT: <strong id="obc-wdt" class="status-value">--</strong></div>
-            <div class="status-item">Comm: <strong id="comm-status" class="status-value" aria-live="polite" aria-atomic="true">WAIT</strong></div>
+        <div id="status-panel" role="group" aria-label="System Status">
+            <div class="status-item" aria-live="polite" aria-atomic="true">Mode: <strong id="obc-mode" class="status-value">--</strong></div>
+            <div class="status-item" aria-live="polite" aria-atomic="true">Reboots: <strong id="obc-reboots" class="status-value">--</strong></div>
+            <div class="status-item" aria-live="polite" aria-atomic="true">WDT: <strong id="obc-wdt" class="status-value">--</strong></div>
+            <div class="status-item" aria-live="polite" aria-atomic="true">Comm: <strong id="comm-status" class="status-value">WAIT</strong></div>
         </div>
         <div id="control-panel">
             <button id="btn-step" aria-keyshortcuts="s" aria-label="Step simulation forward 1 second">Step +1s <span class="kbd">S</span></button>
@@ -25,10 +25,10 @@
     </header>
 
     <main id="main-content" tabindex="-1">
-        <section id="packet-inspector">
-            <h2>CCSDS Packet Inspector</h2>
+        <section id="packet-inspector" aria-labelledby="heading-packet-inspector">
+            <h2 id="heading-packet-inspector">CCSDS Packet Inspector</h2>
             <div id="packet-viewer">
-                <p id="telemetry-status">Waiting for telemetry...</p>
+                <p id="telemetry-status" aria-live="polite" aria-atomic="true">Waiting for telemetry...</p>
                 <div id="packet-details"></div>
                 <div class="hex-wrapper">
                     <button id="copy-hex-btn" class="copy-btn" aria-keyshortcuts="c" aria-label="Copy hex dump to clipboard" disabled>COPY <span class="kbd">C</span></button>
@@ -38,8 +38,8 @@
             </div>
         </section>
 
-        <section id="fdir-panel">
-            <h2>FDIR Status Monitor</h2>
+        <section id="fdir-panel" aria-labelledby="heading-fdir-panel">
+            <h2 id="heading-fdir-panel">FDIR Status Monitor</h2>
             <div id="fdir-logs">
                 <p>Monitoring EDAC and Scrubbing events...</p>
                 <div id="fdir-logs-container" role="log" aria-label="FDIR Event Log" tabindex="0">
@@ -48,8 +48,8 @@
             </div>
         </section>
 
-        <section id="bus-analyzer">
-            <h2>Bus Traffic Analyzer (Logic Analyzer)</h2>
+        <section id="bus-analyzer" aria-labelledby="heading-bus-analyzer">
+            <h2 id="heading-bus-analyzer">Bus Traffic Analyzer (Logic Analyzer)</h2>
             <div id="bus-vis"></div>
             <p class="caption">Figure 2: CAN Bus Arbitration Simulation (Sun Sensor 0x001 vs Camera 0x100)</p>
         </section>
