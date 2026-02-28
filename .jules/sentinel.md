@@ -47,3 +47,10 @@
 **Prevention:**
 1. Added an explicit `math.isfinite(dt)` check in the domain model (`voyager/obc.py`) to raise a `ValueError` for infinite or NaN inputs.
 2. Remember that float inputs from external sources must always be validated for finiteness unless specifically designed to handle `inf`/`nan`.
+
+## 2026-03-01 - Proxy Rate Limiting DoS & Memory Exhaustion
+**Vulnerability:** The `RateLimiter` relied on `request.client.host` to identify clients, which resolves to the reverse proxy's IP in serverless environments like Vercel. This allowed a single client to exhaust the rate limit and trigger a Denial of Service (DoS) for all legitimate users. Furthermore, `self.history` tracked IPs without a size cap, exposing an Out-Of-Memory (OOM) vector if an attacker rotated spoofed IPs or a botnet flooded the endpoint.
+**Learning:** Rate limiting logic must be proxy-aware (`X-Forwarded-For` or `X-Real-IP`) when deployed behind load balancers or edge networks. Additionally, in-memory data structures used for security controls must have strict upper bounds to prevent memory exhaustion DoS.
+**Prevention:**
+1. Updated `RateLimiter` to check `X-Forwarded-For` and `X-Real-IP` headers before falling back to `request.client.host`.
+2. Implemented an OOM protection cap (`max_entries=10000`) on `self.history`, clearing expired IPs or flushing the dictionary entirely to ensure the service remains available during high-volume attacks.

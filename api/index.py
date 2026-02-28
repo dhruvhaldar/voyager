@@ -41,14 +41,32 @@ async def verify_api_key(api_key: str = Security(api_key_header)):
 
 # Rate Limiting Logic
 class RateLimiter:
-    def __init__(self, calls: int, period: float):
+    def __init__(self, calls: int, period: float, max_entries: int = 10000):
         self.calls = calls
         self.period = period
+        self.max_entries = max_entries
         self.history = {}  # ip -> [timestamps]
 
     async def __call__(self, request: Request):
-        client_ip = request.client.host if request.client else "unknown"
+        # Extract real IP behind reverse proxies (like Vercel)
+        client_ip = request.headers.get("X-Forwarded-For")
+        if client_ip:
+            client_ip = client_ip.split(",")[0].strip()
+        else:
+            client_ip = request.headers.get("X-Real-IP")
+
+        if not client_ip:
+            client_ip = request.client.host if request.client else "unknown"
+
         now = time.time()
+
+        # Security: Prevent Memory Exhaustion (OOM) DoS
+        if len(self.history) >= self.max_entries and client_ip not in self.history:
+            # Clear old entries to free memory
+            self.history = {ip: times for ip, times in self.history.items() if times and now - times[-1] < self.period}
+            # If still full, clear entirely to prioritize availability
+            if len(self.history) >= self.max_entries:
+                self.history.clear()
 
         # Initialize history for new IP
         if client_ip not in self.history:
