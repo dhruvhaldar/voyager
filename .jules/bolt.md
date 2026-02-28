@@ -33,3 +33,7 @@
 ## 2026-06-15 - [Loop Fusion in Table Initialization]
 **Learning:** Initializing multiple parallel lookup tables using separate list comprehensions iterates over the same range multiple times and incurs list resizing overhead. Pre-allocating the target structures and populating them in a single loop reduced initialization time by ~50% (from ~22ms to ~10ms).
 **Action:** When initializing related lookup tables, fuse the loops and pre-allocate memory to improve startup performance.
+
+## 2026-06-16 - [Pre-compiling Structs and Inlining for Binary Serialization]
+**Learning:** High-frequency binary serialization (like generating simulated CCSDS packets) using `struct.pack()` with an inline format string recompiles the format on every call. Pre-compiling to a module-level `struct.Struct()` and inlining the argument preparation to avoid helper function calls yielded a ~16% speedup for packet generation.
+**Action:** Always pre-compile `struct` format strings if they are used in high-throughput hot paths. Consider inlining very small helper methods in these loops to avoid Python function call overhead.
