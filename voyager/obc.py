@@ -1,3 +1,5 @@
+import math
+
 class OnBoardComputer:
     def __init__(self):
         self.mode = "OFF"
@@ -25,6 +27,8 @@ class OnBoardComputer:
         """
         Advances the state of the OBC by dt seconds.
         """
+        if not math.isfinite(dt):
+            raise ValueError("Time step must be finite")
         if dt < 0:
             raise ValueError("Time step must be non-negative")
 

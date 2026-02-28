@@ -40,3 +40,10 @@
 **Prevention:**
 1. Enforced API Key authentication using FastAPI's `Security` dependency on all state-changing endpoints.
 2. Implemented a secure-by-default generated key mechanism for local development.
+
+## 2026-03-01 - Watchdog Bypass via Infinite Simulation Timestep
+**Vulnerability:** The `OnBoardComputer.tick(dt)` method validated that `dt` was non-negative to prevent reversing time, but failed to check if `dt` was finite. An attacker could pass `Infinity` via the `/api/tick?dt=inf` endpoint. This caused the watchdog timer to immediately reach `inf`, forcing a reboot into `SAFE_MODE` and disrupting the simulation, effectively acting as a Denial of Service.
+**Learning:** While framework-level validation (like FastAPI's `Query(ge=0)`) ensures numbers meet boundary conditions, standard float types still accept `inf` and `nan`. These special values can break business logic or cause JSON serialization errors further down the stack.
+**Prevention:**
+1. Added an explicit `math.isfinite(dt)` check in the domain model (`voyager/obc.py`) to raise a `ValueError` for infinite or NaN inputs.
+2. Remember that float inputs from external sources must always be validated for finiteness unless specifically designed to handle `inf`/`nan`.
