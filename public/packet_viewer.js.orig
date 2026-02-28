@@ -29,10 +29,7 @@ async function updateTelemetry() {
 
                 // Palette: Enable copy button
                 const btnCopy = document.getElementById('copy-hex-btn');
-                if (btnCopy) {
-                    btnCopy.disabled = false;
-                    btnCopy.setAttribute('title', 'Copy hex dump to clipboard');
-                }
+                if (btnCopy) btnCopy.disabled = false;
 
                 // Hex string split into bytes
                 const bytes = data.hex.split(' ');
