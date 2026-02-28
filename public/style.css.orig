@@ -133,13 +133,6 @@ h2 {
     min-height: 100px;
 }
 
-.empty-hex-state {
-    color: #666;
-    font-style: italic;
-    text-align: center;
-    padding-top: 1rem;
-}
-
 .hex-byte {
     display: inline-block;
     margin-right: 0.5rem;
