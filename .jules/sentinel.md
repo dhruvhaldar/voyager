@@ -54,3 +54,11 @@
 **Prevention:**
 1. Updated `RateLimiter` to check `X-Forwarded-For` and `X-Real-IP` headers before falling back to `request.client.host`.
 2. Implemented an OOM protection cap (`max_entries=10000`) on `self.history`, clearing expired IPs or flushing the dictionary entirely to ensure the service remains available during high-volume attacks.
+
+## 2026-03-01 - 500 Internal Server Error Traceback Leak
+**Vulnerability:** When a `ValueError` was thrown in the domain model (e.g., passing `dt=inf` or `dt=nan` to `/api/tick`), FastAPI allowed the exception to bubble up unhandled. This caused a `500 Internal Server Error`, which in some deployment configurations could leak a stack trace to the client, exposing internal implementation details.
+**Learning:** Framework-level type validations (like `float`) often accept edge cases (like `inf` or `nan`). While the domain model correctly rejected these via a `ValueError`, failing to handle that specific error type gracefully at the API boundary left the application susceptible to returning verbose 500 errors during a DoS attempt. In addition, globally masking `ValueError`s can hide legitimate internal server bugs.
+**Prevention:**
+1. Created a specialized domain exception `SimulationError` (inheriting from `ValueError`) to distinguish intentional domain validation failures from generic `ValueError`s.
+2. Updated the domain logic (`voyager/obc.py`) to raise `SimulationError`.
+3. Added an exception handler for `SimulationError` in `api/index.py` using `@app.exception_handler(SimulationError)` that returns a sanitized `400 Bad Request`.
