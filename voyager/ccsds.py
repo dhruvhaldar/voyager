@@ -64,8 +64,6 @@ class TelemetryPacket:
         if len(raw_bytes) < 8: # Header (6) + CRC (2)
             return False
 
-        data_to_check = raw_bytes[:-2]
-        received_crc = struct.unpack('>H', raw_bytes[-2:])[0]
-
-        calculated_crc = TelemetryPacket.calculate_crc(data_to_check)
-        return calculated_crc == received_crc
+        # Optimization: CRC-16-CCITT evaluates to 0 when calculated over the
+        # entire message including the appended CRC, avoiding slicing and struct unpack.
+        return TelemetryPacket.calculate_crc(raw_bytes) == 0
