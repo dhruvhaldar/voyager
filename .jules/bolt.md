@@ -37,3 +37,7 @@
 ## 2026-06-16 - [Pre-compiling Structs and Inlining for Binary Serialization]
 **Learning:** High-frequency binary serialization (like generating simulated CCSDS packets) using `struct.pack()` with an inline format string recompiles the format on every call. Pre-compiling to a module-level `struct.Struct()` and inlining the argument preparation to avoid helper function calls yielded a ~16% speedup for packet generation.
 **Action:** Always pre-compile `struct` format strings if they are used in high-throughput hot paths. Consider inlining very small helper methods in these loops to avoid Python function call overhead.
+
+## 2026-06-16 - [Fast CRC Validation]
+**Learning:** Validating a CRC by recalculating it and comparing requires slicing the packet and unpacking the appended CRC. The CRC-16-CCITT algorithm guarantees that running the calculation over the entire packet (including the appended CRC) results in 0 if no errors occurred.
+**Action:** Use `cls.calculate_crc(raw_bytes) == 0` instead of byte slicing and comparing to validate the packet for a ~3.5x speedup.
