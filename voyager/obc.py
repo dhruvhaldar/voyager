@@ -1,5 +1,9 @@
 import math
 
+class SimulationError(ValueError):
+    """Exception raised for invalid simulation parameters."""
+    pass
+
 class OnBoardComputer:
     def __init__(self):
         self.mode = "OFF"
@@ -28,9 +32,9 @@ class OnBoardComputer:
         Advances the state of the OBC by dt seconds.
         """
         if not math.isfinite(dt):
-            raise ValueError("Time step must be finite")
+            raise SimulationError("Time step must be finite")
         if dt < 0:
-            raise ValueError("Time step must be non-negative")
+            raise SimulationError("Time step must be non-negative")
 
         if self.mode == "OFF":
             return

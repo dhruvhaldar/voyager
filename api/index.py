@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from fastapi import FastAPI, HTTPException, status, Query, Request, Security, Depends
 from fastapi.security import APIKeyHeader
 from fastapi.staticfiles import StaticFiles
-from voyager.obc import OnBoardComputer
+from voyager.obc import OnBoardComputer, SimulationError
 from voyager.ccsds import TelemetryPacket
 import time
 import secrets
@@ -88,7 +88,19 @@ class RateLimiter:
 # Security: Limit sensitive state-changing commands to prevent abuse/DoS
 limit_sensitive = RateLimiter(calls=10, period=60.0)
 
+from fastapi.responses import JSONResponse
+
 app = FastAPI()
+
+@app.exception_handler(SimulationError)
+async def simulation_error_handler(request: Request, exc: SimulationError):
+    # Sentinel Security Enhancement: Prevent internal exception stack traces
+    # from leaking via 500 responses by catching domain SimulationErrors and
+    # returning a sanitized 400 Bad Request.
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": "Invalid parameter value provided."}
+    )
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
