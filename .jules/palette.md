@@ -28,3 +28,7 @@
 ## 2026-03-02 - Smart Auto-Scrolling for Logs
 **Learning:** Forcing auto-scroll on log containers interrupts users who are reading history to debug issues.
 **Action:** Implement "Smart Auto-Scroll" that only scrolls to the bottom if the user was already at the bottom (within a small tolerance).
+
+## 2026-03-03 - D3 SVG Accessibility
+**Learning:** Complex D3 visualizations (like the CAN bus analyzer) generate many internal `<g>`, `<text>`, and `<path>` elements that create confusing noise for screen readers.
+**Action:** Treat complex SVG charts as single accessible images by adding `role="img"` and a descriptive `aria-label` to the root `<svg>` element to suppress internal DOM noise.
