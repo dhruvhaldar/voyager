@@ -62,3 +62,10 @@
 1. Created a specialized domain exception `SimulationError` (inheriting from `ValueError`) to distinguish intentional domain validation failures from generic `ValueError`s.
 2. Updated the domain logic (`voyager/obc.py`) to raise `SimulationError`.
 3. Added an exception handler for `SimulationError` in `api/index.py` using `@app.exception_handler(SimulationError)` that returns a sanitized `400 Bad Request`.
+
+## 2026-03-02 - Missing Strict-Transport-Security Header
+**Vulnerability:** The application was missing the `Strict-Transport-Security` (HSTS) header in API responses, which left it vulnerable to downgrade attacks (e.g., SSL stripping) if deployed over HTTPS.
+**Learning:** While other security headers (like CSP, X-Frame-Options) were present, HSTS is a critical component for enforcing secure connections at the browser level and should always be included in web applications.
+**Prevention:**
+1. Added the `Strict-Transport-Security: max-age=31536000; includeSubDomains` header to the global HTTP middleware in `api/index.py`.
+2. Added an assertion to `tests/test_security_headers.py` to ensure the header remains present in future changes.
