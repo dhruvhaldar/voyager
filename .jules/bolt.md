@@ -41,3 +41,7 @@
 ## 2026-06-16 - [Fast CRC Validation]
 **Learning:** Validating a CRC by recalculating it and comparing requires slicing the packet and unpacking the appended CRC. The CRC-16-CCITT algorithm guarantees that running the calculation over the entire packet (including the appended CRC) results in 0 if no errors occurred.
 **Action:** Use `cls.calculate_crc(raw_bytes) == 0` instead of byte slicing and comparing to validate the packet for a ~3.5x speedup.
+
+## 2025-02-28 - [RateLimiter deque sliding window]
+**Learning:** The rate limiter implementation initially filtered out old requests using list comprehensions (`[t for t in history if now - t < period]`). Since this is called on every request, it requires an O(N) allocation and full copy where N is the number of recent requests. Using a `collections.deque` and popping from the left (`popleft()`) changes this to an O(1) operation per old request.
+**Action:** When implementing rolling/sliding windows of time-series events where items are always appended chronologically, always use `collections.deque` instead of `list` to allow efficient removal of outdated elements from the head.
