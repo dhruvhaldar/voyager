@@ -41,6 +41,9 @@ def test_security_headers_present():
     # Permissions-Policy
     assert headers.get("Permissions-Policy") == "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
 
+    # Strict-Transport-Security
+    assert headers.get("Strict-Transport-Security") == "max-age=31536000; includeSubDomains"
+
 def test_api_cache_control():
     """
     Test that API endpoints have strict cache control.
