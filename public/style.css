@@ -134,7 +134,7 @@ h2 {
 }
 
 .empty-hex-state {
-    color: #666;
+    color: #999;
     font-style: italic;
     text-align: center;
     padding-top: 1rem;
@@ -341,7 +341,7 @@ button:focus-visible {
 }
 
 .log-time {
-    color: #666;
+    color: #999;
     font-size: 0.9em;
 }
 
@@ -376,6 +376,22 @@ button:focus-visible {
     background: rgba(11, 12, 16, 0.5);
     color: rgba(102, 252, 241, 0.8);
     vertical-align: middle;
+}
+
+/* Palette: Active Monitoring Feedback */
+@keyframes pulse-opacity {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+.pulse-text {
+    animation: pulse-opacity 2s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pulse-text {
+        animation: none;
+    }
 }
 
 /* Palette: Status Update Animation */

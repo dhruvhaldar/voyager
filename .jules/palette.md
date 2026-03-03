@@ -32,3 +32,7 @@
 ## 2026-03-03 - D3 SVG Accessibility
 **Learning:** Complex D3 visualizations (like the CAN bus analyzer) generate many internal `<g>`, `<text>`, and `<path>` elements that create confusing noise for screen readers.
 **Action:** Treat complex SVG charts as single accessible images by adding `role="img"` and a descriptive `aria-label` to the root `<svg>` element to suppress internal DOM noise.
+
+## 2026-03-03 - [Dark Theme Contrast & Async Polling Feedback]
+**Learning:** Secondary text colors like `#666` often fail WCAG AA contrast requirements (4.5:1) on very dark backgrounds (`#0b0c10`), achieving only ~3.4:1 contrast. Additionally, static "Waiting..." text during background polling operations can leave users uncertain if the system is still active or frozen.
+**Action:** Always verify secondary "muted" text colors against their background. Use at least `#888` or `#999` on deep black/gray backgrounds to maintain accessibility while achieving visual hierarchy. For async polling states, add a subtle CSS opacity pulse animation to reassure users the system is actively listening.
