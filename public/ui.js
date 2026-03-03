@@ -16,6 +16,7 @@ async function handleButtonAction(button, url, options = {}) {
 
     // 1. Loading State
     button.disabled = true;
+    button.title = "Action in progress, please wait";
     button.innerText = "Processing...";
     button.setAttribute("aria-busy", "true");
     button.style.cursor = "wait";
@@ -87,6 +88,7 @@ async function handleManualRefresh(button) {
     // Note: Manual refresh doesn't currently change aria-label, so passing null is fine.
 
     button.disabled = true;
+    button.title = "Fetching latest telemetry, please wait";
     button.innerText = "Fetching...";
     button.setAttribute("aria-busy", "true");
 
@@ -118,7 +120,8 @@ function resetButton(button, content, label = null) {
     }
     button.disabled = false;
     button.removeAttribute("aria-busy");
-    button.style.cursor = "pointer";
+    button.removeAttribute("title");
+    button.style.cursor = "";
     button.style.borderColor = "";
 }
 
