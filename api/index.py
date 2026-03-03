@@ -11,6 +11,7 @@ from voyager.ccsds import TelemetryPacket
 import time
 import secrets
 from pathlib import Path
+from collections import deque
 
 # Security Configuration
 API_KEY_NAME = "X-API-Key"
@@ -70,10 +71,13 @@ class RateLimiter:
 
         # Initialize history for new IP
         if client_ip not in self.history:
-            self.history[client_ip] = []
+            self.history[client_ip] = deque()
 
         # Filter timestamps to keep only those within the rolling window
-        self.history[client_ip] = [t for t in self.history[client_ip] if now - t < self.period]
+        # Optimization: Use deque to pop left in O(1) time instead of O(N) list comprehension
+        # This significantly reduces CPU time when N (rate limit calls) is large.
+        while self.history[client_ip] and now - self.history[client_ip][0] >= self.period:
+            self.history[client_ip].popleft()
 
         # Check limit
         if len(self.history[client_ip]) >= self.calls:
