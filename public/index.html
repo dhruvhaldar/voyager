@@ -28,11 +28,11 @@
         <section id="packet-inspector" aria-labelledby="heading-packet-inspector">
             <h2 id="heading-packet-inspector">CCSDS Packet Inspector</h2>
             <div id="packet-viewer">
-                <p id="telemetry-status" aria-live="polite" aria-atomic="true">Waiting for telemetry...</p>
+                <p id="telemetry-status" class="pulse-text" aria-live="polite" aria-atomic="true">Waiting for telemetry...</p>
                 <div id="packet-details"></div>
                 <div class="hex-wrapper">
                     <button id="copy-hex-btn" class="copy-btn" aria-keyshortcuts="c" aria-label="Copy hex dump to clipboard" title="Waiting for telemetry data" disabled>COPY <span class="kbd">C</span></button>
-                    <div id="packet-hex" class="hex-dump"><div class="empty-hex-state">Awaiting payload data...</div></div>
+                    <div id="packet-hex" class="hex-dump"><div class="empty-hex-state pulse-text">Awaiting payload data...</div></div>
                 </div>
                 <button id="btn-fetch-telemetry" aria-label="Manually fetch latest telemetry packet">Fetch Latest Packet</button>
             </div>
@@ -41,7 +41,7 @@
         <section id="fdir-panel" aria-labelledby="heading-fdir-panel">
             <h2 id="heading-fdir-panel">FDIR Status Monitor</h2>
             <div id="fdir-logs">
-                <p>Monitoring EDAC and Scrubbing events...</p>
+                <p class="pulse-text">Monitoring EDAC and Scrubbing events...</p>
                 <div id="fdir-logs-container" role="log" aria-label="FDIR Event Log" tabindex="0">
                     <!-- Logs will be injected here -->
                 </div>
