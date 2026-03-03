@@ -37,6 +37,9 @@ def test_security_headers_present():
     assert "default-src 'self'" in csp
     assert "script-src" in csp
     assert "object-src 'none'" in csp
+    assert "frame-ancestors 'none'" in csp
+    assert "base-uri 'none'" in csp
+    assert "upgrade-insecure-requests" in csp
 
     # Permissions-Policy
     assert headers.get("Permissions-Policy") == "geolocation=(), microphone=(), camera=(), payment=(), usb=()"

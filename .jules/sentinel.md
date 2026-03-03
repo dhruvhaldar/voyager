@@ -69,3 +69,10 @@
 **Prevention:**
 1. Added the `Strict-Transport-Security: max-age=31536000; includeSubDomains` header to the global HTTP middleware in `api/index.py`.
 2. Added an assertion to `tests/test_security_headers.py` to ensure the header remains present in future changes.
+
+## 2026-03-03 - Insufficient Content-Security-Policy Directives
+**Vulnerability:** The Content-Security-Policy header lacked directives like `frame-ancestors`, `base-uri`, and `upgrade-insecure-requests`, leaving the application potentially exposed to UI redressing (clickjacking) in modern browsers, base tag injection, and insecure network transitions.
+**Learning:** Setting basic CSP `*-src` directives isn't always enough to secure a web app. `X-Frame-Options` is deprecated in modern browsers in favor of `frame-ancestors`. Using `upgrade-insecure-requests` prevents mixed content issues when assets are loaded without HTTPS, and `base-uri 'none'` restricts a common attack vector where the base tag is injected to redirect relative URLs.
+**Prevention:**
+1. Appended `frame-ancestors 'none'; base-uri 'none'; upgrade-insecure-requests;` to the existing `Content-Security-Policy` header in the FastAPI middleware (`api/index.py`).
+2. Augmented `tests/test_security_headers.py` to verify the presence of these crucial CSP directives.
