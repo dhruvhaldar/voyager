@@ -52,7 +52,9 @@ class RateLimiter:
         # Extract real IP behind reverse proxies (like Vercel)
         client_ip = request.headers.get("X-Forwarded-For")
         if client_ip:
-            client_ip = client_ip.split(",")[0].strip()
+            # Prevent IP spoofing: use the rightmost IP in the X-Forwarded-For chain,
+            # which is the one appended by the last proxy (e.g., Vercel edge).
+            client_ip = client_ip.split(",")[-1].strip()
         else:
             client_ip = request.headers.get("X-Real-IP")
 
