@@ -12,21 +12,21 @@
     <header>
         <h1>Voyager Avionics Dashboard</h1>
         <div id="status-panel" role="group" aria-label="System Status">
-            <div class="status-item" aria-live="polite" aria-atomic="true">Mode: <strong id="obc-mode" class="status-value">--</strong></div>
-            <div class="status-item" aria-live="polite" aria-atomic="true">Reboots: <strong id="obc-reboots" class="status-value">--</strong></div>
-            <div class="status-item" aria-live="polite" aria-atomic="true">WDT: <strong id="obc-wdt" class="status-value">--</strong></div>
-            <div class="status-item" aria-live="polite" aria-atomic="true">Comm: <strong id="comm-status" class="status-value">WAIT</strong></div>
+            <div class="status-item" aria-live="polite" aria-atomic="true"><span class="abbr-like" title="On-Board Computer Mode">Mode</span>: <strong id="obc-mode" class="status-value">--</strong></div>
+            <div class="status-item" aria-live="polite" aria-atomic="true"><span class="abbr-like" title="On-Board Computer Reboot Count">Reboots</span>: <strong id="obc-reboots" class="status-value">--</strong></div>
+            <div class="status-item" aria-live="polite" aria-atomic="true"><abbr title="Watchdog Timer">WDT</abbr>: <strong id="obc-wdt" class="status-value">--</strong></div>
+            <div class="status-item" aria-live="polite" aria-atomic="true"><span class="abbr-like" title="Communication Link Status">Comm</span>: <strong id="comm-status" class="status-value">WAIT</strong></div>
         </div>
         <div id="control-panel">
             <button id="btn-step" aria-keyshortcuts="s" aria-label="Step simulation forward 1 second">Step +1s <span class="kbd">S</span></button>
-            <button id="btn-freeze" aria-keyshortcuts="f" aria-label="Freeze On-Board Computer">Freeze OBC <span class="kbd">F</span></button>
-            <button id="btn-reboot" aria-keyshortcuts="r" aria-label="Reboot On-Board Computer">Reboot OBC <span class="kbd">R</span></button>
+            <button id="btn-freeze" aria-keyshortcuts="f" aria-label="Freeze On-Board Computer">Freeze <abbr title="On-Board Computer">OBC</abbr> <span class="kbd">F</span></button>
+            <button id="btn-reboot" aria-keyshortcuts="r" aria-label="Reboot On-Board Computer">Reboot <abbr title="On-Board Computer">OBC</abbr> <span class="kbd">R</span></button>
         </div>
     </header>
 
     <main id="main-content" tabindex="-1">
         <section id="packet-inspector" aria-labelledby="heading-packet-inspector">
-            <h2 id="heading-packet-inspector">CCSDS Packet Inspector</h2>
+            <h2 id="heading-packet-inspector"><abbr title="Consultative Committee for Space Data Systems">CCSDS</abbr> Packet Inspector</h2>
             <div id="packet-viewer">
                 <p id="telemetry-status" class="pulse-text" aria-live="polite" aria-atomic="true">Waiting for telemetry...</p>
                 <div id="packet-details"></div>
@@ -39,9 +39,9 @@
         </section>
 
         <section id="fdir-panel" aria-labelledby="heading-fdir-panel">
-            <h2 id="heading-fdir-panel">FDIR Status Monitor</h2>
+            <h2 id="heading-fdir-panel"><abbr title="Fault Detection, Isolation, and Recovery">FDIR</abbr> Status Monitor</h2>
             <div id="fdir-logs">
-                <p class="pulse-text">Monitoring EDAC and Scrubbing events...</p>
+                <p class="pulse-text">Monitoring <abbr title="Error Detection and Correction">EDAC</abbr> and Scrubbing events...</p>
                 <div id="fdir-logs-container" role="log" aria-label="FDIR Event Log" tabindex="0">
                     <!-- Logs will be injected here -->
                 </div>

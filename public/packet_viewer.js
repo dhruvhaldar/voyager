@@ -73,7 +73,7 @@ async function updateTelemetry() {
 
                 // Create APID element
                 const pApid = document.createElement('p');
-                pApid.textContent = 'APID: ';
+                pApid.innerHTML = '<abbr title="Application Process Identifier">APID</abbr>: ';
                 const spanApid = document.createElement('span');
                 spanApid.className = 'val-highlight';
                 spanApid.textContent = '0x' + data.apid.toString(16).toUpperCase();
@@ -91,7 +91,7 @@ async function updateTelemetry() {
 
                 // Create CRC Valid element
                 const pCrc = document.createElement('p');
-                pCrc.textContent = 'CRC Valid: ';
+                pCrc.innerHTML = '<abbr title="Cyclic Redundancy Check">CRC</abbr> Valid: ';
                 const spanCrc = document.createElement('span');
                 if (data.valid_crc) {
                     spanCrc.className = 'status-ok';
