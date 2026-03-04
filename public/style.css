@@ -260,6 +260,11 @@ button:focus-visible {
     display: none !important;
 }
 
+abbr[title], .abbr-like[title] {
+    text-decoration: underline dotted #45a29e;
+    cursor: help;
+}
+
 /* Hex Dump Copy Button */
 .hex-wrapper {
     position: relative;
