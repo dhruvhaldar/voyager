@@ -157,21 +157,34 @@ def tick_simulation(dt: float = Query(1.0, ge=0)):
     obc.tick(dt)
     return {"message": f"Simulation advanced by {dt}s", "status": get_status()}
 
+# Optimization: Cache the telemetry response per sequence count.
+# The sequence count changes once per second (int(time.time())).
+# This avoids redundant packet generation, CRC calculation, and hex formatting
+# for multiple clients polling within the same second.
+_telemetry_cache = {"seq": -1, "res": None}
+
 @app.get("/api/telemetry/latest", dependencies=[Depends(verify_api_key)])
 def get_telemetry():
+    seq = int(time.time()) % 16384
+    if seq == _telemetry_cache["seq"]:
+        return _telemetry_cache["res"]
+
     # Simulate generating a packet
     packet = TelemetryPacket(
         apid=0x10,
-        sequence_count=int(time.time()) % 16384,
+        sequence_count=seq,
         data=b"VoyagerStatus"
     )
     raw_bytes = packet.to_bytes()
-    return {
+
+    _telemetry_cache["seq"] = seq
+    _telemetry_cache["res"] = {
         "hex": raw_bytes.hex(sep=' ').upper(),
         "apid": packet.apid,
         "sequence_count": packet.sequence_count,
         "valid_crc": True 
     }
+    return _telemetry_cache["res"]
 
 # Serve static files from the 'public' directory
 # Mount this LAST so it doesn't shadow API routes
