@@ -201,6 +201,9 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'c':
                 document.getElementById('copy-hex-btn')?.click();
                 break;
+            case 't':
+                document.getElementById('btn-fetch-telemetry')?.click();
+                break;
         }
     });
 });
