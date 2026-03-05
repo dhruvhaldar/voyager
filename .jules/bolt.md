@@ -45,3 +45,7 @@
 ## 2025-02-28 - [RateLimiter deque sliding window]
 **Learning:** The rate limiter implementation initially filtered out old requests using list comprehensions (`[t for t in history if now - t < period]`). Since this is called on every request, it requires an O(N) allocation and full copy where N is the number of recent requests. Using a `collections.deque` and popping from the left (`popleft()`) changes this to an O(1) operation per old request.
 **Action:** When implementing rolling/sliding windows of time-series events where items are always appended chronologically, always use `collections.deque` instead of `list` to allow efficient removal of outdated elements from the head.
+
+## 2026-06-25 - [O(N²) I2C Data Buffer Allocation]
+**Learning:** In streaming protocols like I2C, buffering bytes in a Python list `[]` and consuming chunks via list slicing `buffer = buffer[length:]` causes a complete reallocation and O(N) copy of all remaining elements for every read operation. This results in O(N²) behavior for continuous streams. Using `bytearray` and `del buffer[:length]` utilizes Python's underlying C `memmove` which avoids deep object copies.
+**Action:** When implementing FIFO byte buffers that are frequently appended to and sliced from the front, use `bytearray` instead of lists, and use `del` or `popleft` to consume data without reallocating the remainder of the buffer.
