@@ -9,7 +9,8 @@
 async function handleButtonAction(button, url, options = {}) {
     const originalText = button.innerText;
     // Enhanced: Allow overriding the restore content/label (e.g., for confirmation buttons)
-    const originalContent = options.restoreContent || button.innerHTML;
+    // To avoid innerHTML, we store an array of cloned child nodes
+    const originalContent = options.restoreNodes || Array.from(button.childNodes).map(n => n.cloneNode(true));
     const originalLabel = options.restoreLabel || button.getAttribute('aria-label');
 
     // 0. Loading State
@@ -84,7 +85,7 @@ async function handleButtonAction(button, url, options = {}) {
  * @param {HTMLButtonElement} button
  */
 async function handleManualRefresh(button) {
-    const originalContent = button.innerHTML;
+    const originalContent = Array.from(button.childNodes).map(n => n.cloneNode(true));
     // Note: Manual refresh doesn't currently change aria-label, so passing null is fine.
 
     button.disabled = true;
@@ -114,7 +115,18 @@ async function handleManualRefresh(button) {
 }
 
 function resetButton(button, content, label = null) {
-    button.innerHTML = content;
+    // If content is an object (Node), we append it, else we set textContent
+    button.textContent = ''; // clear
+    if (content instanceof DocumentFragment) {
+        button.appendChild(content.cloneNode(true)); // clone so it can be reused
+    } else if (content instanceof Node) {
+        button.appendChild(content.cloneNode(true));
+    } else if (Array.isArray(content)) {
+        content.forEach(node => button.appendChild(node.cloneNode(true)));
+    } else {
+        button.textContent = content; // fallback for plain text
+    }
+
     if (label !== null) {
         button.setAttribute('aria-label', label);
     }
@@ -239,13 +251,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.remove('status-warn');
 
                 // Retrieve original state
-                const restoreHtml = btn.dataset.originalHtml;
+                const restoreNodes = btn.__originalNodes || [];
                 const restoreLabel = btn.dataset.originalLabel;
 
                 // Call API with instructions to restore the ORIGINAL content, not the current "Confirm?" text
                 handleButtonAction(btn, '/api/command/reboot', {
                     method: 'POST',
-                    restoreContent: restoreHtml,
+                    restoreNodes: restoreNodes,
                     restoreLabel: restoreLabel
                 });
             } else {
@@ -253,20 +265,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 e.stopImmediatePropagation();
 
-                // Store original state
-                btn.dataset.originalHtml = btn.innerHTML;
+                // Store original state using actual Nodes to avoid innerHTML
+                btn.__originalNodes = Array.from(btn.childNodes).map(n => n.cloneNode(true));
                 btn.dataset.originalLabel = btn.getAttribute('aria-label');
 
-                // Set Confirm State
+                // Set Confirm State securely without innerHTML
                 btn.dataset.state = 'confirm';
-                btn.innerHTML = 'Confirm? <span class="kbd">R</span>';
+                btn.textContent = 'Confirm? ';
+                const kbdSpan = document.createElement('span');
+                kbdSpan.className = 'kbd';
+                kbdSpan.textContent = 'R';
+                btn.appendChild(kbdSpan);
+
                 btn.setAttribute('aria-label', 'Confirm Reboot? Press again to execute.');
                 btn.classList.add('status-warn');
 
                 // Auto-revert if not confirmed
                 confirmTimeout = setTimeout(() => {
                     btn.dataset.state = '';
-                    btn.innerHTML = btn.dataset.originalHtml;
+
+                    // Restore safely
+                    btn.textContent = '';
+                    btn.__originalNodes.forEach(node => btn.appendChild(node.cloneNode(true)));
+
                     btn.setAttribute('aria-label', btn.dataset.originalLabel);
                     btn.classList.remove('status-warn');
                 }, 3000);
