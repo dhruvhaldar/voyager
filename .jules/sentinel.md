@@ -76,3 +76,10 @@
 **Prevention:**
 1. Appended `frame-ancestors 'none'; base-uri 'none'; upgrade-insecure-requests;` to the existing `Content-Security-Policy` header in the FastAPI middleware (`api/index.py`).
 2. Augmented `tests/test_security_headers.py` to verify the presence of these crucial CSP directives.
+
+## 2026-03-05 - Complete Eradication of innerHTML in Frontend
+**Vulnerability:** Several instances of `innerHTML` assignment remained in `public/packet_viewer.js` and `public/ui.js` for handling dynamic UI updates (e.g., button state changes, confirmation prompts). While some data sources were static strings or trusted backend variables, using `innerHTML` to update DOM state intrinsically exposes the application to Cross-Site Scripting (XSS) risks if assumptions about data provenance fail.
+**Learning:** Any use of `innerHTML` is an anti-pattern when security is a priority. "Safe" static string assignments (`element.innerHTML = '<span>Safe</span>'`) can easily be refactored by future developers into unsafe ones (`element.innerHTML = '<span>' + userInput + '</span>'`). Defense-in-depth dictates enforcing strict pure DOM manipulation (`textContent` and `createElement`) application-wide.
+**Prevention:**
+1. Replaced all occurrences of `innerHTML` in `packet_viewer.js` and `ui.js` with pure DOM node creation, traversal, and text content assignment (e.g., using `document.createElement`, `textContent`, and `appendChild`).
+2. Implemented node cloning (`cloneNode(true)`) and arrays to persist button states instead of serializing their contents into HTML strings.

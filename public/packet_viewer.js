@@ -39,7 +39,7 @@ async function updateTelemetry() {
 
                 // SECURITY: Use textContent and document.createElement to prevent XSS.
                 // Clear existing content
-                hexElement.innerHTML = '';
+                hexElement.textContent = '';
 
                 // OPTIMIZATION: Use DocumentFragment to batch DOM insertions.
                 // This prevents N reflows (where N is packet length) and causes only 1 reflow.
@@ -67,13 +67,17 @@ async function updateTelemetry() {
 
                 // SECURITY: Use textContent and document.createElement to prevent XSS.
                 // Clear existing content
-                detailsElement.innerHTML = '';
+                detailsElement.textContent = '';
 
                 const detailsFragment = document.createDocumentFragment();
 
                 // Create APID element
                 const pApid = document.createElement('p');
-                pApid.innerHTML = '<abbr title="Application Process Identifier">APID</abbr>: ';
+                                const abbrApid = document.createElement('abbr');
+                abbrApid.title = 'Application Process Identifier';
+                abbrApid.textContent = 'APID';
+                pApid.appendChild(abbrApid);
+                pApid.appendChild(document.createTextNode(': '));
                 const spanApid = document.createElement('span');
                 spanApid.className = 'val-highlight';
                 spanApid.textContent = '0x' + data.apid.toString(16).toUpperCase();
@@ -91,7 +95,11 @@ async function updateTelemetry() {
 
                 // Create CRC Valid element
                 const pCrc = document.createElement('p');
-                pCrc.innerHTML = '<abbr title="Cyclic Redundancy Check">CRC</abbr> Valid: ';
+                                const abbrCrc = document.createElement('abbr');
+                abbrCrc.title = 'Cyclic Redundancy Check';
+                abbrCrc.textContent = 'CRC';
+                pCrc.appendChild(abbrCrc);
+                pCrc.appendChild(document.createTextNode(' Valid: '));
                 const spanCrc = document.createElement('span');
                 if (data.valid_crc) {
                     spanCrc.className = 'status-ok';
@@ -156,20 +164,27 @@ function copyHexToClipboard() {
         }
 
         // Store original state on first click
-        if (!btn.hasAttribute('data-original-html')) {
-            btn.setAttribute('data-original-html', btn.innerHTML);
+        if (!btn.__originalNodes) {
+            btn.__originalNodes = Array.from(btn.childNodes).map(n => n.cloneNode(true));
             btn.setAttribute('data-original-label', btn.getAttribute('aria-label') || "");
         }
 
-        // Update UI & Accessibility
-        btn.innerHTML = 'COPIED! <span class="kbd">C</span>';
+        // Update UI & Accessibility safely
+        btn.textContent = 'COPIED! ';
+        const kbdSpan = document.createElement('span');
+        kbdSpan.className = 'kbd';
+        kbdSpan.textContent = 'C';
+        btn.appendChild(kbdSpan);
+
         btn.style.color = "#66fcf1";
         btn.style.borderColor = "#66fcf1";
         btn.setAttribute('aria-label', "Copied to clipboard");
 
         // Reset after 2 seconds
         copyTimeout = setTimeout(() => {
-            btn.innerHTML = btn.getAttribute('data-original-html');
+            btn.textContent = '';
+            btn.__originalNodes.forEach(node => btn.appendChild(node.cloneNode(true)));
+
             const originalLabel = btn.getAttribute('data-original-label');
             if (originalLabel) {
                 btn.setAttribute('aria-label', originalLabel);
