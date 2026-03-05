@@ -33,13 +33,19 @@ class I2CBus:
 class Slave:
     def __init__(self, address):
         self.address = address
-        self.data_buffer = []
+        # Optimization: Use bytearray instead of a list for the data buffer.
+        # This avoids O(N) list reallocations and deep copies during transmission.
+        self.data_buffer = bytearray()
 
     def receive(self, data):
         self.data_buffer.extend(data)
 
     def transmit(self, length):
-        # Simplistic: return stored buffer or zeros
+        # Optimization: Delete the sliced prefix from the bytearray.
+        # In CPython, deleting from the front of a bytearray uses memmove,
+        # which is significantly faster than slicing and reassigning a list
+        # (which requires allocating a new list and copying pointers).
         res = self.data_buffer[:length]
-        self.data_buffer = self.data_buffer[length:]
-        return res
+        del self.data_buffer[:length]
+        # Return as list to maintain backward compatibility with callers expecting an iterable of integers
+        return list(res)
