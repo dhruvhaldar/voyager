@@ -51,6 +51,8 @@ async function handleButtonAction(button, url, options = {}) {
         // 2. Success State
         button.innerText = "Done!";
         button.classList.add('status-ok');
+        button.removeAttribute('aria-busy');
+        button.removeAttribute('title');
 
         // Refresh telemetry immediately if available
         if (typeof updateTelemetry === 'function') {
@@ -71,6 +73,8 @@ async function handleButtonAction(button, url, options = {}) {
         // 4. Error State
         button.innerText = "Error";
         button.classList.add('status-err');
+        button.removeAttribute('aria-busy');
+        button.title = "Action failed";
 
         addFdirLog('ERROR', `Command '${originalText}' failed: ${error.message}`);
 
@@ -97,6 +101,8 @@ async function handleManualRefresh(button) {
         if (typeof updateTelemetry === 'function') {
             await updateTelemetry();
             button.innerText = "Updated!";
+            button.removeAttribute('aria-busy');
+            button.removeAttribute('title');
             addFdirLog('INFO', "Telemetry updated manually.");
         } else {
             console.warn("updateTelemetry not found");
@@ -107,6 +113,8 @@ async function handleManualRefresh(button) {
         }, 1000);
     } catch (e) {
         button.innerText = "Error";
+        button.removeAttribute('aria-busy');
+        button.title = "Action failed";
         addFdirLog('ERROR', "Manual refresh failed.");
         setTimeout(() => {
             resetButton(button, originalContent);

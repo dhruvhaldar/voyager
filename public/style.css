@@ -228,6 +228,11 @@ h2 {
     color: #66fcf1;
 }
 
+/* Loading state visual feedback */
+button[aria-busy="true"] {
+    animation: pulse-opacity 2s infinite ease-in-out;
+}
+
 /* Focus styles for accessibility */
 button:focus-visible {
     outline: 2px solid #fff;

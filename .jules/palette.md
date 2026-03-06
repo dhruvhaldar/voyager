@@ -36,3 +36,7 @@
 ## 2026-03-03 - [Dark Theme Contrast & Async Polling Feedback]
 **Learning:** Secondary text colors like `#666` often fail WCAG AA contrast requirements (4.5:1) on very dark backgrounds (`#0b0c10`), achieving only ~3.4:1 contrast. Additionally, static "Waiting..." text during background polling operations can leave users uncertain if the system is still active or frozen.
 **Action:** Always verify secondary "muted" text colors against their background. Use at least `#888` or `#999` on deep black/gray backgrounds to maintain accessibility while achieving visual hierarchy. For async polling states, add a subtle CSS opacity pulse animation to reassure users the system is actively listening.
+
+## 2026-03-04 - Stale Attributes in Temporary States
+**Learning:** Leaving `aria-busy="true"` and loading `title` attributes on buttons during temporary success/error feedback states (like "Done!") confuses screen readers and mouse users. Also, overriding `.className` in JS often accidentally strips crucial utility classes like `.pulse-text`.
+**Action:** Always clean up `aria-busy` and loading tooltips *immediately* when an operation resolves, before showing the temporary success/error text. Use `classList.add()` instead of `className` assignments to preserve existing animations. Added a global CSS rule for `button[aria-busy="true"]` to ensure consistent visual loading feedback.
