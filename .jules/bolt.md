@@ -49,3 +49,7 @@
 ## 2026-06-25 - [O(N²) I2C Data Buffer Allocation]
 **Learning:** In streaming protocols like I2C, buffering bytes in a Python list `[]` and consuming chunks via list slicing `buffer = buffer[length:]` causes a complete reallocation and O(N) copy of all remaining elements for every read operation. This results in O(N²) behavior for continuous streams. Using `bytearray` and `del buffer[:length]` utilizes Python's underlying C `memmove` which avoids deep object copies.
 **Action:** When implementing FIFO byte buffers that are frequently appended to and sliced from the front, use `bytearray` instead of lists, and use `del` or `popleft` to consume data without reallocating the remainder of the buffer.
+
+## 2026-06-25 - [Batching API Calls]
+**Learning:** Making separate parallel HTTP requests for telemetry and status incurs significant network latency overhead, especially in high-latency environments.
+**Action:** Batch related data into a single API endpoint to reduce round-trips from the frontend.
