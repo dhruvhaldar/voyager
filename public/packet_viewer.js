@@ -136,7 +136,7 @@ async function updateTelemetry() {
         if (statusElement) {
             statusElement.classList.remove('hidden');
             statusElement.innerText = "Connection Lost. Retrying...";
-            statusElement.className = "status-err";
+            statusElement.className = "pulse-text status-err";
         }
     }
 }
