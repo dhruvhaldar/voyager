@@ -40,3 +40,7 @@
 ## 2026-03-04 - Stale Attributes in Temporary States
 **Learning:** Leaving `aria-busy="true"` and loading `title` attributes on buttons during temporary success/error feedback states (like "Done!") confuses screen readers and mouse users. Also, overriding `.className` in JS often accidentally strips crucial utility classes like `.pulse-text`.
 **Action:** Always clean up `aria-busy` and loading tooltips *immediately* when an operation resolves, before showing the temporary success/error text. Use `classList.add()` instead of `className` assignments to preserve existing animations. Added a global CSS rule for `button[aria-busy="true"]` to ensure consistent visual loading feedback.
+
+## 2026-03-05 - Contextual Tooltips in Data Displays
+**Learning:** Complex raw data displays (like hex dumps or binary payloads) can be intimidating and hard to parse. However, adding visible labels inline clutters the interface and disrupts the density of the visualization.
+**Action:** Use native `title` tooltips on individual data fragments (e.g., specific bytes in a hex dump) to provide contextual, on-demand explanations of what the data represents without compromising the clean, dense layout of technical data displays.

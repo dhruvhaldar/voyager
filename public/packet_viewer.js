@@ -48,10 +48,13 @@ async function updateTelemetry() {
                     // Determine type based on index
                     if (index < 6) {
                         span.classList.add('hex-header');
+                        span.title = 'Primary Header';
                     } else if (index >= bytes.length - 2) {
                         span.classList.add('hex-crc');
+                        span.title = 'Packet Error Control (CRC)';
                     } else {
                         span.classList.add('hex-data');
+                        span.title = 'Payload Data';
                     }
 
                     span.textContent = byte;
