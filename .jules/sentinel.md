@@ -83,3 +83,10 @@
 **Prevention:**
 1. Replaced all occurrences of `innerHTML` in `packet_viewer.js` and `ui.js` with pure DOM node creation, traversal, and text content assignment (e.g., using `document.createElement`, `textContent`, and `appendChild`).
 2. Implemented node cloning (`cloneNode(true)`) and arrays to persist button states instead of serializing their contents into HTML strings.
+
+## 2026-03-07 - Rate Limiter Bypass via Authentication Short-Circuit
+**Vulnerability:** The rate limiter on sensitive endpoints (`/api/command/reboot`, `/api/command/freeze`) was defined after the authentication check (`dependencies=[Depends(verify_api_key), Depends(limit_sensitive)]`). This allowed an unauthenticated attacker to bypass the rate limiter entirely, as the `verify_api_key` dependency would raise a `401 Unauthorized` before `limit_sensitive` could evaluate the request and increment the limit counter. This could enable a denial-of-service attack against the authentication mechanism or underlying systems.
+**Learning:** When combining multiple security dependencies in FastAPI, the order of evaluation matters. Rate limiting should always precede authentication so that both authenticated and unauthenticated malicious traffic can be effectively throttled.
+**Prevention:**
+1. Swapped the order of dependencies in FastAPI route definitions to `dependencies=[Depends(limit_sensitive), Depends(verify_api_key)]`.
+2. Added a test in `tests/test_rate_limit_auth_bypass.py` to assert that rate limiting is enforced even for unauthenticated requests.

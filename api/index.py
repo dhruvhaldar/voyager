@@ -144,12 +144,12 @@ def get_status():
         "frozen": obc.frozen
     }
 
-@app.post("/api/command/reboot", dependencies=[Depends(verify_api_key), Depends(limit_sensitive)])
+@app.post("/api/command/reboot", dependencies=[Depends(limit_sensitive), Depends(verify_api_key)])
 def command_reboot():
     obc.reboot()
     return {"message": "OBC Rebooted"}
 
-@app.post("/api/command/freeze", dependencies=[Depends(verify_api_key), Depends(limit_sensitive)])
+@app.post("/api/command/freeze", dependencies=[Depends(limit_sensitive), Depends(verify_api_key)])
 def command_freeze():
     obc.freeze()
     return {"message": "OBC Frozen"}
