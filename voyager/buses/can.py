@@ -6,9 +6,13 @@ class Node:
     def __repr__(self):
         return f"Node(id={hex(self.id)})"
 
+import operator
+
 class CANBus:
     def __init__(self, bit_rate=500000):
         self.bit_rate = bit_rate
+        # Pre-allocate attrgetter for optimization
+        self._get_id = operator.attrgetter('id')
 
     def arbitrate(self, nodes):
         """
@@ -22,4 +26,5 @@ class CANBus:
         # Optimization: Replaced O(N*11) bitwise loop with O(N) min() for ~7x speedup.
         # Mathematically equivalent to CAN wired-AND arbitration where lowest ID wins.
         # This implementation implicitly supports both 11-bit and 29-bit (extended) IDs.
-        return min(nodes, key=lambda n: n.id)
+        # Further optimized by using operator.attrgetter instead of a lambda to avoid Python function call overhead.
+        return min(nodes, key=self._get_id)
