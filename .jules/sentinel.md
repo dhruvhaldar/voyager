@@ -90,3 +90,10 @@
 **Prevention:**
 1. Swapped the order of dependencies in FastAPI route definitions to `dependencies=[Depends(limit_sensitive), Depends(verify_api_key)]`.
 2. Added a test in `tests/test_rate_limit_auth_bypass.py` to assert that rate limiting is enforced even for unauthenticated requests.
+
+## 2026-03-08 - Missing Subresource Integrity (SRI) on External Scripts
+**Vulnerability:** The `d3.v7.min.js` script was loaded from a third-party Content Delivery Network (CDN) without a Subresource Integrity (SRI) attribute. If the CDN were compromised, an attacker could replace the script with malicious code, leading to an XSS attack on all clients.
+**Learning:** Loading resources from CDNs is common for performance and caching, but introduces a supply chain vulnerability. Trusting third-party infrastructure blindly is an anti-pattern; defense-in-depth requires validating the integrity of fetched assets.
+**Prevention:**
+1. Calculated the SHA-384 hash of the intended `d3.v7.min.js` file.
+2. Added the `integrity` attribute (with the calculated hash) and `crossorigin="anonymous"` to the `<script>` tag in `public/index.html`. This ensures the browser will refuse to execute the script if its contents change unexpectedly.
