@@ -53,3 +53,7 @@
 ## 2026-06-25 - [Batching API Calls]
 **Learning:** Making separate parallel HTTP requests for telemetry and status incurs significant network latency overhead, especially in high-latency environments.
 **Action:** Batch related data into a single API endpoint to reduce round-trips from the frontend.
+
+## 2026-06-25 - [Fast List Sorting / Min / Max]
+**Learning:** Using `lambda n: n.id` inside `min()`, `max()`, or `sort()` results in significant overhead from repeatedly calling Python functions inside an inner loop. Using `operator.attrgetter('id')` is implemented in C and runs roughly ~30% faster for O(N) operations.
+**Action:** When finding extremes or sorting lists of objects by an attribute, use `operator.attrgetter` (or `operator.itemgetter` for dicts) instead of lambdas for improved performance.
