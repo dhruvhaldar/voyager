@@ -19,6 +19,7 @@ async function handleButtonAction(button, url, options = {}) {
     button.disabled = true;
     button.title = "Action in progress, please wait";
     button.innerText = "Processing...";
+    button.setAttribute("aria-label", "Processing...");
     button.setAttribute("aria-busy", "true");
     button.style.cursor = "wait";
 
@@ -50,6 +51,7 @@ async function handleButtonAction(button, url, options = {}) {
 
         // 2. Success State
         button.innerText = "Done!";
+        button.setAttribute("aria-label", "Done!");
         button.classList.add('status-ok');
         button.removeAttribute('aria-busy');
         button.removeAttribute('title');
@@ -72,6 +74,7 @@ async function handleButtonAction(button, url, options = {}) {
 
         // 4. Error State
         button.innerText = "Error";
+        button.setAttribute("aria-label", "Error");
         button.classList.add('status-err');
         button.removeAttribute('aria-busy');
         button.title = "Action failed";
@@ -90,17 +93,19 @@ async function handleButtonAction(button, url, options = {}) {
  */
 async function handleManualRefresh(button) {
     const originalContent = Array.from(button.childNodes).map(n => n.cloneNode(true));
-    // Note: Manual refresh doesn't currently change aria-label, so passing null is fine.
+    const originalLabel = button.getAttribute('aria-label');
 
     button.disabled = true;
     button.title = "Fetching latest telemetry, please wait";
     button.innerText = "Fetching...";
+    button.setAttribute("aria-label", "Fetching...");
     button.setAttribute("aria-busy", "true");
 
     try {
         if (typeof updateTelemetry === 'function') {
             await updateTelemetry();
             button.innerText = "Updated!";
+            button.setAttribute("aria-label", "Updated!");
             button.removeAttribute('aria-busy');
             button.removeAttribute('title');
             addFdirLog('INFO', "Telemetry updated manually.");
@@ -109,15 +114,16 @@ async function handleManualRefresh(button) {
         }
 
         setTimeout(() => {
-            resetButton(button, originalContent);
+            resetButton(button, originalContent, originalLabel);
         }, 1000);
     } catch (e) {
         button.innerText = "Error";
+        button.setAttribute("aria-label", "Error");
         button.removeAttribute('aria-busy');
         button.title = "Action failed";
         addFdirLog('ERROR', "Manual refresh failed.");
         setTimeout(() => {
-            resetButton(button, originalContent);
+            resetButton(button, originalContent, originalLabel);
         }, 2000);
     }
 }
@@ -137,6 +143,8 @@ function resetButton(button, content, label = null) {
 
     if (label !== null) {
         button.setAttribute('aria-label', label);
+    } else {
+        button.removeAttribute('aria-label');
     }
     button.disabled = false;
     button.removeAttribute("aria-busy");
