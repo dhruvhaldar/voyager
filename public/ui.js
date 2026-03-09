@@ -236,6 +236,74 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+
+/**
+ * Sets up a two-step confirmation interaction for destructive actions.
+ * @param {string} btnId - The ID of the button
+ * @param {string} apiUrl - The API endpoint to call
+ * @param {string} kbdShortcut - The keyboard shortcut letter to display
+ * @param {string} ariaLabel - The ARIA label for the confirmation state
+ */
+function setupConfirmAction(btnId, apiUrl, kbdShortcut, ariaLabel) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+
+    let confirmTimeout;
+    btn.addEventListener('click', (e) => {
+        const targetBtn = e.currentTarget;
+
+        // Palette: Confirmation Interaction
+        if (targetBtn.dataset.state === 'confirm') {
+            // CONFIRMED: Execute Action
+            clearTimeout(confirmTimeout);
+            targetBtn.dataset.state = '';
+            targetBtn.classList.remove('status-warn');
+
+            // Retrieve original state
+            const restoreNodes = targetBtn.__originalNodes || [];
+            const restoreLabel = targetBtn.dataset.originalLabel;
+
+            // Call API with instructions to restore the ORIGINAL content
+            handleButtonAction(targetBtn, apiUrl, {
+                method: 'POST',
+                restoreNodes: restoreNodes,
+                restoreLabel: restoreLabel
+            });
+        } else {
+            // FIRST CLICK: Ask for Confirmation
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            // Store original state using actual Nodes to avoid innerHTML
+            targetBtn.__originalNodes = Array.from(targetBtn.childNodes).map(n => n.cloneNode(true));
+            targetBtn.dataset.originalLabel = targetBtn.getAttribute('aria-label');
+
+            // Set Confirm State safely
+            targetBtn.dataset.state = 'confirm';
+            targetBtn.textContent = 'Confirm? ';
+            const kbdSpan = document.createElement('span');
+            kbdSpan.className = 'kbd';
+            kbdSpan.textContent = kbdShortcut;
+            targetBtn.appendChild(kbdSpan);
+
+            targetBtn.setAttribute('aria-label', ariaLabel);
+            targetBtn.classList.add('status-warn');
+
+            // Auto-revert if not confirmed
+            confirmTimeout = setTimeout(() => {
+                targetBtn.dataset.state = '';
+
+                // Restore safely
+                targetBtn.textContent = '';
+                targetBtn.__originalNodes.forEach(node => targetBtn.appendChild(node.cloneNode(true)));
+
+                targetBtn.setAttribute('aria-label', targetBtn.dataset.originalLabel);
+                targetBtn.classList.remove('status-warn');
+            }, 3000);
+        }
+    });
+}
+
 // Security Enhancement: Event Listeners (Replaces inline onclick)
 document.addEventListener('DOMContentLoaded', () => {
     // Control Panel Buttons
@@ -246,70 +314,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const btnFreeze = document.getElementById('btn-freeze');
-    if (btnFreeze) {
-        btnFreeze.addEventListener('click', (e) => {
-            handleButtonAction(e.currentTarget, '/api/command/freeze', { method: 'POST' });
-        });
-    }
-
-    const btnReboot = document.getElementById('btn-reboot');
-    if (btnReboot) {
-        let confirmTimeout;
-        btnReboot.addEventListener('click', (e) => {
-            const btn = e.currentTarget;
-
-            // Palette: Confirmation Interaction
-            if (btn.dataset.state === 'confirm') {
-                // CONFIRMED: Execute Action
-                clearTimeout(confirmTimeout);
-                btn.dataset.state = '';
-                btn.classList.remove('status-warn');
-
-                // Retrieve original state
-                const restoreNodes = btn.__originalNodes || [];
-                const restoreLabel = btn.dataset.originalLabel;
-
-                // Call API with instructions to restore the ORIGINAL content, not the current "Confirm?" text
-                handleButtonAction(btn, '/api/command/reboot', {
-                    method: 'POST',
-                    restoreNodes: restoreNodes,
-                    restoreLabel: restoreLabel
-                });
-            } else {
-                // FIRST CLICK: Ask for Confirmation
-                e.preventDefault();
-                e.stopImmediatePropagation();
-
-                // Store original state using actual Nodes to avoid innerHTML
-                btn.__originalNodes = Array.from(btn.childNodes).map(n => n.cloneNode(true));
-                btn.dataset.originalLabel = btn.getAttribute('aria-label');
-
-                // Set Confirm State securely without innerHTML
-                btn.dataset.state = 'confirm';
-                btn.textContent = 'Confirm? ';
-                const kbdSpan = document.createElement('span');
-                kbdSpan.className = 'kbd';
-                kbdSpan.textContent = 'R';
-                btn.appendChild(kbdSpan);
-
-                btn.setAttribute('aria-label', 'Confirm Reboot? Press again to execute.');
-                btn.classList.add('status-warn');
-
-                // Auto-revert if not confirmed
-                confirmTimeout = setTimeout(() => {
-                    btn.dataset.state = '';
-
-                    // Restore safely
-                    btn.textContent = '';
-                    btn.__originalNodes.forEach(node => btn.appendChild(node.cloneNode(true)));
-
-                    btn.setAttribute('aria-label', btn.dataset.originalLabel);
-                    btn.classList.remove('status-warn');
-                }, 3000);
-            }
-        });
-    }
+    setupConfirmAction('btn-freeze', '/api/command/freeze', 'F', 'Confirm Freeze? Press again to execute.');
+    setupConfirmAction('btn-reboot', '/api/command/reboot', 'R', 'Confirm Reboot? Press again to execute.');
 
     // Copy Hex Button
     const btnCopy = document.getElementById('copy-hex-btn');
