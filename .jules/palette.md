@@ -44,3 +44,7 @@
 ## 2026-03-05 - Contextual Tooltips in Data Displays
 **Learning:** Complex raw data displays (like hex dumps or binary payloads) can be intimidating and hard to parse. However, adding visible labels inline clutters the interface and disrupts the density of the visualization.
 **Action:** Use native `title` tooltips on individual data fragments (e.g., specific bytes in a hex dump) to provide contextual, on-demand explanations of what the data represents without compromising the clean, dense layout of technical data displays.
+
+## 2026-03-05 - Multi-Step Confirmation for Destructive Actions
+**Learning:** Destructive actions (like "Freeze OBC" or "Reboot") risk accidental triggering if they only require a single click. Relying on browser `confirm()` popups creates a disjointed user experience and breaks immersion. Furthermore, writing custom multi-step confirmations inline for each button duplicates complex logic (managing timeouts, saving/restoring DOM state, handling ARIA labels).
+**Action:** Implement and use a reusable `setupConfirmAction(btnId, apiUrl, kbdShortcut, ariaLabel)` helper. This pattern provides in-place visual feedback (changing to a yellow "Confirm?" state with a keyboard hint) and gracefully restores the original DOM state and ARIA labels if the user doesn't confirm within the timeout, preventing accidental disruptions safely and accessibly.
