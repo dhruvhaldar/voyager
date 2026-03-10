@@ -280,6 +280,17 @@ abbr[title], .abbr-like[title] {
     margin-top: 0;
 }
 
+/* Palette: Legend for color-coded data */
+.hex-legend {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    color: #888;
+    font-family: 'Share Tech Mono', monospace;
+}
+
 .copy-btn {
     position: absolute;
     top: 0.5rem;

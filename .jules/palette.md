@@ -48,3 +48,7 @@
 ## 2026-03-05 - Multi-Step Confirmation for Destructive Actions
 **Learning:** Destructive actions (like "Freeze OBC" or "Reboot") risk accidental triggering if they only require a single click. Relying on browser `confirm()` popups creates a disjointed user experience and breaks immersion. Furthermore, writing custom multi-step confirmations inline for each button duplicates complex logic (managing timeouts, saving/restoring DOM state, handling ARIA labels).
 **Action:** Implement and use a reusable `setupConfirmAction(btnId, apiUrl, kbdShortcut, ariaLabel)` helper. This pattern provides in-place visual feedback (changing to a yellow "Confirm?" state with a keyboard hint) and gracefully restores the original DOM state and ARIA labels if the user doesn't confirm within the timeout, preventing accidental disruptions safely and accessibly.
+
+## 2026-03-06 - Accessible Color Coding
+**Learning:** Relying solely on hover `title` tooltips to explain color-coded data visualizations (like the hex dump) makes the meaning inaccessible to touch (mobile) and keyboard users, failing WCAG "Use of Color" criteria.
+**Action:** Always provide a visible, static legend for color-coded data displays so that all users can understand the meaning without relying on precise pointer hover interactions.
