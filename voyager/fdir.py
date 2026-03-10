@@ -138,6 +138,12 @@ class EDAC:
             cls._DECODE_TABLE[i] = res
             cls._DECODE_DATA_TABLE[i] = res[0]
 
+        # Optimization: Convert tables to immutable types for faster CPython access.
+        # tuple and bytes lookups are significantly faster than list and array lookups.
+        cls._ENCODE_TABLE = tuple(cls._ENCODE_TABLE)
+        cls._DECODE_TABLE = tuple(cls._DECODE_TABLE)
+        cls._DECODE_DATA_TABLE = bytes(cls._DECODE_DATA_TABLE)
+
     @staticmethod
     def encode(byte_val):
         """Encodes an 8-bit byte into a 12-bit Hamming code using lookup table."""
