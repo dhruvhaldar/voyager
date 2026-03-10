@@ -94,6 +94,9 @@ class RateLimiter:
 # Security: Limit sensitive state-changing commands to prevent abuse/DoS
 limit_sensitive = RateLimiter(calls=10, period=60.0)
 
+# Security: Limit high-frequency simulation ticks to prevent DoS while allowing valid 1Hz+ polling
+limit_tick = RateLimiter(calls=100, period=1.0)
+
 from fastapi.responses import JSONResponse
 
 app = FastAPI()
@@ -154,7 +157,7 @@ def command_freeze():
     obc.freeze()
     return {"message": "OBC Frozen"}
 
-@app.post("/api/tick", dependencies=[Depends(verify_api_key)])
+@app.post("/api/tick", dependencies=[Depends(limit_tick), Depends(verify_api_key)])
 def tick_simulation(dt: float = Query(1.0, ge=0)):
     obc.tick(dt)
     return {"message": f"Simulation advanced by {dt}s", "status": get_status()}
