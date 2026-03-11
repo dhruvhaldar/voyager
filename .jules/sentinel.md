@@ -97,3 +97,8 @@
 **Prevention:**
 1. Calculated the SHA-384 hash of the intended `d3.v7.min.js` file.
 2. Added the `integrity` attribute (with the calculated hash) and `crossorigin="anonymous"` to the `<script>` tag in `public/index.html`. This ensures the browser will refuse to execute the script if its contents change unexpectedly.
+
+## 2026-03-11 - Exposed FastAPI Documentation (Sentinel)
+**Vulnerability:** FastAPI automatically generates interactive API documentation at `/docs` and `/redoc`, exposing the API structure, parameters, and endpoints. In a production environment, this leaks the attack surface to potential attackers.
+**Learning:** Framework defaults are often optimized for developer experience rather than production security. Always explicitly disable automatic documentation generation in production or secure it behind authentication.
+**Prevention:** Set `docs_url=None`, `redoc_url=None`, and `openapi_url=None` when instantiating the `FastAPI` app.

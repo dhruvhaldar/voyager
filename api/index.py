@@ -99,7 +99,7 @@ limit_tick = RateLimiter(calls=100, period=1.0)
 
 from fastapi.responses import JSONResponse
 
-app = FastAPI()
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 @app.exception_handler(SimulationError)
 async def simulation_error_handler(request: Request, exc: SimulationError):
