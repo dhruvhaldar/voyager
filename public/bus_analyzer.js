@@ -10,6 +10,7 @@ const svg = d3.select("#bus-vis")
     .attr("height", height)
     .attr("role", "img")
     .attr("aria-label", "CAN Bus Arbitration Timeline Visualization")
+    .attr("tabindex", "0")
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
