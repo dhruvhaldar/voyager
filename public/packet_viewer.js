@@ -125,21 +125,29 @@ async function updateTelemetry() {
         const commStatus = document.getElementById('comm-status');
         if (commStatus) {
             commStatus.innerText = "LINK ACTIVE";
-            commStatus.className = "status-value status-ok";
+            commStatus.classList.remove('status-err');
+            commStatus.classList.add('status-ok');
         }
     } catch (e) {
         console.error("Telemetry update failed:", e);
         const commStatus = document.getElementById('comm-status');
         if (commStatus) {
-            commStatus.innerText = "LOS (OFFLINE)";
-            commStatus.className = "status-value status-err";
+            commStatus.textContent = '';
+            const abbrLos = document.createElement('abbr');
+            abbrLos.title = "Loss Of Signal";
+            abbrLos.tabIndex = 0;
+            abbrLos.textContent = "LOS";
+            commStatus.appendChild(abbrLos);
+            commStatus.appendChild(document.createTextNode(" (OFFLINE)"));
+            commStatus.classList.remove('status-ok');
+            commStatus.classList.add('status-err');
         }
 
         const statusElement = document.getElementById('telemetry-status');
         if (statusElement) {
             statusElement.classList.remove('hidden');
             statusElement.innerText = "Connection Lost. Retrying...";
-            statusElement.className = "pulse-text status-err";
+            statusElement.classList.add('status-err');
         }
     }
 }
