@@ -56,3 +56,7 @@
 ## 2026-03-06 - Accessible Color Coding
 **Learning:** Relying solely on hover `title` tooltips to explain color-coded data visualizations (like the hex dump) makes the meaning inaccessible to touch (mobile) and keyboard users, failing WCAG "Use of Color" criteria.
 **Action:** Always provide a visible, static legend for color-coded data displays so that all users can understand the meaning without relying on precise pointer hover interactions.
+
+## 2026-03-08 - Accessible Tooltips for Keyboard Navigation
+**Learning:** `<abbr>` tags and custom `.abbr-like` spans with `title` attributes act as tooltips, but by default, they are not accessible to keyboard users who navigate via the Tab key because they are not focusable.
+**Action:** Always ensure you include `tabindex="0"` when wrapping acronyms or text in `<abbr>` or `.abbr-like` elements with `title` attributes. This enables keyboard-only users to focus the element and read the browser's native title tooltip, making the interface more accessible.
