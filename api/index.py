@@ -75,21 +75,25 @@ class RateLimiter:
         if client_ip not in self.history:
             self.history[client_ip] = deque()
 
+        # Optimization: Store the client's history deque in a local variable
+        # to avoid repeated O(1) dictionary hash lookups in the while loop and below.
+        client_history = self.history[client_ip]
+
         # Filter timestamps to keep only those within the rolling window
         # Optimization: Use deque to pop left in O(1) time instead of O(N) list comprehension
         # This significantly reduces CPU time when N (rate limit calls) is large.
-        while self.history[client_ip] and now - self.history[client_ip][0] >= self.period:
-            self.history[client_ip].popleft()
+        while client_history and now - client_history[0] >= self.period:
+            client_history.popleft()
 
         # Check limit
-        if len(self.history[client_ip]) >= self.calls:
+        if len(client_history) >= self.calls:
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 detail="Rate limit exceeded"
             )
 
         # Log new request
-        self.history[client_ip].append(now)
+        client_history.append(now)
 
 # Security: Limit sensitive state-changing commands to prevent abuse/DoS
 limit_sensitive = RateLimiter(calls=10, period=60.0)
