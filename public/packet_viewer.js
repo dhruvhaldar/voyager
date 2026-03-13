@@ -73,6 +73,7 @@ async function updateTelemetry() {
                 const pApid = document.createElement('p');
                                 const abbrApid = document.createElement('abbr');
                 abbrApid.title = 'Application Process Identifier';
+                abbrApid.tabIndex = 0;
                 abbrApid.textContent = 'APID';
                 pApid.appendChild(abbrApid);
                 pApid.appendChild(document.createTextNode(': '));
@@ -95,6 +96,7 @@ async function updateTelemetry() {
                 const pCrc = document.createElement('p');
                                 const abbrCrc = document.createElement('abbr');
                 abbrCrc.title = 'Cyclic Redundancy Check';
+                abbrCrc.tabIndex = 0;
                 abbrCrc.textContent = 'CRC';
                 pCrc.appendChild(abbrCrc);
                 pCrc.appendChild(document.createTextNode(' Valid: '));
