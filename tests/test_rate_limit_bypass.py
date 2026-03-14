@@ -42,3 +42,42 @@ def test_rate_limit_bypass_prevention_single_ip():
     headers["X-Forwarded-For"] = "192.168.1.100"
     response = client.post("/api/command/freeze", headers=headers)
     assert response.status_code == 429
+
+def test_rate_limit_wipe_bypass():
+    """
+    Test that an attacker cannot wipe the rate limit history by flooding
+    the server with spoofed IPs.
+    """
+    headers = {"X-API-Key": VOYAGER_API_KEY}
+
+    # Temporarily set max_entries to a small number for testing
+    original_max = limit_sensitive.max_entries
+    limit_sensitive.max_entries = 5
+
+    try:
+        # 1. Attacker (IP A) sends a request and is tracked
+        headers["X-Forwarded-For"] = "1.1.1.1"
+        response = client.post("/api/command/freeze", headers=headers)
+        assert response.status_code == 200
+
+        # 2. Attacker spoofs enough IPs to fill the history to max_entries
+        for i in range(5):
+            headers["X-Forwarded-For"] = f"2.2.2.{i}"
+            client.post("/api/command/freeze", headers=headers)
+
+        # 3. Attacker sends one more request from a new spoofed IP
+        # This should hit the max_entries limit and fail securely (429)
+        headers["X-Forwarded-For"] = "3.3.3.3"
+        response = client.post("/api/command/freeze", headers=headers)
+        assert response.status_code == 429
+        assert "Server at capacity" in response.json()["detail"]
+
+        # 4. The original IP A should still be in the history and subject to its own rate limit
+        # If the history was wiped, IP A would be able to bypass the limit.
+        # But we haven't hit IP A's limit yet (it only sent 1 request, limit is 10).
+        # We can just verify IP A is still in the history map.
+        assert "1.1.1.1" in limit_sensitive.history
+
+    finally:
+        # Restore original max_entries
+        limit_sensitive.max_entries = original_max

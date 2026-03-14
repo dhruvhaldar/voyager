@@ -102,3 +102,10 @@
 **Vulnerability:** FastAPI automatically generates interactive API documentation at `/docs` and `/redoc`, exposing the API structure, parameters, and endpoints. In a production environment, this leaks the attack surface to potential attackers.
 **Learning:** Framework defaults are often optimized for developer experience rather than production security. Always explicitly disable automatic documentation generation in production or secure it behind authentication.
 **Prevention:** Set `docs_url=None`, `redoc_url=None`, and `openapi_url=None` when instantiating the `FastAPI` app.
+
+## 2026-03-13 - Rate Limiter Bypass via History Wiping
+**Vulnerability:** The `RateLimiter` relied on an in-memory dictionary `self.history` to track request counts. To prevent memory exhaustion (OOM), it had a mechanism to clear the entire dictionary (`self.history.clear()`) if it reached `max_entries` and no expired entries could be freed. An attacker could exploit this by flooding the server with requests from randomly spoofed `X-Forwarded-For` IPs. Once the dictionary filled up with unexpired spoofed entries, the next request would trigger `clear()`, completely wiping the rate limit history for all legitimate clients and allowing the attacker to bypass the rate limit indefinitely.
+**Learning:** Security controls designed to protect availability (like OOM protection) can inadvertently create bypass vulnerabilities if they fail open or reset state. When a security mechanism is at capacity, it must "fail securely" by denying new unverified requests, prioritizing the integrity of existing state and limits over admitting new potentially malicious clients.
+**Prevention:**
+1. Modified `RateLimiter` to raise an `HTTPException(429, "Server at capacity")` when `self.history` reaches `max_entries` and cannot be pruned, instead of calling `self.history.clear()`.
+2. This ensures that an IP spoofing flood only results in new IPs being blocked, while preserving the rate limit tracking for existing IPs.
