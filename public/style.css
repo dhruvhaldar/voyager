@@ -275,6 +275,12 @@ abbr[title], .abbr-like[title] {
     cursor: help;
 }
 
+abbr[title]:focus-visible, .abbr-like[title]:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
 /* Hex Dump Copy Button */
 .hex-wrapper {
     position: relative;

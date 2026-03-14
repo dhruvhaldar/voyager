@@ -60,3 +60,7 @@
 ## 2026-03-08 - Accessible Tooltips for Keyboard Navigation
 **Learning:** `<abbr>` tags and custom `.abbr-like` spans with `title` attributes act as tooltips, but by default, they are not accessible to keyboard users who navigate via the Tab key because they are not focusable.
 **Action:** Always ensure you include `tabindex="0"` when wrapping acronyms or text in `<abbr>` or `.abbr-like` elements with `title` attributes. This enables keyboard-only users to focus the element and read the browser's native title tooltip, making the interface more accessible.
+
+## 2026-03-14 - Visual Focus Indicators for Tooltips
+**Learning:** Adding `tabindex="0"` to `<abbr>` tags and `.abbr-like` spans makes them focusable, but without a corresponding `:focus-visible` CSS style, keyboard-only users won't know which element has focus.
+**Action:** Always provide clear `:focus-visible` styles (such as an outline) when adding `tabindex="0"` to text elements like `<abbr>` to ensure users can visually track their keyboard navigation.
