@@ -67,9 +67,12 @@ class RateLimiter:
         if len(self.history) >= self.max_entries and client_ip not in self.history:
             # Clear old entries to free memory
             self.history = {ip: times for ip, times in self.history.items() if times and now - times[-1] < self.period}
-            # If still full, clear entirely to prioritize availability
+            # If still full, reject new clients to preserve memory and enforce existing rate limits
             if len(self.history) >= self.max_entries:
-                self.history.clear()
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Rate limit exceeded (Server at capacity)"
+                )
 
         # Initialize history for new IP
         if client_ip not in self.history:
