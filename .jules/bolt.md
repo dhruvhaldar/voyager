@@ -65,3 +65,7 @@
 ## 2026-06-25 - [RateLimiter Hash Lookup Optimization]
 **Learning:** In high-frequency code paths like the `RateLimiter` middleware, repeatedly accessing a dictionary by its key (`self.history[client_ip]`) within a while loop and subsequent checks incurs unnecessary O(1) hash lookup overhead on every reference. Fetching it once into a local variable (`client_history = self.history[client_ip]`) speeds up the overall limit check by ~30% per request.
 **Action:** When a nested data structure (like a list or deque inside a dict) is accessed multiple times within the same function scope, assign it to a local variable to avoid redundant dictionary lookups.
+
+## 2026-06-25 - [Dynamic hasattr checks in hot loops]
+**Learning:** Using `hasattr()` dynamically inside a high-frequency loop (such as checking `hasattr(int, "bit_count")` on every byte encode) adds substantial overhead compared to checking a simple boolean variable.
+**Action:** Always pre-evaluate static feature checks or capability flags into module-level constants to avoid redundant lookups.
