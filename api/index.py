@@ -54,7 +54,8 @@ class RateLimiter:
         if client_ip:
             # Prevent IP spoofing: use the rightmost IP in the X-Forwarded-For chain,
             # which is the one appended by the last proxy (e.g., Vercel edge).
-            client_ip = client_ip.split(",")[-1].strip()
+            # Optimization: Use rpartition instead of split to avoid allocating a list of all IPs.
+            client_ip = client_ip.rpartition(",")[-1].strip()
         else:
             client_ip = request.headers.get("X-Real-IP")
 

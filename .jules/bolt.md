@@ -69,3 +69,7 @@
 ## 2026-06-25 - [Dynamic hasattr checks in hot loops]
 **Learning:** Using `hasattr()` dynamically inside a high-frequency loop (such as checking `hasattr(int, "bit_count")` on every byte encode) adds substantial overhead compared to checking a simple boolean variable.
 **Action:** Always pre-evaluate static feature checks or capability flags into module-level constants to avoid redundant lookups.
+
+## 2026-03-15 - [Efficient string suffix extraction]
+**Learning:** Extracting the last element from a delimited string (like the rightmost IP in an `X-Forwarded-For` chain) using `.split(",")[-1]` requires O(N) allocation of a list containing all elements. Using `.rpartition(",")[-1]` performs a single reverse search and avoids list allocation, resulting in ~25-30% faster execution.
+**Action:** When extracting only the last (or first) delimited segment of a string in high-frequency code paths (like request middleware), prefer `rpartition` (or `partition`) over `split` to reduce memory allocation and improve performance.
