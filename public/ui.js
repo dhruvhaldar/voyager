@@ -151,6 +151,7 @@ function resetButton(button, content, label = null) {
     button.removeAttribute("title");
     button.style.cursor = "";
     button.style.borderColor = "";
+    button.classList.remove('status-ok', 'status-err', 'status-warn');
 }
 
 /**
