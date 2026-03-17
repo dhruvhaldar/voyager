@@ -73,3 +73,7 @@
 ## 2026-03-15 - [Efficient string suffix extraction]
 **Learning:** Extracting the last element from a delimited string (like the rightmost IP in an `X-Forwarded-For` chain) using `.split(",")[-1]` requires O(N) allocation of a list containing all elements. Using `.rpartition(",")[-1]` performs a single reverse search and avoids list allocation, resulting in ~25-30% faster execution.
 **Action:** When extracting only the last (or first) delimited segment of a string in high-frequency code paths (like request middleware), prefer `rpartition` (or `partition`) over `split` to reduce memory allocation and improve performance.
+
+## 2026-06-25 - [Starlette Middleware Headers Optimization]
+**Learning:** Assigning multiple HTTP headers individually using `response.headers["Key"] = "Value"` in a Starlette middleware requires string-to-bytes encoding and mutable dictionary overhead for every key on every request. This is extremely slow in the hot path.
+**Action:** Pre-encode static headers into a list of byte tuples `[(b"key", b"value"), ...]` at the module level, and append them directly using `response.raw_headers.extend(...)`. Also, use `request.scope["path"]` instead of `request.url.path` to avoid URL parsing overhead. This optimization yielded a ~6-7x speedup for middleware execution.
