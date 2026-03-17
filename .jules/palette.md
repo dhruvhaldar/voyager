@@ -68,3 +68,7 @@
 ## 2026-03-15 - Cleanup of Contextual Status Classes
 **Learning:** Temporary feedback states (like success, warning, or error) applied via CSS classes (e.g., `.status-ok`, `.status-warn`) can remain "stuck" on reusable interactive elements if the reset logic only focuses on attributes and content. This leads to confusing UI where a button might show an error color even after returning to its default state.
 **Action:** Always explicitly `classList.remove()` all contextual state classes when building a generic `resetButton()` or similar DOM restoration utility to guarantee a clean slate.
+
+## 2026-03-16 - Confusing Hover States on Disabled Buttons
+**Learning:** Disabled buttons (e.g., awaiting data) that still trigger CSS `:hover` states (like changing background color and glowing) provide conflicting UX signals, confusing users as the visual feedback implies interactivity while the cursor remains `not-allowed`.
+**Action:** Always restrict active and hover states in CSS to `:not(:disabled)` (e.g., `button:hover:not(:disabled)`) so that disabled elements properly reflect their inactive status visually.

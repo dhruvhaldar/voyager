@@ -61,13 +61,13 @@ button {
     box-shadow: 0 0 5px rgba(102, 252, 241, 0.2);
 }
 
-button:hover {
+button:hover:not(:disabled) {
     background-color: #45a29e;
     color: #0b0c10;
     box-shadow: 0 0 15px rgba(102, 252, 241, 0.6);
 }
 
-button:active {
+button:active:not(:disabled) {
     transform: scale(0.98);
 }
 
@@ -316,7 +316,7 @@ abbr[title]:focus-visible, .abbr-like[title]:focus-visible {
     z-index: 10;
 }
 
-.copy-btn:hover {
+.copy-btn:hover:not(:disabled) {
     background: #1f2833;
     color: #45a29e;
     border-color: #45a29e;
