@@ -64,29 +64,33 @@ class RateLimiter:
 
         now = time.time()
 
+        hist = self.history
+        client_history = hist.get(client_ip)
+
         # Security: Prevent Memory Exhaustion (OOM) DoS
-        if len(self.history) >= self.max_entries and client_ip not in self.history:
-            # Clear old entries to free memory
-            self.history = {ip: times for ip, times in self.history.items() if times and now - times[-1] < self.period}
-            # If still full, reject new clients to preserve memory and enforce existing rate limits
-            if len(self.history) >= self.max_entries:
-                raise HTTPException(
-                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                    detail="Rate limit exceeded (Server at capacity)"
-                )
+        # Optimization: Fast path dictionary get() to avoid redundant length/membership checks
+        if client_history is None:
+            if len(hist) >= self.max_entries:
+                period = self.period
+                # Clear old entries to free memory
+                self.history = {ip: times for ip, times in hist.items() if times and now - times[-1] < period}
+                hist = self.history
+                # If still full, reject new clients to preserve memory and enforce existing rate limits
+                if len(hist) >= self.max_entries:
+                    raise HTTPException(
+                        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                        detail="Rate limit exceeded (Server at capacity)"
+                    )
 
-        # Initialize history for new IP
-        if client_ip not in self.history:
-            self.history[client_ip] = deque()
-
-        # Optimization: Store the client's history deque in a local variable
-        # to avoid repeated O(1) dictionary hash lookups in the while loop and below.
-        client_history = self.history[client_ip]
+            # Initialize history for new IP
+            client_history = deque()
+            hist[client_ip] = client_history
 
         # Filter timestamps to keep only those within the rolling window
         # Optimization: Use deque to pop left in O(1) time instead of O(N) list comprehension
         # This significantly reduces CPU time when N (rate limit calls) is large.
-        while client_history and now - client_history[0] >= self.period:
+        period = self.period
+        while client_history and now - client_history[0] >= period:
             client_history.popleft()
 
         # Check limit
