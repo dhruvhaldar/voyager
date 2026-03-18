@@ -72,3 +72,7 @@
 ## 2026-03-16 - Confusing Hover States on Disabled Buttons
 **Learning:** Disabled buttons (e.g., awaiting data) that still trigger CSS `:hover` states (like changing background color and glowing) provide conflicting UX signals, confusing users as the visual feedback implies interactivity while the cursor remains `not-allowed`.
 **Action:** Always restrict active and hover states in CSS to `:not(:disabled)` (e.g., `button:hover:not(:disabled)`) so that disabled elements properly reflect their inactive status visually.
+
+## 2026-03-20 - Actionable Error States
+**Learning:** Generic error messages (like "Connection Lost") when an explicit user action is required (like entering an API key due to a 401 Unauthorized response) leave the user stranded without a clear path forward.
+**Action:** Always provide specific, actionable feedback for known error states. If an authentication error occurs during background polling, provide an interactive, accessible button (with proper `aria-label`) right next to the error message to let the user immediately resolve the issue.
