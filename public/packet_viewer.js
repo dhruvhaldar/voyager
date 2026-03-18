@@ -11,6 +11,10 @@ async function updateTelemetry() {
         // This avoids making two separate requests, which is especially beneficial when network RTT is high.
         const telemetryRes = await fetch('/api/telemetry/latest', { headers });
 
+        if (telemetryRes.status === 401) {
+            throw new Error("UNAUTHORIZED");
+        }
+
         const data = await telemetryRes.json();
         const status = data.status;
 
@@ -148,8 +152,29 @@ async function updateTelemetry() {
         const statusElement = document.getElementById('telemetry-status');
         if (statusElement) {
             statusElement.classList.remove('hidden');
-            statusElement.innerText = "Connection Lost. Retrying...";
             statusElement.classList.add('status-err');
+
+            if (e.message === "UNAUTHORIZED") {
+                statusElement.textContent = "Authentication Required. ";
+                const authBtn = document.createElement("button");
+                authBtn.textContent = "Enter API Key";
+                authBtn.setAttribute("aria-label", "Enter API Key for Telemetry");
+                authBtn.style.padding = "2px 8px";
+                authBtn.style.fontSize = "0.8rem";
+                authBtn.style.marginLeft = "10px";
+                authBtn.addEventListener("click", () => {
+                    const key = prompt("Please enter the API Key (check server logs):");
+                    if (key) {
+                        localStorage.setItem('voyager_api_key', key);
+                        updateTelemetry();
+                    }
+                });
+                statusElement.appendChild(authBtn);
+                statusElement.classList.remove('pulse-text');
+            } else {
+                statusElement.innerText = "Connection Lost. Retrying...";
+                statusElement.classList.add('pulse-text');
+            }
         }
     }
 }
