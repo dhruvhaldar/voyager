@@ -1,13 +1,12 @@
-import asyncio
-from playwright.async_api import async_playwright
+from playwright.sync_api import sync_playwright
+import time
 
-async def main():
-    async with async_playwright() as p:
-        browser = await p.chromium.launch()
-        page = await browser.new_page()
-        await page.goto('http://127.0.0.1:8000')
-        await asyncio.sleep(2) # wait for telemetry to load
-        await page.screenshot(path='screenshot.png')
-        await browser.close()
-
-asyncio.run(main())
+with sync_playwright() as p:
+    browser = p.chromium.launch()
+    page = browser.new_page()
+    # Intercept API calls to force a 401
+    page.route("**/api/telemetry/latest", lambda route: route.fulfill(status=401, body="Unauthorized"))
+    page.goto('http://localhost:8000')
+    time.sleep(2)
+    page.screenshot(path='screenshot.png')
+    browser.close()
