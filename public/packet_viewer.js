@@ -11,6 +11,10 @@ async function updateTelemetry() {
         // This avoids making two separate requests, which is especially beneficial when network RTT is high.
         const telemetryRes = await fetch('/api/telemetry/latest', { headers });
 
+        if (telemetryRes.status === 401) {
+            throw new Error("401 Unauthorized");
+        }
+
         const data = await telemetryRes.json();
         const status = data.status;
 
@@ -150,8 +154,25 @@ async function updateTelemetry() {
             statusElement.classList.remove('hidden');
             statusElement.classList.add('status-err');
 
-            statusElement.innerText = "Connection Lost. Retrying...";
-            statusElement.classList.add('pulse-text');
+            if (e.message.includes("401")) {
+                statusElement.classList.remove('pulse-text');
+                statusElement.textContent = "Unauthorized: API Key required. ";
+
+                const btn = document.createElement('button');
+                btn.textContent = "Provide API Key";
+                btn.setAttribute("aria-label", "Provide API Key to restore connection");
+                btn.onclick = () => {
+                    const key = prompt("Enter Voyager API Key:");
+                    if (key) {
+                        localStorage.setItem('voyager_api_key', key);
+                        updateTelemetry();
+                    }
+                };
+                statusElement.appendChild(btn);
+            } else {
+                statusElement.innerText = "Connection Lost. Retrying...";
+                statusElement.classList.add('pulse-text');
+            }
         }
     }
 }
