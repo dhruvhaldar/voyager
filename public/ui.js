@@ -205,22 +205,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
         if (e.metaKey || e.ctrlKey || e.altKey) return; // Ignore combinations
 
+        let btnId = null;
         switch (e.key.toLowerCase()) {
-            case 's':
-                document.getElementById('btn-step')?.click();
-                break;
-            case 'f':
-                document.getElementById('btn-freeze')?.click();
-                break;
-            case 'r':
-                document.getElementById('btn-reboot')?.click();
-                break;
-            case 'c':
-                document.getElementById('copy-hex-btn')?.click();
-                break;
-            case 't':
-                document.getElementById('btn-fetch-telemetry')?.click();
-                break;
+            case 's': btnId = 'btn-step'; break;
+            case 'f': btnId = 'btn-freeze'; break;
+            case 'r': btnId = 'btn-reboot'; break;
+            case 'c': btnId = 'copy-hex-btn'; break;
+            case 't': btnId = 'btn-fetch-telemetry'; break;
+        }
+
+        if (btnId) {
+            const btn = document.getElementById(btnId);
+            if (btn && !btn.disabled) {
+                btn.click();
+                // Palette: Visual tactile feedback for keyboard shortcuts
+                btn.classList.add('keyboard-active');
+                setTimeout(() => btn.classList.remove('keyboard-active'), 150);
+            }
         }
     });
 });

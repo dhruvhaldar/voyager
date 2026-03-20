@@ -76,3 +76,7 @@
 ## 2026-03-20 - Actionable Error States
 **Learning:** Generic error messages (like "Connection Lost") when an explicit user action is required (like entering an API key due to a 401 Unauthorized response) leave the user stranded without a clear path forward.
 **Action:** Always provide specific, actionable feedback for known error states. If an authentication error occurs during background polling, provide an interactive, accessible button (with proper `aria-label`) right next to the error message to let the user immediately resolve the issue.
+
+## 2026-03-21 - Keyboard Shortcut Tactile Feedback
+**Learning:** When UI buttons are triggered programmatically via keyboard shortcuts (e.g., `btn.click()`), the browser does not natively apply the `:active` or `:hover` CSS pseudo-classes. This leaves keyboard power-users without the immediate tactile visual feedback that mouse users rely on.
+**Action:** Always pair programmatic clicks from keyboard shortcuts with a temporary CSS class (e.g., `.keyboard-active`) that explicitly mirrors the `:active` and `:hover` button styling to ensure consistent, delightful tactile feedback across all input modalities.

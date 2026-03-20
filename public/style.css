@@ -61,13 +61,15 @@ button {
     box-shadow: 0 0 5px rgba(102, 252, 241, 0.2);
 }
 
-button:hover:not(:disabled) {
+button:hover:not(:disabled),
+button.keyboard-active:not(:disabled) {
     background-color: #45a29e;
     color: #0b0c10;
     box-shadow: 0 0 15px rgba(102, 252, 241, 0.6);
 }
 
-button:active:not(:disabled) {
+button:active:not(:disabled),
+button.keyboard-active:not(:disabled) {
     transform: scale(0.98);
 }
 
