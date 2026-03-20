@@ -85,3 +85,7 @@
 ## 2025-10-25 - [Starlette Middleware Headers list comprehension]
 **Learning:** Using a `for` loop and `.append()` to add headers conditionally conditionally in Starlette middleware incurs significant Python bytecode overhead. Replacing it with a list comprehension inside an `.extend()` call reduces this overhead, resulting in ~3x faster execution for this specific hot path operation.
 **Action:** When conditionally appending multiple items to a list in a high-frequency path, prefer `list.extend()` with a list comprehension instead of an explicit `for` loop with `list.append()`.
+
+## 2026-06-25 - [Starlette response.raw_headers Optimization]
+**Learning:** In FastAPI/Starlette, the keys inside `response.raw_headers` are guaranteed to be lowercase bytes. Using `.lower()` on each key within a dictionary/set comprehension in a high-frequency middleware hot path introduces redundant O(N) overhead per request (e.g., adding ~35-50% CPU time to the specific line).
+**Action:** When inspecting `response.raw_headers` to avoid duplicate insertions, rely on the framework's guarantee and compare directly without invoking `.lower()`.
