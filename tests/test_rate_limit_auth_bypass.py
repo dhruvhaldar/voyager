@@ -19,8 +19,8 @@ def test_rate_limit_enforced_before_auth():
     # Send 10 unauthenticated requests
     for i in range(10):
         response = client.post("/api/command/freeze")
-        assert response.status_code == 200, f"Expected 200 OK for request {i+1}, got {response.status_code}"
+        assert response.status_code == 401, f"Expected 401 Unauthorized for request {i+1}, got {response.status_code}"
 
-    # The 11th request should hit the rate limit (429)
+    # The 11th request should hit the rate limit (429) before returning 401
     response = client.post("/api/command/freeze")
     assert response.status_code == 429, "Rate limit should block the request before auth check"
