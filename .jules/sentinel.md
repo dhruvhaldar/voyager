@@ -103,6 +103,13 @@
 **Learning:** Framework defaults are often optimized for developer experience rather than production security. Always explicitly disable automatic documentation generation in production or secure it behind authentication.
 **Prevention:** Set `docs_url=None`, `redoc_url=None`, and `openapi_url=None` when instantiating the `FastAPI` app.
 
+## 2026-06-25 - Authentication Bypass via Simulated Key
+**Vulnerability:** The `verify_api_key` dependency allowed unauthenticated access to all endpoints because it returned a "SIMULATED_KEY" string when the key was missing or incorrect instead of raising an HTTP 401 Unauthorized exception. This essentially bypassed the API key enforcement, leaving sensitive simulation commands exposed.
+**Learning:** Returning dummy or simulated values during authentication checks is a critical security vulnerability. An authentication dependency must strictly reject unauthorized requests using appropriate HTTP status codes (e.g., 401, 403) rather than passing simulated context to the downstream route handlers.
+**Prevention:**
+1. Modified `verify_api_key` to explicitly raise `HTTPException(status_code=401)` when the API key is missing or invalid.
+2. Updated tests to assert that unauthenticated requests to protected endpoints receive a `401 Unauthorized` response.
+
 ## 2026-03-13 - Rate Limiter Bypass via History Wiping
 **Vulnerability:** The `RateLimiter` relied on an in-memory dictionary `self.history` to track request counts. To prevent memory exhaustion (OOM), it had a mechanism to clear the entire dictionary (`self.history.clear()`) if it reached `max_entries` and no expired entries could be freed. An attacker could exploit this by flooding the server with requests from randomly spoofed `X-Forwarded-For` IPs. Once the dictionary filled up with unexpired spoofed entries, the next request would trigger `clear()`, completely wiping the rate limit history for all legitimate clients and allowing the attacker to bypass the rate limit indefinitely.
 **Learning:** Security controls designed to protect availability (like OOM protection) can inadvertently create bypass vulnerabilities if they fail open or reset state. When a security mechanism is at capacity, it must "fail securely" by denying new unverified requests, prioritizing the integrity of existing state and limits over admitting new potentially malicious clients.
