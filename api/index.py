@@ -10,6 +10,7 @@ from voyager.obc import OnBoardComputer, SimulationError
 from voyager.ccsds import TelemetryPacket
 import time
 import secrets
+import logging
 from pathlib import Path
 from collections import deque
 
@@ -126,6 +127,16 @@ async def simulation_error_handler(request: Request, exc: SimulationError):
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content={"detail": "Invalid parameter value provided."}
+    )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logging.error(f"Unhandled exception: {exc}", exc_info=True)
+    # Sentinel Security Enhancement: Catch all unhandled exceptions to prevent
+    # FastAPI from leaking stack traces via 500 Internal Server Error responses.
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "Internal Server Error"}
     )
 
 # Optimization: Pre-encode static security headers to avoid string-to-bytes encoding
