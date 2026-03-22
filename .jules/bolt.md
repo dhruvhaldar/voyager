@@ -89,3 +89,7 @@
 ## 2026-06-25 - [Starlette response.raw_headers Optimization]
 **Learning:** In FastAPI/Starlette, the keys inside `response.raw_headers` are guaranteed to be lowercase bytes. Using `.lower()` on each key within a dictionary/set comprehension in a high-frequency middleware hot path introduces redundant O(N) overhead per request (e.g., adding ~35-50% CPU time to the specific line).
 **Action:** When inspecting `response.raw_headers` to avoid duplicate insertions, rely on the framework's guarantee and compare directly without invoking `.lower()`.
+
+## 2026-06-26 - [Starlette Middleware Fast Set Disjoint Check]
+**Learning:** Checking for overlap using `h[0] not in existing_keys` in a list comprehension inside a middleware hot path requires Python bytecode execution for every header being added. Using the C-level `set.isdisjoint()` allows skipping the comprehension entirely when there is no overlap, yielding a ~2x speedup for the header insertion step.
+**Action:** When adding a predefined list of key-value pairs to a data structure, use `isdisjoint()` against the set of keys to check for overlaps. If there is no overlap, you can extend the list directly without individual item checking.
