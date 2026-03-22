@@ -3,3 +3,4 @@ uvicorn
 pytest
 requests
 httpx
+pytest-playwright
