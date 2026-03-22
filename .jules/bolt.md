@@ -93,3 +93,11 @@
 ## 2026-06-26 - [Starlette Middleware Fast Set Disjoint Check]
 **Learning:** Checking for overlap using `h[0] not in existing_keys` in a list comprehension inside a middleware hot path requires Python bytecode execution for every header being added. Using the C-level `set.isdisjoint()` allows skipping the comprehension entirely when there is no overlap, yielding a ~2x speedup for the header insertion step.
 **Action:** When adding a predefined list of key-value pairs to a data structure, use `isdisjoint()` against the set of keys to check for overlaps. If there is no overlap, you can extend the list directly without individual item checking.
+
+## 2026-06-27 - [Starlette Request Client Allocation Overhead]
+**Learning:** In Starlette/FastAPI middleware (hot paths), accessing `request.client.host` dynamically allocates an `Address` object on every call to parse the underlying tuple. When only the raw IP string is needed (e.g., as a fallback in rate limiting), this incurs redundant object allocation overhead. Reading directly from the ASGI scope `request.scope.get('client')[0]` avoids this allocation and executes significantly faster.
+**Action:** When extracting the client IP in high-frequency middleware paths, avoid using `request.client` and instead extract the tuple directly from `request.scope.get("client")`.
+
+## 2026-06-27 - [Dictionary Copy Optimization]
+**Learning:** In Python, cloning a dictionary using the `dict()` constructor (e.g., `dict(my_dict)`) is generally slower than using the built-in `.copy()` method (e.g., `my_dict.copy()`) because the constructor has to handle arbitrary iterables and kwargs, whereas `.copy()` directly utilizes the underlying C implementation to duplicate the hash map.
+**Action:** When shallow-copying an existing dictionary in high-frequency code paths, prefer `.copy()` over `dict()`.
