@@ -145,6 +145,16 @@ h2 {
 .hex-byte {
     display: inline-block;
     margin-right: 0.5rem;
+    cursor: help;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+    padding: 0 2px;
+    margin-left: -2px; /* Offset padding to maintain grid */
+}
+
+.hex-byte:hover {
+    background-color: #1f2833;
+    outline: 1px solid #45a29e;
 }
 
 .hex-header {

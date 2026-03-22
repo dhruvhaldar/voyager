@@ -80,3 +80,7 @@
 ## 2026-03-21 - Keyboard Shortcut Tactile Feedback
 **Learning:** When UI buttons are triggered programmatically via keyboard shortcuts (e.g., `btn.click()`), the browser does not natively apply the `:active` or `:hover` CSS pseudo-classes. This leaves keyboard power-users without the immediate tactile visual feedback that mouse users rely on.
 **Action:** Always pair programmatic clicks from keyboard shortcuts with a temporary CSS class (e.g., `.keyboard-active`) that explicitly mirrors the `:active` and `:hover` button styling to ensure consistent, delightful tactile feedback across all input modalities.
+
+## 2026-03-22 - Visual Discoverability of Tooltips
+**Learning:** Data fragments with `title` attributes (like individual bytes in a hex dump) contain valuable contextual information but remain functionally invisible if they appear as static text. Users will not randomly hover over text unless there is a visual cue indicating interactivity.
+**Action:** Always provide explicit visual cues (such as `cursor: help`, `transition`, and subtle `:hover` styling like a background change or outline) to text elements with `title` attributes so users know they can explore them for more details.
