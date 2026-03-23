@@ -162,8 +162,9 @@ function addFdirLog(level, message) {
     if (level === 'ERROR') levelClass = 'log-err';
 
     // Create elements safely
-    const timeSpan = document.createElement('span');
+    const timeSpan = document.createElement('time');
     timeSpan.className = 'log-time';
+    timeSpan.dateTime = new Date().toISOString();
     timeSpan.textContent = time;
 
     const levelSpan = document.createElement('span');
