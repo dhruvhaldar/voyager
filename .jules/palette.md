@@ -88,3 +88,7 @@
 ## 2026-03-23 - Keyboard Accessibility of Data Fragments Tooltips
 **Learning:** Interactive data fragments with `title` attributes (like individual bytes in a hex dump) remain completely invisible to keyboard-only users who navigate via the Tab key because they are not focusable by default, even if visual hover cues exist.
 **Action:** Always ensure you add `tabindex="0"` and explicitly share `:focus-visible` styles with the `:hover` pseudo-class for data fragments relying on native browser tooltips so keyboard users can navigate to them and visually track their focus.
+
+## 2026-03-23 - Continuous Metrics and Screen Reader Spam
+**Learning:** Placing rapidly updating continuous metrics (like a countdown timer or live voltage reading) inside `aria-live` regions causes continuous, overwhelming announcements, making the rest of the application unusable for screen reader users.
+**Action:** Only use `aria-live` on status indicators that represent discrete state changes (like Mode, Comm Status, or Error events). For continuous, predictable metrics like a Watchdog Timer, rely on standard HTML semantic structures without live regions so users can consume the data on demand when navigating.
