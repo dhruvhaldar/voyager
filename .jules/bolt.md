@@ -101,3 +101,7 @@
 ## 2026-06-27 - [Dictionary Copy Optimization]
 **Learning:** In Python, cloning a dictionary using the `dict()` constructor (e.g., `dict(my_dict)`) is generally slower than using the built-in `.copy()` method (e.g., `my_dict.copy()`) because the constructor has to handle arbitrary iterables and kwargs, whereas `.copy()` directly utilizes the underlying C implementation to duplicate the hash map.
 **Action:** When shallow-copying an existing dictionary in high-frequency code paths, prefer `.copy()` over `dict()`.
+
+## 2026-06-28 - [Dictionary Unpacking Optimization]
+**Learning:** In high-frequency code paths, shallow copying a dictionary and then updating a key (`res = d.copy(); res["k"] = v`) requires two separate operations (duplicating the hash map, then a lookup/insertion). Using Python 3.5+ dictionary unpacking (`{**d, "k": v}`) performs this in a single, highly optimized C-level step, resulting in faster execution.
+**Action:** When creating a modified shallow copy of a dictionary with a few new or updated keys, prefer `{**d, "k": v}` over `.copy()` and assignment.

@@ -228,15 +228,14 @@ _telemetry_cache = {"seq": -1, "res": None}
 
 @app.get("/api/telemetry/latest", dependencies=[Depends(verify_api_key)])
 def get_telemetry():
-    seq = int(time.time()) % 16384
+    seq = int(time.time()) & 0x3FFF
 
     # Always get fresh status, even if telemetry is cached
     current_status = get_status()
 
     if seq == _telemetry_cache["seq"]:
-        res = _telemetry_cache["res"].copy()
-        res["status"] = current_status
-        return res
+        # Optimization: Dictionary unpacking `{**d, "k": v}` is faster than `.copy()` + assignment
+        return {**_telemetry_cache["res"], "status": current_status}
 
     # Simulate generating a packet
     packet = TelemetryPacket(
@@ -254,9 +253,8 @@ def get_telemetry():
         "valid_crc": True 
     }
 
-    res = _telemetry_cache["res"].copy()
-    res["status"] = current_status
-    return res
+    # Optimization: Dictionary unpacking `{**d, "k": v}` is faster than `.copy()` + assignment
+    return {**_telemetry_cache["res"], "status": current_status}
 
 # Serve static files from the 'public' directory
 # Mount this LAST so it doesn't shadow API routes
