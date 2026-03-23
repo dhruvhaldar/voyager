@@ -152,7 +152,8 @@ h2 {
     margin-left: -2px; /* Offset padding to maintain grid */
 }
 
-.hex-byte:hover {
+.hex-byte:hover,
+.hex-byte:focus-visible {
     background-color: #1f2833;
     outline: 1px solid #45a29e;
 }
