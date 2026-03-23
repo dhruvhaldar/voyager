@@ -48,6 +48,7 @@ async function updateTelemetry() {
                 bytes.forEach((byte, index) => {
                     const span = document.createElement('span');
                     span.className = 'hex-byte';
+                    span.tabIndex = 0;
 
                     // Determine type based on index
                     if (index < 6) {

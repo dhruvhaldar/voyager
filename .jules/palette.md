@@ -84,3 +84,7 @@
 ## 2026-03-22 - Visual Discoverability of Tooltips
 **Learning:** Data fragments with `title` attributes (like individual bytes in a hex dump) contain valuable contextual information but remain functionally invisible if they appear as static text. Users will not randomly hover over text unless there is a visual cue indicating interactivity.
 **Action:** Always provide explicit visual cues (such as `cursor: help`, `transition`, and subtle `:hover` styling like a background change or outline) to text elements with `title` attributes so users know they can explore them for more details.
+
+## 2026-03-23 - Keyboard Accessibility of Data Fragments Tooltips
+**Learning:** Interactive data fragments with `title` attributes (like individual bytes in a hex dump) remain completely invisible to keyboard-only users who navigate via the Tab key because they are not focusable by default, even if visual hover cues exist.
+**Action:** Always ensure you add `tabindex="0"` and explicitly share `:focus-visible` styles with the `:hover` pseudo-class for data fragments relying on native browser tooltips so keyboard users can navigate to them and visually track their focus.
