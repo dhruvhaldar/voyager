@@ -423,6 +423,31 @@ abbr[title]:focus-visible, .abbr-like[title]:focus-visible {
     vertical-align: middle;
 }
 
+/* Palette: Heartbeat Indicator for active connections */
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #45a29e;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    box-shadow: 0 0 8px #45a29e;
+    animation: heartbeat-pulse 1.5s infinite;
+}
+
+@keyframes heartbeat-pulse {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 12px #45a29e; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .status-dot {
+        animation: none;
+    }
+}
+
 /* Palette: Active Monitoring Feedback */
 @keyframes pulse-opacity {
     0%, 100% { opacity: 1; }
