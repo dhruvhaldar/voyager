@@ -131,9 +131,21 @@ async function updateTelemetry() {
 
         const commStatus = document.getElementById('comm-status');
         if (commStatus) {
-            commStatus.innerText = "LINK ACTIVE";
-            commStatus.classList.remove('status-err');
-            commStatus.classList.add('status-ok');
+            // Palette: Only update DOM if not already active to prevent animation reset/thrashing
+            if (!commStatus.querySelector('.status-dot')) {
+                commStatus.textContent = '';
+
+                // Palette: Heartbeat indicator explicitly added via DOM to avoid XSS
+                const dot = document.createElement('span');
+                dot.className = 'status-dot';
+                dot.setAttribute('aria-hidden', 'true');
+
+                commStatus.appendChild(dot);
+                commStatus.appendChild(document.createTextNode('ACTIVE'));
+
+                commStatus.classList.remove('status-err');
+                commStatus.classList.add('status-ok');
+            }
         }
     } catch (e) {
         console.error("Telemetry update failed:", e);
