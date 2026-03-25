@@ -7,7 +7,13 @@
  * @param {object} options - Fetch options
  */
 async function handleButtonAction(button, url, options = {}) {
-    const originalText = button.innerText;
+    // Extract command name for logging without the keyboard shortcut `.kbd` text
+    let defaultCommandName = "";
+    Array.from(button.childNodes).forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) defaultCommandName += node.textContent;
+    });
+    const originalText = options.commandName || defaultCommandName.trim() || button.innerText.trim();
+
     // Enhanced: Allow overriding the restore content/label (e.g., for confirmation buttons)
     // To avoid innerHTML, we store an array of cloned child nodes
     const originalContent = options.restoreNodes || Array.from(button.childNodes).map(n => n.cloneNode(true));
@@ -254,11 +260,18 @@ function setupConfirmAction(btnId, apiUrl, kbdShortcut, ariaLabel) {
             const restoreNodes = targetBtn.__originalNodes || [];
             const restoreLabel = targetBtn.dataset.originalLabel;
 
+            // Extract the original command name without the keyboard shortcut span for clean logging
+            let originalCommandName = "";
+            restoreNodes.forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) originalCommandName += node.textContent;
+            });
+
             // Call API with instructions to restore the ORIGINAL content
             handleButtonAction(targetBtn, apiUrl, {
                 method: 'POST',
                 restoreNodes: restoreNodes,
-                restoreLabel: restoreLabel
+                restoreLabel: restoreLabel,
+                commandName: originalCommandName.trim()
             });
         } else {
             // FIRST CLICK: Ask for Confirmation
