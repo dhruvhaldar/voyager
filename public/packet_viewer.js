@@ -169,18 +169,59 @@ async function updateTelemetry() {
 
             if (e.message.includes("401")) {
                 statusElement.classList.remove('pulse-text');
+
+                // Don't overwrite if the user is currently typing
+                const existingInput = statusElement.querySelector('input');
+                if (existingInput) {
+                    // Re-enable if it was disabled during a failed connection attempt
+                    if (existingInput.disabled) {
+                        existingInput.disabled = false;
+                        existingInput.value = '';
+                        existingInput.focus();
+                        const existingBtn = statusElement.querySelector('button');
+                        if (existingBtn) {
+                            existingBtn.disabled = false;
+                            existingBtn.textContent = "Submit";
+                            existingBtn.classList.add('status-err'); // Provide error feedback
+                            setTimeout(() => existingBtn.classList.remove('status-err'), 2000);
+                        }
+                    }
+                    return;
+                }
+
                 statusElement.textContent = "Unauthorized: API Key required. ";
 
-                const btn = document.createElement('button');
-                btn.textContent = "Provide API Key";
-                btn.setAttribute("aria-label", "Provide API Key to restore connection");
-                btn.onclick = () => {
-                    const key = prompt("Enter Voyager API Key:");
+                const input = document.createElement('input');
+                input.type = "password";
+                input.id = "api-key-input";
+                input.placeholder = "Enter API Key";
+                input.setAttribute("aria-label", "Voyager API Key");
+
+                // Use class for styling to avoid inline CSS
+                input.className = "api-key-input";
+
+                const submitKey = () => {
+                    const key = input.value.trim();
                     if (key) {
                         localStorage.setItem('voyager_api_key', key);
+                        // Provide immediate feedback
+                        btn.textContent = "Connecting...";
+                        btn.disabled = true;
+                        input.disabled = true;
                         updateTelemetry();
                     }
                 };
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') submitKey();
+                });
+
+                const btn = document.createElement('button');
+                btn.textContent = "Submit";
+                btn.setAttribute("aria-label", "Submit API Key to restore connection");
+                btn.onclick = submitKey;
+
+                statusElement.appendChild(input);
                 statusElement.appendChild(btn);
             } else {
                 statusElement.innerText = "Connection Lost. Retrying...";
