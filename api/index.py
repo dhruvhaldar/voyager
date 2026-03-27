@@ -51,14 +51,19 @@ class RateLimiter:
 
     async def __call__(self, request: Request):
         # Extract real IP behind reverse proxies (like Vercel)
-        client_ip = request.headers.get("X-Forwarded-For")
-        if client_ip:
-            # Prevent IP spoofing: use the rightmost IP in the X-Forwarded-For chain,
-            # which is the one appended by the last proxy (e.g., Vercel edge).
-            # Optimization: Use rpartition instead of split to avoid allocating a list of all IPs.
-            client_ip = client_ip.rpartition(",")[-1].strip()
-        else:
-            client_ip = request.headers.get("X-Real-IP")
+        # Prevent IP spoofing: use the rightmost IP in the X-Forwarded-For chain,
+        # which is the one appended by the last proxy (e.g., Vercel edge).
+        # Optimization: Avoid request.headers.get() which dynamically allocates a Headers
+        # mapping object. Instead, iterate over the raw ASGI tuple list request.scope.get('headers', [])
+        # in reverse to extract the rightmost X-Forwarded-For or X-Real-IP header.
+        client_ip = None
+        for name, value in reversed(request.scope.get("headers", [])):
+            if name == b"x-forwarded-for":
+                client_ip = value.decode("latin1").rpartition(",")[-1].strip()
+                break
+            elif name == b"x-real-ip" and not client_ip:
+                client_ip = value.decode("latin1").strip()
+                # Do not break here; x-forwarded-for might appear earlier in the reversed list
 
         if not client_ip:
             # Optimization: Extract client IP directly from the ASGI scope rather than
