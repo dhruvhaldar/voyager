@@ -92,3 +92,7 @@
 ## 2026-03-23 - Continuous Metrics and Screen Reader Spam
 **Learning:** Placing rapidly updating continuous metrics (like a countdown timer or live voltage reading) inside `aria-live` regions causes continuous, overwhelming announcements, making the rest of the application unusable for screen reader users.
 **Action:** Only use `aria-live` on status indicators that represent discrete state changes (like Mode, Comm Status, or Error events). For continuous, predictable metrics like a Watchdog Timer, rely on standard HTML semantic structures without live regions so users can consume the data on demand when navigating.
+
+## 2026-03-24 - Blocking Prompts in Real-time Dashboards
+**Learning:** Using blocking browser dialogs like `prompt()` for authentication (e.g., API Key entry) disrupts the user experience, especially in real-time dashboards with background polling. Furthermore, if an inline input replaces the prompt but isn't protected, the continuous polling loop will overwrite the DOM and steal focus while the user is typing.
+**Action:** Always replace blocking `prompt()` dialogs with inline `<input>` elements. Crucially, when rendering inputs dynamically inside a polling loop, add a check (like `if (container.querySelector('input')) return;`) to ensure the input is not continuously overwritten, preserving user focus and input state.
