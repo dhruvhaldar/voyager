@@ -113,3 +113,11 @@
 ## 2026-07-01 - [FastAPI Middleware Headers Request Optimization]
 **Learning:** In FastAPI/Starlette hot paths, calling `request.headers.get()` dynamically allocates a `Headers` mapping object on every invocation, merging duplicate headers (e.g., `x-forwarded-for`). This incurs redundant O(1) allocation overhead and string joining operations. Iterating backwards over the raw ASGI tuple list `request.scope.get('headers', [])` allows finding the rightmost appended header value without any dict allocation.
 **Action:** When extracting specific headers (like `x-forwarded-for` or `x-real-ip`) in high-frequency paths like RateLimiter middleware, avoid `request.headers.get()`. Iterate `reversed(request.scope.get('headers', []))` to extract the value directly, yielding significant speed improvements.
+
+## 2026-07-02 - [Avoid List Default Allocation in dict.get()]
+**Learning:** In high-frequency code paths (like middleware processing `request.scope.get("headers", [])`), using a mutable list `[]` as the default argument dynamically allocates a new list object on every single function call before `get()` even executes. This introduces unnecessary O(1) allocation overhead (e.g., ~75ns per call). Using an empty tuple `()` leverages CPython's empty tuple singleton, entirely avoiding the allocation (~40ns per call).
+**Action:** When providing a default iterable to `dict.get()` or similar methods in hot paths, always use an empty tuple `()` instead of an empty list `[]` to prevent redundant object allocation.
+
+## 2026-07-02 - [Late Decoding of Byte Strings]
+**Learning:** When extracting a substring from a large byte sequence (like parsing the last IP from `X-Forwarded-For`), doing `.decode("latin1").rpartition(",")[-1]` decodes the entire string into memory first. Doing `.rpartition(b",")[-1].decode("latin1")` operates on the raw bytes and only decodes the small resulting fragment, improving execution speed and reducing memory allocation.
+**Action:** Always perform string manipulations (split, partition, strip) on raw bytes before decoding when only a small fragment is needed.
