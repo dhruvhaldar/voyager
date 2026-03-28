@@ -54,12 +54,12 @@ class RateLimiter:
         # Prevent IP spoofing: use the rightmost IP in the X-Forwarded-For chain,
         # which is the one appended by the last proxy (e.g., Vercel edge).
         # Optimization: Avoid request.headers.get() which dynamically allocates a Headers
-        # mapping object. Instead, iterate over the raw ASGI tuple list request.scope.get('headers', [])
+        # mapping object. Instead, iterate over the raw ASGI tuple list request.scope.get('headers', ())
         # in reverse to extract the rightmost X-Forwarded-For or X-Real-IP header.
         client_ip = None
-        for name, value in reversed(request.scope.get("headers", [])):
+        for name, value in reversed(request.scope.get("headers", ())):
             if name == b"x-forwarded-for":
-                client_ip = value.decode("latin1").rpartition(",")[-1].strip()
+                client_ip = value.rpartition(b",")[-1].decode("latin1").strip()
                 break
             elif name == b"x-real-ip" and not client_ip:
                 client_ip = value.decode("latin1").strip()
