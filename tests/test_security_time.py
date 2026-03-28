@@ -1,9 +1,14 @@
 import pytest
 from fastapi.testclient import TestClient
-from api.index import app, VOYAGER_API_KEY
+from api.index import app, VOYAGER_API_KEY, limit_tick
 from voyager.obc import OnBoardComputer
 
 client = TestClient(app)
+
+@pytest.fixture(autouse=True)
+def reset_rate_limiters():
+    limit_tick.history.clear()
+    yield
 
 def test_tick_negative_dt_api():
     """
