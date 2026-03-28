@@ -204,7 +204,7 @@ def health_check():
 
 
 # API Routes
-@app.get("/api/status", dependencies=[Depends(verify_api_key)])
+@app.get("/api/status", dependencies=[Depends(limit_tick), Depends(verify_api_key)])
 def get_status():
     return {
         "mode": obc.mode,
@@ -234,7 +234,7 @@ def tick_simulation(dt: float = Query(1.0, ge=0)):
 # for multiple clients polling within the same second.
 _telemetry_cache = {"seq": -1, "res": None}
 
-@app.get("/api/telemetry/latest", dependencies=[Depends(verify_api_key)])
+@app.get("/api/telemetry/latest", dependencies=[Depends(limit_tick), Depends(verify_api_key)])
 def get_telemetry():
     seq = int(time.time()) & 0x3FFF
 
