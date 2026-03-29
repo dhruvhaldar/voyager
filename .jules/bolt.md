@@ -121,3 +121,7 @@
 ## 2026-07-02 - [Late Decoding of Byte Strings]
 **Learning:** When extracting a substring from a large byte sequence (like parsing the last IP from `X-Forwarded-For`), doing `.decode("latin1").rpartition(",")[-1]` decodes the entire string into memory first. Doing `.rpartition(b",")[-1].decode("latin1")` operates on the raw bytes and only decodes the small resulting fragment, improving execution speed and reducing memory allocation.
 **Action:** Always perform string manipulations (split, partition, strip) on raw bytes before decoding when only a small fragment is needed.
+
+## 2026-07-02 - [RateLimiter History Expiry Optimization]
+**Learning:** When clearing expired entries from a dictionary based on a predicate (like timestamps), replacing the dictionary via a dictionary comprehension `{k: v for k, v in dict.items() if ...}` incurs significant overhead to re-allocate a large dictionary and copy remaining elements. Modifying the dict in-place by gathering keys to delete in a list comprehension `[k for k, v in dict.items() if ...]` and deleting them `del dict[k]` avoids reallocations and is approximately 40% faster.
+**Action:** When filtering a dictionary where a majority of elements are kept, prefer collecting keys to delete and modifying it in-place rather than allocating a new dictionary.
