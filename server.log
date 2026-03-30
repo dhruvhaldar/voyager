@@ -1,0 +1,22 @@
+INFO:     Started server process [3236]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+WARNING: VOYAGER_API_KEY not set. Generated secure key (hidden). Set VOYAGER_SHOW_KEY=1 to see it.
+OBC Booted into NORMAL mode.
+Mounting static files from /app/public
+INFO:     127.0.0.1:34968 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34968 - "GET /style.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34968 - "GET /packet_viewer.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34982 - "GET /bus_analyzer.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34992 - "GET /ui.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34992 - "GET /api/telemetry/latest HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:34992 - "POST /api/tick?dt=1.0 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:34992 - "GET /api/telemetry/latest HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:37138 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37138 - "GET /style.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37148 - "GET /packet_viewer.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37152 - "GET /bus_analyzer.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37168 - "GET /ui.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37168 - "GET /api/telemetry/latest HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:37168 - "GET /api/telemetry/latest HTTP/1.1" 401 Unauthorized
