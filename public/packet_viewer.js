@@ -189,7 +189,12 @@ async function updateTelemetry() {
                     return;
                 }
 
-                statusElement.textContent = "Unauthorized: API Key required. ";
+                statusElement.textContent = "";
+
+                const label = document.createElement('label');
+                label.htmlFor = "api-key-input";
+                label.textContent = "Unauthorized: API Key required. ";
+                statusElement.appendChild(label);
 
                 const input = document.createElement('input');
                 input.type = "password";

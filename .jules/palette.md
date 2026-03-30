@@ -96,3 +96,7 @@
 ## 2026-03-24 - Blocking Prompts in Real-time Dashboards
 **Learning:** Using blocking browser dialogs like `prompt()` for authentication (e.g., API Key entry) disrupts the user experience, especially in real-time dashboards with background polling. Furthermore, if an inline input replaces the prompt but isn't protected, the continuous polling loop will overwrite the DOM and steal focus while the user is typing.
 **Action:** Always replace blocking `prompt()` dialogs with inline `<input>` elements. Crucially, when rendering inputs dynamically inside a polling loop, add a check (like `if (container.querySelector('input')) return;`) to ensure the input is not continuously overwritten, preserving user focus and input state.
+
+## 2026-03-30 - Semantic Labels for Dynamic Inputs
+**Learning:** When injecting dynamic inputs into the DOM (such as a fallback authentication prompt), appending loose text nodes beside the input creates orphaned form fields. Screen readers rely on explicit `<label>` associations to announce inputs correctly, and visual users benefit from an increased click target area.
+**Action:** Always wrap text associated with dynamically generated inputs in a semantic `<label>` element with a matching `htmlFor` attribute. Do not use plain text nodes for input prompts.
