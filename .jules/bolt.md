@@ -125,3 +125,7 @@
 ## 2026-07-02 - [RateLimiter History Expiry Optimization]
 **Learning:** When clearing expired entries from a dictionary based on a predicate (like timestamps), replacing the dictionary via a dictionary comprehension `{k: v for k, v in dict.items() if ...}` incurs significant overhead to re-allocate a large dictionary and copy remaining elements. Modifying the dict in-place by gathering keys to delete in a list comprehension `[k for k, v in dict.items() if ...]` and deleting them `del dict[k]` avoids reallocations and is approximately 40% faster.
 **Action:** When filtering a dictionary where a majority of elements are kept, prefer collecting keys to delete and modifying it in-place rather than allocating a new dictionary.
+
+## 2026-07-03 - [FastAPI JSON Serialization Overhead]
+**Learning:** FastAPI's default response serialization runs `jsonable_encoder`, which recursively checks dictionaries for non-serializable types. In high-frequency hot paths (like 1Hz polling endpoints such as `/api/telemetry/latest`), this adds unnecessary Python overhead even for simple dictionaries.
+**Action:** Explicitly return `JSONResponse(content=...)` for endpoints returning simple, JSON-safe dictionaries to bypass the encoder and use optimized C-level JSON serialization.

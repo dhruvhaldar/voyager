@@ -203,12 +203,15 @@ obc.boot()
 # Health Check
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "timestamp": time.time()}
+    return JSONResponse(content={"status": "ok", "timestamp": time.time()})
 
 
 # API Routes
 @app.get("/api/status", dependencies=[Depends(limit_tick), Depends(verify_api_key)])
 def get_status():
+    return JSONResponse(content=get_status_dict())
+
+def get_status_dict():
     return {
         "mode": obc.mode,
         "reboot_count": obc.reboot_count,
@@ -219,17 +222,17 @@ def get_status():
 @app.post("/api/command/reboot", dependencies=[Depends(limit_sensitive), Depends(verify_api_key)])
 def command_reboot():
     obc.reboot()
-    return {"message": "OBC Rebooted"}
+    return JSONResponse(content={"message": "OBC Rebooted"})
 
 @app.post("/api/command/freeze", dependencies=[Depends(limit_sensitive), Depends(verify_api_key)])
 def command_freeze():
     obc.freeze()
-    return {"message": "OBC Frozen"}
+    return JSONResponse(content={"message": "OBC Frozen"})
 
 @app.post("/api/tick", dependencies=[Depends(limit_tick), Depends(verify_api_key)])
 def tick_simulation(dt: float = Query(1.0, ge=0)):
     obc.tick(dt)
-    return {"message": f"Simulation advanced by {dt}s", "status": get_status()}
+    return JSONResponse(content={"message": f"Simulation advanced by {dt}s", "status": get_status_dict()})
 
 # Optimization: Cache the telemetry response per sequence count.
 # The sequence count changes once per second (int(time.time())).
@@ -242,11 +245,11 @@ def get_telemetry():
     seq = int(time.time()) & 0x3FFF
 
     # Always get fresh status, even if telemetry is cached
-    current_status = get_status()
+    current_status = get_status_dict()
 
     if seq == _telemetry_cache["seq"]:
         # Optimization: Dictionary unpacking `{**d, "k": v}` is faster than `.copy()` + assignment
-        return {**_telemetry_cache["res"], "status": current_status}
+        return JSONResponse(content={**_telemetry_cache["res"], "status": current_status})
 
     # Simulate generating a packet
     packet = TelemetryPacket(
@@ -265,7 +268,7 @@ def get_telemetry():
     }
 
     # Optimization: Dictionary unpacking `{**d, "k": v}` is faster than `.copy()` + assignment
-    return {**_telemetry_cache["res"], "status": current_status}
+    return JSONResponse(content={**_telemetry_cache["res"], "status": current_status})
 
 # Serve static files from the 'public' directory
 # Mount this LAST so it doesn't shadow API routes
