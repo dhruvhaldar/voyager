@@ -205,6 +205,7 @@ async function updateTelemetry() {
                 // Use class for styling to avoid inline CSS
                 input.className = "api-key-input";
 
+                let validationTimeout;
                 const submitKey = () => {
                     const key = input.value.trim();
                     if (key) {
@@ -214,6 +215,23 @@ async function updateTelemetry() {
                         btn.disabled = true;
                         input.disabled = true;
                         updateTelemetry();
+                    } else {
+                        // Palette: Inline validation feedback for empty input
+                        input.classList.add('status-err');
+                        input.setAttribute('aria-invalid', 'true');
+                        input.placeholder = "Cannot be empty";
+                        input.focus();
+
+                        if (validationTimeout) {
+                            clearTimeout(validationTimeout);
+                        }
+
+                        validationTimeout = setTimeout(() => {
+                            input.classList.remove('status-err');
+                            input.removeAttribute('aria-invalid');
+                            input.placeholder = "Enter API Key";
+                            validationTimeout = null;
+                        }, 2500);
                     }
                 };
 
