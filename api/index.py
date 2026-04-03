@@ -33,13 +33,31 @@ def get_api_key():
 # Initialize key once
 VOYAGER_API_KEY = get_api_key()
 
-async def verify_api_key(api_key: str = Security(api_key_header)):
+async def verify_api_key(request: Request, api_key: str = Security(api_key_header)):
     if not api_key or not secrets.compare_digest(api_key, VOYAGER_API_KEY):
+        client_ip = get_client_ip(request)
+        logging.warning(f"AUDIT: Failed authentication attempt from IP: {client_ip}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or missing API Key"
         )
     return api_key
+
+def get_client_ip(request: Request) -> str:
+    """Extract real IP behind reverse proxies safely."""
+    client_ip = None
+    for name, value in reversed(request.scope.get("headers", ())):
+        if name == b"x-forwarded-for":
+            client_ip = value.rpartition(b",")[-1].strip().decode("latin1")
+            break
+        elif name == b"x-real-ip" and not client_ip:
+            client_ip = value.strip().decode("latin1")
+
+    if not client_ip:
+        client_scope = request.scope.get("client")
+        client_ip = client_scope[0] if client_scope else "unknown"
+
+    return client_ip
 
 # Rate Limiting Logic
 class RateLimiter:
@@ -50,28 +68,7 @@ class RateLimiter:
         self.history = {}  # ip -> [timestamps]
 
     async def __call__(self, request: Request):
-        # Extract real IP behind reverse proxies (like Vercel)
-        # Prevent IP spoofing: use the rightmost IP in the X-Forwarded-For chain,
-        # which is the one appended by the last proxy (e.g., Vercel edge).
-        # Optimization: Avoid request.headers.get() which dynamically allocates a Headers
-        # mapping object. Instead, iterate over the raw ASGI tuple list request.scope.get('headers', ())
-        # in reverse to extract the rightmost X-Forwarded-For or X-Real-IP header.
-        client_ip = None
-        for name, value in reversed(request.scope.get("headers", ())):
-            if name == b"x-forwarded-for":
-                client_ip = value.rpartition(b",")[-1].strip().decode("latin1")
-                break
-            elif name == b"x-real-ip" and not client_ip:
-                client_ip = value.strip().decode("latin1")
-                # Do not break here; x-forwarded-for might appear earlier in the reversed list
-
-        if not client_ip:
-            # Optimization: Extract client IP directly from the ASGI scope rather than
-            # using request.client.host. The request.client property dynamically instantiates
-            # an Address object on every call, which incurs O(1) allocation overhead.
-            # Reading the tuple directly from the scope is ~7x faster.
-            client_scope = request.scope.get("client")
-            client_ip = client_scope[0] if client_scope else "unknown"
+        client_ip = get_client_ip(request)
 
         now = time.time()
 
@@ -220,12 +217,16 @@ def get_status_dict():
     }
 
 @app.post("/api/command/reboot", dependencies=[Depends(limit_sensitive), Depends(verify_api_key)])
-def command_reboot():
+def command_reboot(request: Request):
+    client_ip = get_client_ip(request)
+    logging.info(f"AUDIT: OBC Reboot command executed by IP: {client_ip}")
     obc.reboot()
     return JSONResponse(content={"message": "OBC Rebooted"})
 
 @app.post("/api/command/freeze", dependencies=[Depends(limit_sensitive), Depends(verify_api_key)])
-def command_freeze():
+def command_freeze(request: Request):
+    client_ip = get_client_ip(request)
+    logging.info(f"AUDIT: OBC Freeze command executed by IP: {client_ip}")
     obc.freeze()
     return JSONResponse(content={"message": "OBC Frozen"})
 
