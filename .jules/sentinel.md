@@ -116,3 +116,11 @@
 **Prevention:**
 1. Modified `RateLimiter` to raise an `HTTPException(429, "Server at capacity")` when `self.history` reaches `max_entries` and cannot be pruned, instead of calling `self.history.clear()`.
 2. This ensures that an IP spoofing flood only results in new IPs being blocked, while preserving the rate limit tracking for existing IPs.
+
+## 2026-04-03 - Insufficient Logging of Security Events
+**Vulnerability:** The application lacked audit logging for sensitive operations, such as failed authentication attempts and successful execution of destructive commands (`/api/command/reboot`, `/api/command/freeze`). Without this logging, it is impossible to detect brute-force attacks on the API key or audit which IP addresses are executing critical system commands.
+**Learning:** Proper audit logging is a fundamental security requirement for incident response and forensics. Any security boundary check (like authentication) or critical state modification must log the event, including the source IP address, to provide visibility into potential malicious activity.
+**Prevention:**
+1. Extracted the IP parsing logic from the `RateLimiter` class into a reusable `get_client_ip` function to allow consistent IP extraction across the application.
+2. Added a `WARNING` level log entry to `verify_api_key` that records the source IP when an authentication attempt fails.
+3. Added `INFO` level log entries to the `/api/command/reboot` and `/api/command/freeze` endpoints to record the source IP when these commands are successfully executed.
