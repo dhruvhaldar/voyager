@@ -116,3 +116,11 @@
 **Prevention:**
 1. Modified `RateLimiter` to raise an `HTTPException(429, "Server at capacity")` when `self.history` reaches `max_entries` and cannot be pruned, instead of calling `self.history.clear()`.
 2. This ensures that an IP spoofing flood only results in new IPs being blocked, while preserving the rate limit tracking for existing IPs.
+
+## 2026-10-27 - Missing Audit Logging for Sensitive Operations
+**Vulnerability:** The application was missing audit logs tracking the source IP of clients that fail authentication or successfully trigger sensitive operations (`/api/command/reboot`, `/api/command/freeze`). This lack of observability hinders incident response, making it difficult to trace brute-force attempts or identify compromised clients executing critical commands.
+**Learning:** Security is not just about preventing access; it's also about visibility. Without proper audit logging, identifying the source of malicious activity or tracking the impact of a breach is nearly impossible. Establishing a clear record of who did what (or attempted to do what) is crucial for accountability and post-incident forensic analysis.
+**Prevention:**
+1. Extracted `get_client_ip(request)` into a reusable function to ensure consistent IP extraction across the application.
+2. Updated the `verify_api_key` dependency to log a `WARNING` level message with the client's IP address upon authentication failure.
+3. Updated the sensitive command handlers to log an `INFO` level message with the client's IP address upon successful execution.
