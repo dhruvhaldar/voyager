@@ -116,3 +116,8 @@
 **Prevention:**
 1. Modified `RateLimiter` to raise an `HTTPException(429, "Server at capacity")` when `self.history` reaches `max_entries` and cannot be pruned, instead of calling `self.history.clear()`.
 2. This ensures that an IP spoofing flood only results in new IPs being blocked, while preserving the rate limit tracking for existing IPs.
+
+## 2025-02-24 - Missing Audit Logs for Sensitive Actions
+**Vulnerability:** Critical actions like `reboot` and `freeze`, as well as failed authentication attempts, were not logging the client IP.
+**Learning:** Without tracking IPs for sensitive endpoints, detecting brute-force attacks or tracking unauthorized access attempts becomes impossible.
+**Prevention:** Add audit logging with client IPs extracted reliably from headers for all state-altering commands and authentication failures.
