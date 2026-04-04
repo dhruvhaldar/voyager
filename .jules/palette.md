@@ -100,3 +100,7 @@
 ## 2026-03-30 - Semantic Labels for Dynamic Inputs
 **Learning:** When injecting dynamic inputs into the DOM (such as a fallback authentication prompt), appending loose text nodes beside the input creates orphaned form fields. Screen readers rely on explicit `<label>` associations to announce inputs correctly, and visual users benefit from an increased click target area.
 **Action:** Always wrap text associated with dynamically generated inputs in a semantic `<label>` element with a matching `htmlFor` attribute. Do not use plain text nodes for input prompts.
+
+## 2026-04-04 - aria-live Restraints with Interactive Elements
+**Learning:** Injecting interactive elements (like a password input for an API key) directly into a container marked with `aria-live` causes a major accessibility issue. Every time the user types a character, the DOM updates, triggering the screen reader to repeatedly announce the entire contents of the live region, making it impossible to type securely or efficiently.
+**Action:** Always dynamically remove `aria-live` and `aria-atomic` attributes from a container *before* injecting interactive inputs into it. Once the input resolves (e.g., returning to a static status message), restore the `aria-live` properties to ensure normal status updates continue to be announced.
