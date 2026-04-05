@@ -121,7 +121,12 @@ async function updateTelemetry() {
 
             // Always hide status if we have valid data (idempotent)
             const statusElement = document.getElementById('telemetry-status');
-            if (statusElement) statusElement.classList.add('hidden');
+            if (statusElement) {
+                statusElement.classList.add('hidden');
+                // Restore accessibility attributes for future static text updates
+                statusElement.setAttribute('aria-live', 'polite');
+                statusElement.setAttribute('aria-atomic', 'true');
+            }
         }
 
         // Update Status Panel
@@ -189,6 +194,11 @@ async function updateTelemetry() {
                     return;
                 }
 
+                // Temporarily disable aria-live to prevent continuous screen reader spam
+                // while the user is typing in the dynamically injected input field.
+                statusElement.removeAttribute('aria-live');
+                statusElement.removeAttribute('aria-atomic');
+
                 statusElement.textContent = "";
 
                 const label = document.createElement('label');
@@ -247,6 +257,10 @@ async function updateTelemetry() {
                 statusElement.appendChild(input);
                 statusElement.appendChild(btn);
             } else {
+                // Restore accessibility attributes for static text status updates
+                statusElement.setAttribute('aria-live', 'polite');
+                statusElement.setAttribute('aria-atomic', 'true');
+
                 statusElement.innerText = "Connection Lost. Retrying...";
                 statusElement.classList.add('pulse-text');
             }
