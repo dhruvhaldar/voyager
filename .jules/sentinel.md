@@ -116,3 +116,7 @@
 **Prevention:**
 1. Modified `RateLimiter` to raise an `HTTPException(429, "Server at capacity")` when `self.history` reaches `max_entries` and cannot be pruned, instead of calling `self.history.clear()`.
 2. This ensures that an IP spoofing flood only results in new IPs being blocked, while preserving the rate limit tracking for existing IPs.
+## 2024-05-24 - Centralized IP Extraction & Audit Logging
+**Vulnerability:** Inconsistent extraction of client IP across endpoints could lead to spoofing (trusting false `X-Forwarded-For` headers) and missed audit trails for sensitive API operations (like missing authentication or executing system-level commands).
+**Learning:** Extracting client IP behind a reverse proxy must be standardized. `request.scope.get('client')[0]` handles direct connections, but `X-Forwarded-For` chains need to be iterated backwards to find the trusted edge proxy IP, preventing injection by attackers. Applying this centralized extraction consistently is critical for building accurate audit trails.
+**Prevention:** Always use the centralized `get_client_ip(request)` function for rate limiters, auth checks, and sensitive command handlers, logging the IP explicitly to track potential abuse and debugging issues.
