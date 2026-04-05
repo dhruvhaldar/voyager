@@ -121,7 +121,11 @@ async function updateTelemetry() {
 
             // Always hide status if we have valid data (idempotent)
             const statusElement = document.getElementById('telemetry-status');
-            if (statusElement) statusElement.classList.add('hidden');
+            if (statusElement) {
+                statusElement.classList.add('hidden');
+                statusElement.setAttribute('aria-live', 'polite');
+                statusElement.setAttribute('aria-atomic', 'true');
+            }
         }
 
         // Update Status Panel
@@ -190,6 +194,8 @@ async function updateTelemetry() {
                 }
 
                 statusElement.textContent = "";
+                statusElement.removeAttribute('aria-live');
+                statusElement.removeAttribute('aria-atomic');
 
                 const label = document.createElement('label');
                 label.htmlFor = "api-key-input";
@@ -249,6 +255,8 @@ async function updateTelemetry() {
             } else {
                 statusElement.innerText = "Connection Lost. Retrying...";
                 statusElement.classList.add('pulse-text');
+                statusElement.setAttribute('aria-live', 'polite');
+                statusElement.setAttribute('aria-atomic', 'true');
             }
         }
     }

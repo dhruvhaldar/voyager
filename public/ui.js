@@ -10,7 +10,10 @@ async function handleButtonAction(button, url, options = {}) {
     // Extract command name for logging without the keyboard shortcut `.kbd` text
     let defaultCommandName = "";
     Array.from(button.childNodes).forEach(node => {
-        if (node.nodeType === Node.TEXT_NODE) defaultCommandName += node.textContent;
+        // We only want the text from the button itself or nested spans that aren't the keyboard shortcut
+        if (node.nodeType === Node.TEXT_NODE || (node.nodeType === Node.ELEMENT_NODE && !node.classList.contains('kbd'))) {
+             defaultCommandName += node.textContent;
+        }
     });
     const originalText = options.commandName || defaultCommandName.trim() || button.innerText.trim();
 
