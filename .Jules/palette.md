@@ -5,3 +5,7 @@
 ## 2024-03-04 - Semantic Acronym Tags for Complex Domains
 **Learning:** Using semantic `<abbr title="...">` tags is a highly effective, low-effort way to improve both accessibility and usability in domain-specific interfaces (like aerospace). It provides built-in tooltips for new users and expands cryptic abbreviations for screen readers, reducing the cognitive load.
 **Action:** Always check if industry-specific terms or acronyms can be wrapped in `<abbr>` tags, and provide a subtle visual cue (like a dotted underline) to hint that they are interactive.
+
+## 2024-04-05 - Pausing aria-live When Injecting Form Inputs
+**Learning:** When dynamically injecting interactive form inputs (like an API key prompt) into a container that has `aria-live` and `aria-atomic` attributes, screen readers will repeatedly read out the entire container's contents on every keystroke. This causes severe screen reader spam and a poor user experience.
+**Action:** Always temporarily remove `aria-live` and `aria-atomic` attributes from a live region before injecting an inline input field, and restore them when returning to a static message.
