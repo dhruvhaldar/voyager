@@ -74,6 +74,7 @@ class RateLimiter:
 
         hist = self.history
         period = self.period
+        cutoff = now - period
         client_history = hist.get(client_ip)
 
         # Security: Prevent Memory Exhaustion (OOM) DoS
@@ -84,7 +85,7 @@ class RateLimiter:
                 # Clear old entries to free memory
                 # Optimization: In-place deletion using a list comprehension to gather keys is ~40% faster
                 # than re-allocating a new dictionary via comprehension when most elements are kept.
-                to_delete = [ip for ip, times in hist.items() if not times or now - times[-1] >= period]
+                to_delete = [ip for ip, times in hist.items() if not times or times[-1] <= cutoff]
                 for ip in to_delete:
                     del hist[ip]
                 # If still full, reject new clients to preserve memory and enforce existing rate limits
@@ -101,7 +102,7 @@ class RateLimiter:
         # Filter timestamps to keep only those within the rolling window
         # Optimization: Use deque to pop left in O(1) time instead of O(N) list comprehension
         # This significantly reduces CPU time when N (rate limit calls) is large.
-        while client_history and now - client_history[0] >= period:
+        while client_history and client_history[0] <= cutoff:
             client_history.popleft()
 
         # Check limit
