@@ -174,6 +174,11 @@ async function updateTelemetry() {
             if (e.message.includes("401")) {
                 statusElement.classList.remove('pulse-text');
 
+                // Palette: Remove aria-live attributes from the container while input is present
+                // to prevent screen readers from continuously announcing the contents as the user types.
+                statusElement.removeAttribute('aria-live');
+                statusElement.removeAttribute('aria-atomic');
+
                 // Don't overwrite if the user is currently typing
                 const existingInput = statusElement.querySelector('input');
                 if (existingInput) {
@@ -181,13 +186,24 @@ async function updateTelemetry() {
                     if (existingInput.disabled) {
                         existingInput.disabled = false;
                         existingInput.value = '';
+
+                        // Palette: Inline validation feedback for rejected (invalid) key
+                        existingInput.classList.add('status-err');
+                        existingInput.setAttribute('aria-invalid', 'true');
+                        existingInput.placeholder = "Invalid Key, Try Again";
                         existingInput.focus();
+
+                        // Clean up validation state after a moment
+                        setTimeout(() => {
+                            existingInput.classList.remove('status-err');
+                            existingInput.removeAttribute('aria-invalid');
+                            existingInput.placeholder = "Enter API Key";
+                        }, 2500);
+
                         const existingBtn = statusElement.querySelector('button');
                         if (existingBtn) {
                             existingBtn.disabled = false;
                             existingBtn.textContent = "Submit";
-                            existingBtn.classList.add('status-err'); // Provide error feedback
-                            setTimeout(() => existingBtn.classList.remove('status-err'), 2000);
                         }
                     }
                     return;
@@ -207,6 +223,7 @@ async function updateTelemetry() {
                 input.id = "api-key-input";
                 input.placeholder = "Enter API Key";
                 input.setAttribute("aria-label", "Voyager API Key");
+                input.setAttribute("aria-required", "true");
 
                 // Use class for styling to avoid inline CSS
                 input.className = "api-key-input";
@@ -253,6 +270,10 @@ async function updateTelemetry() {
                 statusElement.appendChild(input);
                 statusElement.appendChild(btn);
             } else {
+                // Restore aria-live properties for normal status messages
+                statusElement.setAttribute('aria-live', 'polite');
+                statusElement.setAttribute('aria-atomic', 'true');
+
                 statusElement.innerText = "Connection Lost. Retrying...";
                 statusElement.classList.add('pulse-text');
                 statusElement.setAttribute('aria-live', 'polite');
