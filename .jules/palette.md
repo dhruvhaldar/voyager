@@ -104,3 +104,7 @@
 ## 2026-04-04 - aria-live Restraints with Interactive Elements
 **Learning:** Injecting interactive elements (like a password input for an API key) directly into a container marked with `aria-live` causes a major accessibility issue. Every time the user types a character, the DOM updates, triggering the screen reader to repeatedly announce the entire contents of the live region, making it impossible to type securely or efficiently.
 **Action:** Always dynamically remove `aria-live` and `aria-atomic` attributes from a container *before* injecting interactive inputs into it. Once the input resolves (e.g., returning to a static status message), restore the `aria-live` properties to ensure normal status updates continue to be announced.
+
+## 2026-04-07 - Accessible Disabled Tooltips
+**Learning:** Using the native HTML `disabled` attribute on an element completely removes it from the browser's accessibility tree and focus order. This means that if a disabled button has an important contextual `title` tooltip (e.g., explaining *why* it's disabled), screen reader and keyboard-only users will never be able to access that explanation.
+**Action:** When a disabled interactive element contains an important tooltip, use `aria-disabled="true"` instead of the native `disabled` attribute. This allows the element to remain focusable so the tooltip can be read, while you manually enforce the disabled behavior via CSS (`cursor: not-allowed`, `pointer-events: none` or specific click handling) and JavaScript (returning early from click handlers).
