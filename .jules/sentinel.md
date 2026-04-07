@@ -120,3 +120,8 @@
 **Vulnerability:** Inconsistent extraction of client IP across endpoints could lead to spoofing (trusting false `X-Forwarded-For` headers) and missed audit trails for sensitive API operations (like missing authentication or executing system-level commands).
 **Learning:** Extracting client IP behind a reverse proxy must be standardized. `request.scope.get('client')[0]` handles direct connections, but `X-Forwarded-For` chains need to be iterated backwards to find the trusted edge proxy IP, preventing injection by attackers. Applying this centralized extraction consistently is critical for building accurate audit trails.
 **Prevention:** Always use the centralized `get_client_ip(request)` function for rate limiters, auth checks, and sensitive command handlers, logging the IP explicitly to track potential abuse and debugging issues.
+
+## 2023-10-25 - Log Injection (CRLF) via X-Forwarded-For
+**Vulnerability:** The application extracted the client IP from the `X-Forwarded-For` header and logged it directly during authorization failures and command executions. An attacker could inject CRLF (`\n`, `\r`) characters into the `X-Forwarded-For` header, leading to Log Injection where they could spoof arbitrary log entries (e.g. `[CRITICAL] HACKED`).
+**Learning:** Even though `X-Forwarded-For` is parsed backwards to find the real IP, if the header is completely attacker-controlled (e.g. direct access), it must be sanitized. The `strip()` function only removes leading and trailing whitespace, leaving embedded newlines intact.
+**Prevention:** Always sanitize data extracted from HTTP headers before logging. For strings like IPs, stripping newlines (`.replace('\n', '').replace('\r', '')`) prevents log structure manipulation.
