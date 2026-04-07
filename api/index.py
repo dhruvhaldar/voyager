@@ -48,7 +48,8 @@ def get_client_ip(request: Request) -> str:
         client_scope = request.scope.get("client")
         client_ip = client_scope[0] if client_scope else "unknown"
 
-    return client_ip
+    # Security: Prevent Log Injection (CRLF) by sanitizing the IP string
+    return client_ip.replace("\n", "").replace("\r", "")
 
 async def verify_api_key(request: Request, api_key: str = Security(api_key_header)):
     if not api_key or not secrets.compare_digest(api_key, VOYAGER_API_KEY):
