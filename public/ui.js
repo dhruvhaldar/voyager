@@ -144,6 +144,7 @@ function resetButton(button, content, label = null) {
         button.removeAttribute('aria-label');
     }
     button.disabled = false;
+    button.removeAttribute("aria-disabled");
     button.removeAttribute("aria-busy");
     button.removeAttribute("title");
     button.style.cursor = "";
@@ -226,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (btnId) {
             const btn = document.getElementById(btnId);
-            if (btn && !btn.disabled) {
+            if (btn && !btn.disabled && btn.getAttribute('aria-disabled') !== 'true') {
                 btn.click();
                 // Palette: Visual tactile feedback for keyboard shortcuts
                 btn.classList.add('keyboard-active');
@@ -327,7 +328,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Copy Hex Button
     const btnCopy = document.getElementById('copy-hex-btn');
     if (btnCopy) {
-        btnCopy.addEventListener('click', () => {
+        btnCopy.addEventListener('click', (e) => {
+            if (e.currentTarget.getAttribute('aria-disabled') === 'true') {
+                return;
+            }
             if (typeof copyHexToClipboard === 'function') {
                 copyHexToClipboard();
             }

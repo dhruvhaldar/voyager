@@ -61,15 +61,15 @@ button {
     box-shadow: 0 0 5px rgba(102, 252, 241, 0.2);
 }
 
-button:hover:not(:disabled),
-button.keyboard-active:not(:disabled) {
+button:hover:not(:disabled):not([aria-disabled="true"]),
+button.keyboard-active:not(:disabled):not([aria-disabled="true"]) {
     background-color: #45a29e;
     color: #0b0c10;
     box-shadow: 0 0 15px rgba(102, 252, 241, 0.6);
 }
 
-button:active:not(:disabled),
-button.keyboard-active:not(:disabled) {
+button:active:not(:disabled):not([aria-disabled="true"]),
+button.keyboard-active:not(:disabled):not([aria-disabled="true"]) {
     transform: scale(0.98);
 }
 
@@ -329,7 +329,7 @@ abbr[title]:focus-visible, .abbr-like[title]:focus-visible {
     z-index: 10;
 }
 
-.copy-btn:hover:not(:disabled) {
+.copy-btn:hover:not(:disabled):not([aria-disabled="true"]) {
     background: #1f2833;
     color: #45a29e;
     border-color: #45a29e;
@@ -502,19 +502,23 @@ abbr[title]:focus-visible, .abbr-like[title]:focus-visible {
     margin-top: 1rem;
 }
 /* Palette: Disabled State Improvements */
-button:disabled {
+button:disabled,
+button[aria-disabled="true"] {
     opacity: 0.6;
     cursor: not-allowed;
     box-shadow: none;
 }
 
-button:disabled:active {
+button:disabled:active,
+button[aria-disabled="true"]:active {
     transform: none;
 }
 
 /* Ensure feedback states remain visible even when disabled */
 button:disabled.status-ok,
-button:disabled.status-err {
+button:disabled.status-err,
+button[aria-disabled="true"].status-ok,
+button[aria-disabled="true"].status-err {
     opacity: 1;
     cursor: default;
 }
