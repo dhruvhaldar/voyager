@@ -5,3 +5,6 @@
 ## 2026-07-05 - [Loop-Invariant Arithmetic Hoisting]
 **Learning:** Calculating mathematical expressions (e.g. `now - period`) inside loop conditions (especially list comprehensions executed during memory cleanup on thousands of entries) results in repeated, redundant float arithmetic, wasting CPU cycles.
 **Action:** Hoist loop-invariant calculations by calculating the value once into a local variable (`cutoff = now - period`) before entering loops.
+## 2026-07-06 - [FastAPI Threadpool Overhead for Sync Endpoints]
+**Learning:** Defining FastAPI endpoints with standard synchronous `def` causes the framework to execute them in an external threadpool (via `anyio.to_thread.run_sync`) to prevent blocking the main event loop. For fast, purely in-memory operations with no blocking I/O (like reading local dictionaries or modifying small objects), this thread dispatch overhead is significantly slower than running them directly on the event loop.
+**Action:** Always define fast, non-blocking FastAPI endpoints (those without synchronous file I/O, database calls, or network requests) using `async def` instead of `def` to avoid threadpool overhead.

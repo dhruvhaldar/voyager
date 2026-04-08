@@ -202,13 +202,13 @@ obc.boot()
 
 # Health Check
 @app.get("/api/health")
-def health_check():
+async def health_check():
     return JSONResponse(content={"status": "ok", "timestamp": time.time()})
 
 
 # API Routes
 @app.get("/api/status", dependencies=[Depends(limit_tick), Depends(verify_api_key)])
-def get_status():
+async def get_status():
     return JSONResponse(content=get_status_dict())
 
 def get_status_dict():
@@ -220,21 +220,21 @@ def get_status_dict():
     }
 
 @app.post("/api/command/reboot", dependencies=[Depends(limit_sensitive), Depends(verify_api_key)])
-def command_reboot(request: Request):
+async def command_reboot(request: Request):
     obc.reboot()
     client_ip = get_client_ip(request)
     logging.info(f"OBC Rebooted by command from IP: {client_ip}")
     return JSONResponse(content={"message": "OBC Rebooted"})
 
 @app.post("/api/command/freeze", dependencies=[Depends(limit_sensitive), Depends(verify_api_key)])
-def command_freeze(request: Request):
+async def command_freeze(request: Request):
     obc.freeze()
     client_ip = get_client_ip(request)
     logging.info(f"OBC Frozen by command from IP: {client_ip}")
     return JSONResponse(content={"message": "OBC Frozen"})
 
 @app.post("/api/tick", dependencies=[Depends(limit_tick), Depends(verify_api_key)])
-def tick_simulation(dt: float = Query(1.0, ge=0)):
+async def tick_simulation(dt: float = Query(1.0, ge=0)):
     obc.tick(dt)
     return JSONResponse(content={"message": f"Simulation advanced by {dt}s", "status": get_status_dict()})
 
@@ -245,7 +245,7 @@ def tick_simulation(dt: float = Query(1.0, ge=0)):
 _telemetry_cache = {"seq": -1, "res": None}
 
 @app.get("/api/telemetry/latest", dependencies=[Depends(limit_tick), Depends(verify_api_key)])
-def get_telemetry():
+async def get_telemetry():
     seq = int(time.time()) & 0x3FFF
 
     # Always get fresh status, even if telemetry is cached
