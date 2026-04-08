@@ -17,15 +17,15 @@ async function handleButtonAction(button, url, options = {}) {
     });
     const originalText = options.commandName || defaultCommandName.trim() || button.innerText.trim();
 
+    if (button.getAttribute('aria-disabled') === 'true') return;
+
     // Enhanced: Allow overriding the restore content/label (e.g., for confirmation buttons)
     // To avoid innerHTML, we store an array of cloned child nodes
     const originalContent = options.restoreNodes || Array.from(button.childNodes).map(n => n.cloneNode(true));
     const originalLabel = options.restoreLabel || button.getAttribute('aria-label');
 
-    // 0. Loading State
-
     // 1. Loading State
-    button.disabled = true;
+    button.setAttribute("aria-disabled", "true");
     button.title = "Action in progress, please wait";
     button.innerText = "Processing...";
     button.setAttribute("aria-label", "Processing...");
@@ -89,10 +89,12 @@ async function handleButtonAction(button, url, options = {}) {
  * @param {HTMLButtonElement} button
  */
 async function handleManualRefresh(button) {
+    if (button.getAttribute('aria-disabled') === 'true') return;
+
     const originalContent = Array.from(button.childNodes).map(n => n.cloneNode(true));
     const originalLabel = button.getAttribute('aria-label');
 
-    button.disabled = true;
+    button.setAttribute("aria-disabled", "true");
     button.title = "Fetching latest telemetry, please wait";
     button.innerText = "Fetching...";
     button.setAttribute("aria-label", "Fetching...");
@@ -143,7 +145,6 @@ function resetButton(button, content, label = null) {
     } else {
         button.removeAttribute('aria-label');
     }
-    button.disabled = false;
     button.removeAttribute("aria-disabled");
     button.removeAttribute("aria-busy");
     button.removeAttribute("title");
