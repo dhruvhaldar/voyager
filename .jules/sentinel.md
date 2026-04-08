@@ -125,3 +125,10 @@
 **Vulnerability:** The application extracted the client IP from the `X-Forwarded-For` header and logged it directly during authorization failures and command executions. An attacker could inject CRLF (`\n`, `\r`) characters into the `X-Forwarded-For` header, leading to Log Injection where they could spoof arbitrary log entries (e.g. `[CRITICAL] HACKED`).
 **Learning:** Even though `X-Forwarded-For` is parsed backwards to find the real IP, if the header is completely attacker-controlled (e.g. direct access), it must be sanitized. The `strip()` function only removes leading and trailing whitespace, leaving embedded newlines intact.
 **Prevention:** Always sanitize data extracted from HTTP headers before logging. For strings like IPs, stripping newlines (`.replace('\n', '').replace('\r', '')`) prevents log structure manipulation.
+
+## 2026-11-04 - Terminal Log Injection via X-Forwarded-For
+**Vulnerability:** The `get_client_ip` function relied on a simple string replacement (`.replace('\n', '').replace('\r', '')`) to sanitize extracted IPs for logging. While this mitigated basic Log Injection (CRLF), it failed to sanitize terminal escape sequences like ANSI color codes (e.g., `\x1b[31m`). An attacker could exploit this by passing a spoofed `X-Forwarded-For` header containing such sequences, resulting in Terminal Log Injection, which can disrupt observability or mask the true nature of the logs.
+**Learning:** String stripping for sanitization is generally insufficient for untrusted input. When extracting a predictable format (like an IP address or proxy chain), an explicit allowlist regex is far safer than a blocklist approach, because it prevents unforeseen attack vectors like ANSI injections.
+**Prevention:**
+1. Updated the `get_client_ip` sanitization in `api/index.py` to use a strict regex allowlist (`re.sub(r'[^a-zA-Z0-9.:\-, ]', '', client_ip)`) that only permits valid IP address characters and common proxy separation syntax.
+2. Wrote an automated test `test_terminal_log_injection_prevention` to explicitly verify that terminal escape characters like `\x1b` are stripped prior to logging.
