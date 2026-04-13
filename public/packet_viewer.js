@@ -131,7 +131,14 @@ async function updateTelemetry() {
         // Update Status Panel
         updateStatusValue('obc-mode', status.mode);
         updateStatusValue('obc-reboots', status.reboot_count);
-        document.getElementById('obc-wdt').innerText = status.watchdog_timer.toFixed(1) + 's';
+
+        const wdtElement = document.getElementById('obc-wdt');
+        wdtElement.innerText = status.watchdog_timer.toFixed(1) + 's';
+        if (status.watchdog_timer <= 2.0) {
+            wdtElement.classList.add('status-warn');
+        } else {
+            wdtElement.classList.remove('status-warn');
+        }
 
         const commStatus = document.getElementById('comm-status');
         if (commStatus) {
