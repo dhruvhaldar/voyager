@@ -108,3 +108,6 @@
 ## 2026-04-07 - Accessible Disabled Tooltips
 **Learning:** Using the native HTML `disabled` attribute on an element completely removes it from the browser's accessibility tree and focus order. This means that if a disabled button has an important contextual `title` tooltip (e.g., explaining *why* it's disabled), screen reader and keyboard-only users will never be able to access that explanation.
 **Action:** When a disabled interactive element contains an important tooltip, use `aria-disabled="true"` instead of the native `disabled` attribute. This allows the element to remain focusable so the tooltip can be read, while you manually enforce the disabled behavior via CSS (`cursor: not-allowed`, `pointer-events: none` or specific click handling) and JavaScript (returning early from click handlers).
+## 2026-04-13 - Critical System Metrics Visual Warnings
+**Learning:** Continuous metrics like a Watchdog Timer are often ignored until they fail if they remain a static color, defeating the purpose of a proactive dashboard.
+**Action:** Always implement progressive visual warnings (e.g., adding a `.status-warn` class when approaching a critical threshold) for time-sensitive or critical system metrics to give users explicit, actionable time to react before a failure occurs.
