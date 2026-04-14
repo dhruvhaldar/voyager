@@ -111,3 +111,7 @@
 ## 2026-04-13 - Critical System Metrics Visual Warnings
 **Learning:** Continuous metrics like a Watchdog Timer are often ignored until they fail if they remain a static color, defeating the purpose of a proactive dashboard.
 **Action:** Always implement progressive visual warnings (e.g., adding a `.status-warn` class when approaching a critical threshold) for time-sensitive or critical system metrics to give users explicit, actionable time to react before a failure occurs.
+
+## 2026-04-14 - Semantic Text Extraction for UI Logging
+**Learning:** When dynamically extracting button text for UI logging (e.g. tracking what action the user performed), simply grabbing `Node.TEXT_NODE` elements will inadvertently drop semantic inline elements like `<abbr>`. Conversely, blindly using `element.textContent` will extract everything, including decorative, screen-reader-hidden hints (like a keyboard shortcut `.kbd` class). This leads to confusing UI logs for users (e.g., "Command 'Step +1s S' failed" or "Command 'Freeze ' sent").
+**Action:** When extracting textual command names from composite UI elements, iterate over `childNodes` and explicitly filter: include `Node.TEXT_NODE` and standard `Node.ELEMENT_NODE`s, but exclude specific decorative element classes like `.kbd`. This ensures logs are clean, readable, and semantically complete.
