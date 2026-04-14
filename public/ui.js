@@ -268,7 +268,9 @@ function setupConfirmAction(btnId, apiUrl, kbdShortcut, ariaLabel) {
             // Extract the original command name without the keyboard shortcut span for clean logging
             let originalCommandName = "";
             restoreNodes.forEach(node => {
-                if (node.nodeType === Node.TEXT_NODE) originalCommandName += node.textContent;
+                if (node.nodeType === Node.TEXT_NODE || (node.nodeType === Node.ELEMENT_NODE && !node.classList.contains('kbd'))) {
+                    originalCommandName += node.textContent;
+                }
             });
 
             // Call API with instructions to restore the ORIGINAL content
