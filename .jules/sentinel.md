@@ -132,3 +132,11 @@
 **Prevention:**
 1. Updated the `get_client_ip` sanitization in `api/index.py` to use a strict regex allowlist (`re.sub(r'[^a-zA-Z0-9.:\-, ]', '', client_ip)`) that only permits valid IP address characters and common proxy separation syntax.
 2. Wrote an automated test `test_terminal_log_injection_prevention` to explicitly verify that terminal escape characters like `\x1b` are stripped prior to logging.
+
+## 2024-05-27 - Unauthenticated DoS via Health Check Flooding
+**Vulnerability:** The `/api/health` endpoint, used for server health monitoring, lacked any rate limiting. An attacker could flood this unauthenticated endpoint with high-frequency requests, consuming server resources (CPU, network bandwidth) and potentially causing a Denial of Service (DoS) for legitimate users trying to access the application.
+**Learning:** Even benign endpoints like health checks need defense-in-depth protection against abuse. While they must be accessible without authentication to allow load balancers to function, they should be bounded by a generous but strict rate limit that permits normal polling while blocking malicious floods.
+**Prevention:**
+1. Implemented a dedicated `RateLimiter` for the health check (`limit_health = RateLimiter(calls=1000, period=60.0)`).
+2. Added `dependencies=[Depends(limit_health)]` to the `@app.get("/api/health")` route.
+3. Wrote `test_rate_limiting_health_endpoint` to enforce this limit in the CI pipeline.

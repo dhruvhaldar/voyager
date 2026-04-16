@@ -139,6 +139,9 @@ limit_sensitive = RateLimiter(calls=10, period=60.0)
 # Security: Limit high-frequency simulation ticks to prevent DoS while allowing valid 1Hz+ polling
 limit_tick = RateLimiter(calls=100, period=1.0)
 
+# Sentinel Security Enhancement: Limit health checks to prevent basic unauthenticated flooding (DoS)
+limit_health = RateLimiter(calls=1000, period=60.0)
+
 from fastapi.responses import JSONResponse
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
@@ -210,6 +213,9 @@ async def add_security_headers(request: Request, call_next):
         existing_keys = {k for k, _ in response.raw_headers}
         response.raw_headers.extend([h for h in headers_to_add if h[0] not in existing_keys])
 
+    # Sentinel Security Enhancement: Strip Server header to prevent infrastructure fingerprinting
+    response.raw_headers = [(k, v) for k, v in response.raw_headers if k != b"server"]
+
     return response
 
 # Global OBC instance
@@ -217,7 +223,7 @@ obc = OnBoardComputer()
 obc.boot()
 
 # Health Check
-@app.get("/api/health")
+@app.get("/api/health", dependencies=[Depends(limit_health)])
 async def health_check():
     return JSONResponse(content={"status": "ok", "timestamp": time.time()})
 

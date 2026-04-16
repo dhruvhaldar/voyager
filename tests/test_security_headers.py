@@ -55,3 +55,12 @@ def test_api_cache_control():
     headers = response.headers
 
     assert headers.get("Cache-Control") == "no-store"
+
+def test_server_header_stripped():
+    """
+    Test that the Server header is stripped to prevent information leakage.
+    """
+    response = client.get("/api/health")
+    headers = response.headers
+    assert "Server" not in headers
+    assert "server" not in headers
