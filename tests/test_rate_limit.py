@@ -83,3 +83,30 @@ def test_rate_limit_distinct_endpoints_share_limit():
         # 11th request (reboot) should fail
         response = client.post("/api/command/reboot", headers=headers)
         assert response.status_code == 429
+
+def test_rate_limiting_health_endpoint():
+    """Test that the health endpoint is rate limited."""
+    # We will temporarily patch the health limit to 5 calls for testing so we don't have to send 1000.
+    from api.index import limit_health
+
+    # Store original max entries and calls
+    original_calls = limit_health.calls
+    limit_health.calls = 5
+
+    try:
+        limit_health.history.clear()
+
+        with patch("time.time", return_value=3000.0):
+            # Make 5 allowed requests
+            for _ in range(5):
+                response = client.get("/api/health")
+                assert response.status_code == 200
+                assert response.json()["status"] == "ok"
+
+            # The 6th request should fail
+            response = client.get("/api/health")
+            assert response.status_code == 429
+            assert "Rate limit exceeded" in response.json()["detail"]
+    finally:
+        # Restore original settings
+        limit_health.calls = original_calls
