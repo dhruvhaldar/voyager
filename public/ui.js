@@ -34,7 +34,7 @@ async function handleButtonAction(button, url, options = {}) {
 
     try {
         // SECURITY: Inject API Key if available
-        const apiKey = localStorage.getItem('voyager_api_key');
+        const apiKey = sessionStorage.getItem('voyager_api_key');
         if (apiKey) {
             options.headers = options.headers || {};
             options.headers['X-API-Key'] = apiKey;
