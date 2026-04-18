@@ -522,3 +522,26 @@ button[aria-disabled="true"].status-err {
     opacity: 1;
     cursor: default;
 }
+
+/* Palette: Responsive Layout for Mobile/Smaller Screens */
+@media (max-width: 1024px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    #status-panel {
+        flex-wrap: wrap;
+    }
+
+    #control-panel {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    main {
+        grid-template-columns: 1fr;
+    }
+}
