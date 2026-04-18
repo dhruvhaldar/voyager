@@ -522,3 +522,30 @@ button[aria-disabled="true"].status-err {
     opacity: 1;
     cursor: default;
 }
+
+/* Palette: Responsive design for mobile screens */
+@media (max-width: 900px) {
+    header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    #status-panel, #control-panel {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    main {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    /* Keep bus analyzer full width in single column */
+    #bus-analyzer {
+        grid-column: 1;
+    }
+}

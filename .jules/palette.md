@@ -115,3 +115,7 @@
 ## 2026-04-14 - Semantic Text Extraction for UI Logging
 **Learning:** When dynamically extracting button text for UI logging (e.g. tracking what action the user performed), simply grabbing `Node.TEXT_NODE` elements will inadvertently drop semantic inline elements like `<abbr>`. Conversely, blindly using `element.textContent` will extract everything, including decorative, screen-reader-hidden hints (like a keyboard shortcut `.kbd` class). This leads to confusing UI logs for users (e.g., "Command 'Step +1s S' failed" or "Command 'Freeze ' sent").
 **Action:** When extracting textual command names from composite UI elements, iterate over `childNodes` and explicitly filter: include `Node.TEXT_NODE` and standard `Node.ELEMENT_NODE`s, but exclude specific decorative element classes like `.kbd`. This ensures logs are clean, readable, and semantically complete.
+
+## 2026-04-18 - Responsive Design for Technical Dashboards
+**Learning:** Hardcoding CSS flex layouts without wrapping and multi-column CSS grids (e.g., `1fr 1fr`) in complex dashboards forces content like hex dumps or graphs to squash or overflow horizontally on smaller screens, rendering the UI inaccessible and unreadable for mobile or zoomed-in users.
+**Action:** Always implement standard CSS `@media` queries for technical dashboards to switch layouts to a single column (e.g., `grid-template-columns: 1fr`) and allow flex items to wrap (`flex-wrap: wrap`) on smaller viewports, ensuring content scales accessibly across all devices.
