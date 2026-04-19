@@ -46,9 +46,9 @@ def live_server():
 @pytest.fixture(autouse=True)
 def inject_api_key(page: Page):
     """Ensure the page has the test API key in local storage."""
-    # We must navigate to the page before we can set localStorage
+    # We must navigate to the page before we can set sessionStorage
     page.goto(URL)
-    page.evaluate("() => { localStorage.setItem('voyager_api_key', 'test_key_123'); }")
+    page.evaluate("() => { sessionStorage.setItem('voyager_api_key', 'test_key_123'); }")
     # Reload so scripts pick up the key if they run on load
     page.reload()
 

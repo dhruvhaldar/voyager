@@ -140,3 +140,10 @@
 1. Implemented a dedicated `RateLimiter` for the health check (`limit_health = RateLimiter(calls=1000, period=60.0)`).
 2. Added `dependencies=[Depends(limit_health)]` to the `@app.get("/api/health")` route.
 3. Wrote `test_rate_limiting_health_endpoint` to enforce this limit in the CI pipeline.
+
+## 2026-11-20 - API Key Persistence via localStorage
+**Vulnerability:** The application was storing the sensitive `voyager_api_key` in `localStorage`. This meant the key persisted across browser sessions and tabs, making it vulnerable to extraction if the device was shared, left unattended, or if an XSS vulnerability was exploited later.
+**Learning:** For client-side application interactions that don't use secure HttpOnly cookies, storing sensitive credentials (like API keys) in `localStorage` creates an unnecessarily large attack surface.
+**Prevention:**
+1. Modified `public/packet_viewer.js` and `public/ui.js` to store and retrieve the API key using `sessionStorage` instead of `localStorage`.
+2. Updated tests to correctly mock key injection via `sessionStorage`.
