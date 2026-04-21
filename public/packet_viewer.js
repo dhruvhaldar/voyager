@@ -4,7 +4,7 @@ let lastPacketHex = null;
 async function updateTelemetry() {
     try {
         // SECURITY: Inject API Key if available
-        const apiKey = localStorage.getItem('voyager_api_key');
+        const apiKey = sessionStorage.getItem('voyager_api_key');
         const headers = apiKey ? { 'X-API-Key': apiKey } : {};
 
         // OPTIMIZATION: Fetch telemetry and status in a single batched API call to reduce total latency.
@@ -239,7 +239,7 @@ async function updateTelemetry() {
                 const submitKey = () => {
                     const key = input.value.trim();
                     if (key) {
-                        localStorage.setItem('voyager_api_key', key);
+                        sessionStorage.setItem('voyager_api_key', key);
                         // Provide immediate feedback
                         btn.textContent = "Connecting...";
                         btn.disabled = true;
