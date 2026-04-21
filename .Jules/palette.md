@@ -9,3 +9,7 @@
 ## 2024-04-05 - Pausing aria-live When Injecting Form Inputs
 **Learning:** When dynamically injecting interactive form inputs (like an API key prompt) into a container that has `aria-live` and `aria-atomic` attributes, screen readers will repeatedly read out the entire container's contents on every keystroke. This causes severe screen reader spam and a poor user experience.
 **Action:** Always temporarily remove `aria-live` and `aria-atomic` attributes from a live region before injecting an inline input field, and restore them when returning to a static message.
+
+## 2024-05-15 - Responsive Layouts in Technical Dashboards
+**Learning:** Hardcoded multi-column grids (like `1fr 1fr`) or non-wrapping flex layouts in complex technical dashboards cause horizontal scrolling and poor usability on smaller screens (e.g., mobile viewports).
+**Action:** Always implement `@media` queries to switch to single-column layouts and allow flex items to wrap natively, ensuring data remains readable on all devices.
