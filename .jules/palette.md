@@ -115,3 +115,7 @@
 ## 2026-04-14 - Semantic Text Extraction for UI Logging
 **Learning:** When dynamically extracting button text for UI logging (e.g. tracking what action the user performed), simply grabbing `Node.TEXT_NODE` elements will inadvertently drop semantic inline elements like `<abbr>`. Conversely, blindly using `element.textContent` will extract everything, including decorative, screen-reader-hidden hints (like a keyboard shortcut `.kbd` class). This leads to confusing UI logs for users (e.g., "Command 'Step +1s S' failed" or "Command 'Freeze ' sent").
 **Action:** When extracting textual command names from composite UI elements, iterate over `childNodes` and explicitly filter: include `Node.TEXT_NODE` and standard `Node.ELEMENT_NODE`s, but exclude specific decorative element classes like `.kbd`. This ensures logs are clean, readable, and semantically complete.
+
+## 2026-04-14 - Reduced Motion for UI States
+**Learning:** Loading states (like `aria-busy="true"`) and state changes (like `.status-changed`) often use animations to draw attention, but these animations can trigger motion sickness or be distracting for users who prefer reduced motion. While explicit pulse animations and progress bars might be adjusted, implicit animations on general UI elements must also be considered.
+**Action:** Always provide `@media (prefers-reduced-motion: reduce)` media queries to set `animation: none;` on any animated states, such as `button[aria-busy="true"]` or elements indicating state changes with flash animations.

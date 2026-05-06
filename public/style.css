@@ -251,6 +251,12 @@ button[aria-busy="true"] {
     animation: pulse-opacity 2s infinite ease-in-out;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    button[aria-busy="true"] {
+        animation: none;
+    }
+}
+
 /* Focus styles for accessibility */
 button:focus-visible {
     outline: 2px solid #fff;
@@ -495,6 +501,12 @@ abbr[title]:focus-visible, .abbr-like[title]:focus-visible {
 
 .status-changed {
     animation: status-flash 0.5s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .status-changed {
+        animation: none;
+    }
 }
 
 /* Security Enhancement: Replaced inline style */
