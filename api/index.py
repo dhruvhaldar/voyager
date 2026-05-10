@@ -61,6 +61,7 @@ def get_client_ip(request: Request) -> str:
 
     # Security: Prevent Log/Terminal Injection by strictly sanitizing the IP string
     # Optimization: Use pre-compiled regex for ~2x faster IP sanitization in this hot path
+    client_ip = client_ip[:50]
     safe_ip = _IP_SANITIZE_PATTERN.sub('', client_ip)
 
     if hasattr(request, "state"):
