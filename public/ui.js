@@ -251,6 +251,29 @@ function setupConfirmAction(btnId, apiUrl, kbdShortcut, ariaLabel) {
     if (!btn) return;
 
     let confirmTimeout;
+
+    const revert = () => {
+        if (btn.dataset.state !== 'confirm') return;
+        btn.dataset.state = '';
+        btn.textContent = '';
+        btn.__originalNodes.forEach(node => btn.appendChild(node.cloneNode(true)));
+        btn.setAttribute('aria-label', btn.dataset.originalLabel);
+        btn.classList.remove('status-warn');
+    };
+
+    // Palette: Allow immediate cancellation of confirmation state
+    btn.addEventListener('blur', () => {
+        clearTimeout(confirmTimeout);
+        revert();
+    });
+
+    btn.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            clearTimeout(confirmTimeout);
+            revert();
+        }
+    });
+
     btn.addEventListener('click', (e) => {
         const targetBtn = e.currentTarget;
 
@@ -301,16 +324,7 @@ function setupConfirmAction(btnId, apiUrl, kbdShortcut, ariaLabel) {
             targetBtn.classList.add('status-warn');
 
             // Auto-revert if not confirmed
-            confirmTimeout = setTimeout(() => {
-                targetBtn.dataset.state = '';
-
-                // Restore safely
-                targetBtn.textContent = '';
-                targetBtn.__originalNodes.forEach(node => targetBtn.appendChild(node.cloneNode(true)));
-
-                targetBtn.setAttribute('aria-label', targetBtn.dataset.originalLabel);
-                targetBtn.classList.remove('status-warn');
-            }, 3000);
+            confirmTimeout = setTimeout(revert, 3000);
         }
     });
 }
