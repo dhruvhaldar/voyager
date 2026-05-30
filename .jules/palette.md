@@ -119,3 +119,7 @@
 ## 2026-04-14 - Reduced Motion for UI States
 **Learning:** Loading states (like `aria-busy="true"`) and state changes (like `.status-changed`) often use animations to draw attention, but these animations can trigger motion sickness or be distracting for users who prefer reduced motion. While explicit pulse animations and progress bars might be adjusted, implicit animations on general UI elements must also be considered.
 **Action:** Always provide `@media (prefers-reduced-motion: reduce)` media queries to set `animation: none;` on any animated states, such as `button[aria-busy="true"]` or elements indicating state changes with flash animations.
+
+## 2026-05-30 - Granular Visual Feedback in Dense Data Views
+**Learning:** In dense data views (like a hex dump or a long list of configuration values), updating the entire block when a single element changes causes users to lose track of what actually updated. Without specific visual cues, changes in dynamic payload data blend in with static headers, forcing users to manually scan and compare values.
+**Action:** Always provide granular, field-level visual highlights (e.g., adding a `.status-changed` class that triggers a brief flash) to the specific data fragments that changed between updates. This draws user attention directly to the delta, significantly improving discoverability in complex interfaces.
