@@ -24,6 +24,7 @@ async function updateTelemetry() {
         if (hexElement && detailsElement) {
             // UX: Only update DOM if content has changed (preserves text selection)
             if (data.hex !== lastPacketHex) {
+                const oldPacketHex = lastPacketHex;
                 lastPacketHex = data.hex;
 
                 // Palette: Enable copy button
@@ -35,6 +36,7 @@ async function updateTelemetry() {
 
                 // Hex string split into bytes
                 const bytes = data.hex.split(' ');
+                const oldBytes = oldPacketHex ? oldPacketHex.split(' ') : [];
 
                 // SECURITY: Use textContent and document.createElement to prevent XSS.
                 // Clear existing content
@@ -49,6 +51,11 @@ async function updateTelemetry() {
                     const span = document.createElement('span');
                     span.className = 'hex-byte';
                     span.tabIndex = 0;
+
+                    // Palette: Visual highlight for changing payload data
+                    if (oldBytes.length > 0 && oldBytes[index] !== byte) {
+                        span.classList.add('status-changed');
+                    }
 
                     // Determine type based on index
                     if (index < 6) {
