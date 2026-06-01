@@ -123,3 +123,7 @@
 ## 2026-05-30 - Granular Visual Feedback in Dense Data Views
 **Learning:** In dense data views (like a hex dump or a long list of configuration values), updating the entire block when a single element changes causes users to lose track of what actually updated. Without specific visual cues, changes in dynamic payload data blend in with static headers, forcing users to manually scan and compare values.
 **Action:** Always provide granular, field-level visual highlights (e.g., adding a `.status-changed` class that triggers a brief flash) to the specific data fragments that changed between updates. This draws user attention directly to the delta, significantly improving discoverability in complex interfaces.
+
+## 2026-06-15 - Redundant Screen Reader Announcements for Keyboard Shortcuts
+**Learning:** Visual keyboard shortcut hints (like `<span class="kbd">S</span>`) placed inside button text are read aloud by screen readers, resulting in redundant or confusing announcements (e.g., "Step +1s S") when the button already uses `aria-keyshortcuts` to convey this information.
+**Action:** Always add `aria-hidden="true"` to decorative or redundant visual keyboard shortcut hints inside interactive elements to prevent them from interfering with the semantic label of the element, relying on `aria-keyshortcuts` to properly communicate the binding to assistive technology.

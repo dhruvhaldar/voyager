@@ -318,6 +318,7 @@ function setupConfirmAction(btnId, apiUrl, kbdShortcut, ariaLabel) {
             const kbdSpan = document.createElement('span');
             kbdSpan.className = 'kbd';
             kbdSpan.textContent = kbdShortcut;
+            kbdSpan.setAttribute('aria-hidden', 'true');
             targetBtn.appendChild(kbdSpan);
 
             targetBtn.setAttribute('aria-label', ariaLabel);

@@ -325,6 +325,7 @@ function copyHexToClipboard() {
         const kbdSpan = document.createElement('span');
         kbdSpan.className = 'kbd';
         kbdSpan.textContent = 'C';
+        kbdSpan.setAttribute('aria-hidden', 'true');
         btn.appendChild(kbdSpan);
 
         btn.style.color = "#66fcf1";
