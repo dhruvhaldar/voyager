@@ -18,9 +18,9 @@
             <div class="status-item" aria-live="polite" aria-atomic="true"><span class="abbr-like" title="Communication Link Status" tabindex="0">Comm</span>: <strong id="comm-status" class="status-value">WAIT</strong></div>
         </div>
         <div id="control-panel">
-            <button id="btn-step" aria-keyshortcuts="s" aria-label="Step simulation forward 1 second">Step +1s <span class="kbd">S</span></button>
-            <button id="btn-freeze" aria-keyshortcuts="f" aria-label="Freeze On-Board Computer">Freeze <abbr title="On-Board Computer">OBC</abbr> <span class="kbd">F</span></button>
-            <button id="btn-reboot" aria-keyshortcuts="r" aria-label="Reboot On-Board Computer">Reboot <abbr title="On-Board Computer">OBC</abbr> <span class="kbd">R</span></button>
+            <button id="btn-step" aria-keyshortcuts="s" aria-label="Step simulation forward 1 second">Step +1s <span class="kbd" aria-hidden="true">S</span></button>
+            <button id="btn-freeze" aria-keyshortcuts="f" aria-label="Freeze On-Board Computer">Freeze <abbr title="On-Board Computer">OBC</abbr> <span class="kbd" aria-hidden="true">F</span></button>
+            <button id="btn-reboot" aria-keyshortcuts="r" aria-label="Reboot On-Board Computer">Reboot <abbr title="On-Board Computer">OBC</abbr> <span class="kbd" aria-hidden="true">R</span></button>
         </div>
     </header>
 
@@ -31,7 +31,7 @@
                 <p id="telemetry-status" class="pulse-text" aria-live="polite" aria-atomic="true">Waiting for telemetry...</p>
                 <div id="packet-details"></div>
                 <div class="hex-wrapper">
-                    <button id="copy-hex-btn" class="copy-btn" aria-keyshortcuts="c" aria-label="Copy hex dump to clipboard" title="Waiting for telemetry data" aria-disabled="true">COPY <span class="kbd">C</span></button>
+                    <button id="copy-hex-btn" class="copy-btn" aria-keyshortcuts="c" aria-label="Copy hex dump to clipboard" title="Waiting for telemetry data" aria-disabled="true">COPY <span class="kbd" aria-hidden="true">C</span></button>
                     <div id="packet-hex" class="hex-dump"><div class="empty-hex-state pulse-text">Awaiting payload data...</div></div>
                     <div class="hex-legend" aria-hidden="true">
                         <span class="hex-header">■ Primary Header</span>
@@ -39,7 +39,7 @@
                         <span class="hex-crc">■ CRC Checksum</span>
                     </div>
                 </div>
-                <button id="btn-fetch-telemetry" aria-keyshortcuts="t" aria-label="Manually fetch latest telemetry packet">Fetch Latest Packet <span class="kbd">T</span></button>
+                <button id="btn-fetch-telemetry" aria-keyshortcuts="t" aria-label="Manually fetch latest telemetry packet">Fetch Latest Packet <span class="kbd" aria-hidden="true">T</span></button>
             </div>
         </section>
 
