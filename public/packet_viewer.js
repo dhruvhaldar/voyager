@@ -141,11 +141,16 @@ async function updateTelemetry() {
 
         const wdtElement = document.getElementById('obc-wdt');
         wdtElement.innerText = status.watchdog_timer.toFixed(1) + 's';
+
+        let titlePrefix = "";
         if (status.watchdog_timer <= 2.0) {
             wdtElement.classList.add('status-warn');
+            titlePrefix = "⚠️ [WDT LOW] ";
         } else {
             wdtElement.classList.remove('status-warn');
         }
+
+        document.title = titlePrefix + "Voyager Avionics Dashboard";
 
         const commStatus = document.getElementById('comm-status');
         if (commStatus) {
@@ -186,6 +191,7 @@ async function updateTelemetry() {
             statusElement.classList.add('status-err');
 
             if (e.message.includes("401")) {
+                document.title = "🔒 [AUTH] Voyager Avionics Dashboard";
                 statusElement.classList.remove('pulse-text');
 
                 // Palette: Remove aria-live attributes from the container while input is present
@@ -284,6 +290,7 @@ async function updateTelemetry() {
                 statusElement.appendChild(input);
                 statusElement.appendChild(btn);
             } else {
+                document.title = "🔴 [OFFLINE] Voyager Avionics Dashboard";
                 // Restore aria-live properties for normal status messages
                 statusElement.setAttribute('aria-live', 'polite');
                 statusElement.setAttribute('aria-atomic', 'true');
