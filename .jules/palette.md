@@ -127,3 +127,7 @@
 ## 2026-06-15 - Redundant Screen Reader Announcements for Keyboard Shortcuts
 **Learning:** Visual keyboard shortcut hints (like `<span class="kbd">S</span>`) placed inside button text are read aloud by screen readers, resulting in redundant or confusing announcements (e.g., "Step +1s S") when the button already uses `aria-keyshortcuts` to convey this information.
 **Action:** Always add `aria-hidden="true"` to decorative or redundant visual keyboard shortcut hints inside interactive elements to prevent them from interfering with the semantic label of the element, relying on `aria-keyshortcuts` to properly communicate the binding to assistive technology.
+
+## 2026-06-25 - Out-of-Viewport State Visibility
+**Learning:** Users monitoring dashboards across multiple tabs often miss critical state changes (like connection loss or low watchdog timers) because standard visual alerts are only visible when the tab is active.
+**Action:** Dynamically update the `document.title` with status prefixes (e.g., `🔴 [OFFLINE]`) for critical events to ensure users are alerted even when the dashboard tab is out of focus.
