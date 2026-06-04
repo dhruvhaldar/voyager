@@ -151,3 +151,10 @@
 **Learning:** Even when inputs are sanitized using strict regex allowlists, they must still be bound by reasonable length limits. Failing to limit input length before processing or storing it opens the application to Denial of Service (DoS) attacks.
 **Prevention:**
 1. Modified `get_client_ip` in `api/index.py` to truncate the `client_ip` string to 50 characters (`client_ip[:50]`) before passing it to the sanitization regex. This safely accommodates the maximum length of valid IPv6 addresses while preventing excessively large strings from being processed or stored.
+
+## 2026-11-20 - Defense against side-channel leaks (Sentinel)
+**Vulnerability:** The application was missing `Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy` headers, leaving it potentially vulnerable to side-channel attacks like Spectre by allowing cross-origin resources to share the same execution context.
+**Learning:** Adding strict security headers is essential to properly isolate the browsing context. Relying solely on standard headers might miss context isolation which limits side-channel information leaks.
+**Prevention:**
+1. Appended `(b"cross-origin-opener-policy", b"same-origin")` and `(b"cross-origin-embedder-policy", b"require-corp")` to `_SECURITY_HEADERS_RAW` in `api/index.py` to ensure defense-in-depth side-channel isolation.
+2. Updated tests to enforce the presence of these headers.

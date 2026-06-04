@@ -47,6 +47,12 @@ def test_security_headers_present():
     # Strict-Transport-Security
     assert headers.get("Strict-Transport-Security") == "max-age=31536000; includeSubDomains"
 
+    # Cross-Origin-Opener-Policy
+    assert headers.get("Cross-Origin-Opener-Policy") == "same-origin"
+
+    # Cross-Origin-Embedder-Policy
+    assert headers.get("Cross-Origin-Embedder-Policy") == "require-corp"
+
 def test_api_cache_control():
     """
     Test that API endpoints have strict cache control.

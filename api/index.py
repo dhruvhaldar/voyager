@@ -176,7 +176,9 @@ _SECURITY_HEADERS_RAW = [
     (b"referrer-policy", b"strict-origin-when-cross-origin"),
     (b"content-security-policy", b"default-src 'self'; script-src 'self' https://d3js.org; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; upgrade-insecure-requests;"),
     (b"permissions-policy", b"geolocation=(), microphone=(), camera=(), payment=(), usb=()"),
-    (b"strict-transport-security", b"max-age=31536000; includeSubDomains")
+    (b"strict-transport-security", b"max-age=31536000; includeSubDomains"),
+    (b"cross-origin-opener-policy", b"same-origin"),
+    (b"cross-origin-embedder-policy", b"require-corp")
 ]
 
 _API_SECURITY_HEADERS_RAW = _SECURITY_HEADERS_RAW + [(b"cache-control", b"no-store")]
