@@ -16,3 +16,7 @@
 ## 2026-07-09 - [Pre-compiling Regex in Hot Paths]
 **Learning:** Calling `re.sub(pattern, ...)` inside a high-frequency function (like IP extraction in a middleware) forces the regex engine to parse and lookup the pattern in its internal cache on every request.
 **Action:** Always pre-compile regular expressions (`re.compile(...)`) at the module level when they are used in hot paths. This avoids the cache lookup and execution overhead, resulting in ~2x faster string matching/substitution operations.
+
+## 2026-07-10 - [Avoid Unnecessary List Comprehensions in Middleware]
+**Learning:** Re-allocating lists using comprehension `[(k, v) for k, v in headers if k != b"server"]` unconditionally in high-frequency middleware is wasteful when the condition (e.g. presence of `Server` header) is rarely met. A simple pre-check loop `for k, _ in headers: if k == b"server"` avoids allocating a new list entirely in the common case.
+**Action:** When filtering collections in a hot path where modifications are rare, check for the presence of the condition first before applying the filter to avoid unnecessary memory allocation and overhead.

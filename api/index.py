@@ -217,7 +217,17 @@ async def add_security_headers(request: Request, call_next):
         response.raw_headers.extend([h for h in headers_to_add if h[0] not in existing_keys])
 
     # Sentinel Security Enhancement: Strip Server header to prevent infrastructure fingerprinting
-    response.raw_headers = [(k, v) for k, v in response.raw_headers if k != b"server"]
+    # Optimization: Replaced O(N) list comprehension with an optimized check-first approach.
+    # The `Server` header is rarely present at the FastAPI middleware level (ASGI servers like uvicorn inject it later).
+    # Building a new list on every request when the header doesn't exist is unnecessary overhead.
+    has_server = False
+    for k, _ in response.raw_headers:
+        if k == b"server":
+            has_server = True
+            break
+
+    if has_server:
+        response.raw_headers = [(k, v) for k, v in response.raw_headers if k != b"server"]
 
     return response
 
