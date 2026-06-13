@@ -187,49 +187,55 @@ _API_SECURITY_HEADERS_RAW = _SECURITY_HEADERS_RAW + [(b"cache-control", b"no-sto
 _SECURITY_HEADERS_KEYS = {h[0] for h in _SECURITY_HEADERS_RAW}
 _API_SECURITY_HEADERS_KEYS = {h[0] for h in _API_SECURITY_HEADERS_RAW}
 
-@app.middleware("http")
-async def add_security_headers(request: Request, call_next):
-    response = await call_next(request)
+class SecurityHeadersMiddleware:
+    def __init__(self, app):
+        self.app = app
 
-    # Optimization: Bypass the MutableHeaders wrapper and extend the raw list directly
-    # for a ~6x speedup. Use request.scope["path"] instead of request.url.path to
-    # avoid URL parsing overhead.
-    is_api = request.scope["path"].startswith("/api/")
-    headers_to_add = _API_SECURITY_HEADERS_RAW if is_api else _SECURITY_HEADERS_RAW
-    keys_to_add = _API_SECURITY_HEADERS_KEYS if is_api else _SECURITY_HEADERS_KEYS
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
 
-    # Optimization: Starlette guarantees that keys in response.raw_headers are
-    # already lowercased bytes. Calling .lower() on every key is redundant.
-    # Instead of proactively building a set of `existing_keys` on every request,
-    # iterate through the raw headers and check if any intersect with the target keys.
-    # This avoids set allocation overhead entirely for the common path, yielding a ~30% speedup.
-    overlap = False
-    for k, _ in response.raw_headers:
-        if k in keys_to_add:
-            overlap = True
-            break
+        async def send_wrapper(message):
+            if message["type"] == "http.response.start":
+                # Optimization: ASGI guarantees headers is a list of (bytes, bytes)
+                headers = message.get("headers", [])
 
-    if not overlap:
-        response.raw_headers.extend(headers_to_add)
-    else:
-        # Fallback to list comprehension if there is an overlap
-        existing_keys = {k for k, _ in response.raw_headers}
-        response.raw_headers.extend([h for h in headers_to_add if h[0] not in existing_keys])
+                # Optimization: Use request.scope["path"] to avoid URL parsing overhead.
+                is_api = scope["path"].startswith("/api/")
+                headers_to_add = _API_SECURITY_HEADERS_RAW if is_api else _SECURITY_HEADERS_RAW
+                keys_to_add = _API_SECURITY_HEADERS_KEYS if is_api else _SECURITY_HEADERS_KEYS
 
-    # Sentinel Security Enhancement: Strip Server header to prevent infrastructure fingerprinting
-    # Optimization: Replaced O(N) list comprehension with an optimized check-first approach.
-    # The `Server` header is rarely present at the FastAPI middleware level (ASGI servers like uvicorn inject it later).
-    # Building a new list on every request when the header doesn't exist is unnecessary overhead.
-    has_server = False
-    for k, _ in response.raw_headers:
-        if k == b"server":
-            has_server = True
-            break
+                # Optimization: Fast path disjoint checking to avoid set allocation
+                overlap = False
+                for k, _ in headers:
+                    if k in keys_to_add:
+                        overlap = True
+                        break
 
-    if has_server:
-        response.raw_headers = [(k, v) for k, v in response.raw_headers if k != b"server"]
+                if not overlap:
+                    headers.extend(headers_to_add)
+                else:
+                    existing_keys = {k for k, _ in headers}
+                    headers.extend([h for h in headers_to_add if h[0] not in existing_keys])
 
-    return response
+                # Sentinel Security Enhancement: Strip Server header
+                # Optimization: Check-first approach before modifying list
+                has_server = False
+                for k, _ in headers:
+                    if k == b"server":
+                        has_server = True
+                        break
+
+                if has_server:
+                    message["headers"] = [(k, v) for k, v in headers if k != b"server"]
+                else:
+                    message["headers"] = headers
+
+            await send(message)
+
+        await self.app(scope, receive, send_wrapper)
+
+app.add_middleware(SecurityHeadersMiddleware)
 
 # Global OBC instance
 obc = OnBoardComputer()

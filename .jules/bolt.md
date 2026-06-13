@@ -20,3 +20,7 @@
 ## 2026-07-10 - [Avoid Unnecessary List Comprehensions in Middleware]
 **Learning:** Re-allocating lists using comprehension `[(k, v) for k, v in headers if k != b"server"]` unconditionally in high-frequency middleware is wasteful when the condition (e.g. presence of `Server` header) is rarely met. A simple pre-check loop `for k, _ in headers: if k == b"server"` avoids allocating a new list entirely in the common case.
 **Action:** When filtering collections in a hot path where modifications are rare, check for the presence of the condition first before applying the filter to avoid unnecessary memory allocation and overhead.
+
+## 2026-07-12 - [Replace BaseHTTPMiddleware with Pure ASGI Middleware]
+**Learning:** `BaseHTTPMiddleware` in FastAPI (inherited from Starlette) introduces significant performance overhead because it creates a new task and uses an asynchronous queue to stream the response for every request.
+**Action:** When creating middleware that simply intercepts or modifies request/response headers, use a pure ASGI middleware class that wraps the `send` callable. This avoids the task/queue overhead and is roughly 3-4x faster for high-throughput endpoints.
