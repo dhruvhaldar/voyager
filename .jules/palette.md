@@ -131,3 +131,7 @@
 ## 2026-06-25 - Out-of-Viewport State Visibility
 **Learning:** Users monitoring dashboards across multiple tabs often miss critical state changes (like connection loss or low watchdog timers) because standard visual alerts are only visible when the tab is active.
 **Action:** Dynamically update the `document.title` with status prefixes (e.g., `🔴 [OFFLINE]`) for critical events to ensure users are alerted even when the dashboard tab is out of focus.
+
+## 2026-06-25 - Precise Contextual Tooltips in Dense Data Views
+**Learning:** Generic tooltips in dense data visualizations (like "Primary Header" for every byte in a hex dump) fail to provide specific, actionable context. Users must still mentally map the hovered item back to its exact position and value.
+**Action:** Always enrich tooltips in dense data views with precise, contextual information (e.g., specific index/offset and exact value) to eliminate cognitive load and make the interactive feedback immediately useful.
