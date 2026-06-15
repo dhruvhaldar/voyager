@@ -58,16 +58,20 @@ async function updateTelemetry() {
                     }
 
                     // Determine type based on index
+                    let regionName = '';
                     if (index < 6) {
                         span.classList.add('hex-header');
-                        span.title = 'Primary Header';
+                        regionName = 'Primary Header';
                     } else if (index >= bytes.length - 2) {
                         span.classList.add('hex-crc');
-                        span.title = 'Packet Error Control (CRC)';
+                        regionName = 'Packet Error Control (CRC)';
                     } else {
                         span.classList.add('hex-data');
-                        span.title = 'Payload Data';
+                        regionName = 'Payload Data';
                     }
+
+                    // Palette: Precise contextual tooltip
+                    span.title = `Byte ${index}: ${regionName} (0x${byte})`;
 
                     span.textContent = byte;
                     fragment.appendChild(span);
