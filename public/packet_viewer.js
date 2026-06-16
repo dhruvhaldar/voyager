@@ -237,10 +237,16 @@ async function updateTelemetry() {
                 statusElement.removeAttribute('aria-live');
                 statusElement.removeAttribute('aria-atomic');
 
+                const form = document.createElement('form');
+                form.onsubmit = (e) => {
+                    e.preventDefault();
+                    submitKey();
+                };
+
                 const label = document.createElement('label');
                 label.htmlFor = "api-key-input";
                 label.textContent = "Unauthorized: API Key required. ";
-                statusElement.appendChild(label);
+                form.appendChild(label);
 
                 const input = document.createElement('input');
                 input.type = "password";
@@ -282,17 +288,14 @@ async function updateTelemetry() {
                     }
                 };
 
-                input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') submitKey();
-                });
-
                 const btn = document.createElement('button');
+                btn.type = "submit";
                 btn.textContent = "Submit";
                 btn.setAttribute("aria-label", "Submit API Key to restore connection");
-                btn.onclick = submitKey;
 
-                statusElement.appendChild(input);
-                statusElement.appendChild(btn);
+                form.appendChild(input);
+                form.appendChild(btn);
+                statusElement.appendChild(form);
             } else {
                 document.title = "🔴 [OFFLINE] Voyager Avionics Dashboard";
                 // Restore aria-live properties for normal status messages
