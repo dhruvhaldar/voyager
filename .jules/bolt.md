@@ -24,3 +24,7 @@
 ## 2026-07-12 - [Replace BaseHTTPMiddleware with Pure ASGI Middleware]
 **Learning:** `BaseHTTPMiddleware` in FastAPI (inherited from Starlette) introduces significant performance overhead because it creates a new task and uses an asynchronous queue to stream the response for every request.
 **Action:** When creating middleware that simply intercepts or modifies request/response headers, use a pure ASGI middleware class that wraps the `send` callable. This avoids the task/queue overhead and is roughly 3-4x faster for high-throughput endpoints.
+
+## 2026-07-13 - [DOM Manipulation Optimization: textContent vs innerText/innerHTML]
+**Learning:** Using `innerText` triggers synchronous layout calculations (reflows) because it accounts for CSS styling (like `display: none`), causing significant layout thrashing in high-frequency polling dashboards. Similarly, assigning to `innerHTML` forces the browser to invoke the HTML parser, adding unnecessary overhead when only updating text or clearing a node.
+**Action:** Always prefer `textContent` over `innerText` for getting or setting text in DOM nodes. When clearing elements, use `.textContent = ''` instead of `.innerHTML = ''` to bypass parsing overhead completely.

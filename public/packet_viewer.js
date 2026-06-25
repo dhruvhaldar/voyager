@@ -40,6 +40,7 @@ async function updateTelemetry() {
 
                 // SECURITY: Use textContent and document.createElement to prevent XSS.
                 // Clear existing content
+                // Optimization: Assigning to textContent instead of innerHTML bypasses the HTML parser
                 hexElement.textContent = '';
 
                 // OPTIMIZATION: Use DocumentFragment to batch DOM insertions.
@@ -144,7 +145,7 @@ async function updateTelemetry() {
         updateStatusValue('obc-reboots', status.reboot_count);
 
         const wdtElement = document.getElementById('obc-wdt');
-        wdtElement.innerText = status.watchdog_timer.toFixed(1) + 's';
+        wdtElement.textContent = status.watchdog_timer.toFixed(1) + 's';
 
         let titlePrefix = "";
         if (status.watchdog_timer <= 2.0) {
@@ -302,7 +303,7 @@ async function updateTelemetry() {
                 statusElement.setAttribute('aria-live', 'polite');
                 statusElement.setAttribute('aria-atomic', 'true');
 
-                statusElement.innerText = "Connection Lost. Retrying...";
+                statusElement.textContent = "Connection Lost. Retrying...";
                 statusElement.classList.add('pulse-text');
                 statusElement.setAttribute('aria-live', 'polite');
                 statusElement.setAttribute('aria-atomic', 'true');
@@ -318,7 +319,7 @@ function copyHexToClipboard() {
     const hexElement = document.getElementById('packet-hex');
     if (!hexElement) return;
 
-    const text = hexElement.innerText;
+    const text = hexElement.textContent;
     navigator.clipboard.writeText(text).then(() => {
         const btn = document.getElementById('copy-hex-btn');
 
@@ -378,8 +379,9 @@ function updateStatusValue(elementId, newValue) {
     // Convert to string for comparison
     const strValue = String(newValue);
 
-    if (element.innerText !== strValue) {
-        element.innerText = strValue;
+    if (element.textContent !== strValue) {
+        // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
+        element.textContent = strValue;
 
         // Remove class if it exists to restart animation
         element.classList.remove('status-changed');

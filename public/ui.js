@@ -15,7 +15,7 @@ async function handleButtonAction(button, url, options = {}) {
              defaultCommandName += node.textContent;
         }
     });
-    const originalText = options.commandName || defaultCommandName.trim() || button.innerText.trim();
+    const originalText = options.commandName || defaultCommandName.trim() || button.textContent.trim();
 
     if (button.getAttribute('aria-disabled') === 'true') return;
 
@@ -27,7 +27,8 @@ async function handleButtonAction(button, url, options = {}) {
     // 1. Loading State
     button.setAttribute("aria-disabled", "true");
     button.title = "Action in progress, please wait";
-    button.innerText = "Processing...";
+    // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
+    button.textContent = "Processing...";
     button.setAttribute("aria-label", "Processing...");
     button.setAttribute("aria-busy", "true");
     button.style.cursor = "wait";
@@ -47,7 +48,8 @@ async function handleButtonAction(button, url, options = {}) {
         }
 
         // 2. Success State
-        button.innerText = "Done!";
+        // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
+        button.textContent = "Done!";
         button.setAttribute("aria-label", "Done!");
         button.classList.add('status-ok');
         button.removeAttribute('aria-busy');
@@ -70,7 +72,8 @@ async function handleButtonAction(button, url, options = {}) {
         console.error("Action failed:", error);
 
         // 4. Error State
-        button.innerText = "Error";
+        // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
+        button.textContent = "Error";
         button.setAttribute("aria-label", "Error");
         button.classList.add('status-err');
         button.removeAttribute('aria-busy');
@@ -96,14 +99,16 @@ async function handleManualRefresh(button) {
 
     button.setAttribute("aria-disabled", "true");
     button.title = "Fetching latest telemetry, please wait";
-    button.innerText = "Fetching...";
+    // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
+    button.textContent = "Fetching...";
     button.setAttribute("aria-label", "Fetching...");
     button.setAttribute("aria-busy", "true");
 
     try {
         if (typeof updateTelemetry === 'function') {
             await updateTelemetry();
-            button.innerText = "Updated!";
+            // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
+            button.textContent = "Updated!";
             button.setAttribute("aria-label", "Updated!");
             button.removeAttribute('aria-busy');
             button.removeAttribute('title');
@@ -116,7 +121,8 @@ async function handleManualRefresh(button) {
             resetButton(button, originalContent, originalLabel);
         }, 1000);
     } catch (e) {
-        button.innerText = "Error";
+        // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
+        button.textContent = "Error";
         button.setAttribute("aria-label", "Error");
         button.removeAttribute('aria-busy');
         button.title = "Action failed";
