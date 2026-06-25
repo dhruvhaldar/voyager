@@ -27,6 +27,7 @@ async function handleButtonAction(button, url, options = {}) {
     // 1. Loading State
     button.setAttribute("aria-disabled", "true");
     button.title = "Action in progress, please wait";
+    // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
     button.textContent = "Processing...";
     button.setAttribute("aria-label", "Processing...");
     button.setAttribute("aria-busy", "true");
@@ -47,6 +48,7 @@ async function handleButtonAction(button, url, options = {}) {
         }
 
         // 2. Success State
+        // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
         button.textContent = "Done!";
         button.setAttribute("aria-label", "Done!");
         button.classList.add('status-ok');
@@ -70,6 +72,7 @@ async function handleButtonAction(button, url, options = {}) {
         console.error("Action failed:", error);
 
         // 4. Error State
+        // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
         button.textContent = "Error";
         button.setAttribute("aria-label", "Error");
         button.classList.add('status-err');
@@ -96,6 +99,7 @@ async function handleManualRefresh(button) {
 
     button.setAttribute("aria-disabled", "true");
     button.title = "Fetching latest telemetry, please wait";
+    // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
     button.textContent = "Fetching...";
     button.setAttribute("aria-label", "Fetching...");
     button.setAttribute("aria-busy", "true");
@@ -103,6 +107,7 @@ async function handleManualRefresh(button) {
     try {
         if (typeof updateTelemetry === 'function') {
             await updateTelemetry();
+            // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
             button.textContent = "Updated!";
             button.setAttribute("aria-label", "Updated!");
             button.removeAttribute('aria-busy');
@@ -116,6 +121,7 @@ async function handleManualRefresh(button) {
             resetButton(button, originalContent, originalLabel);
         }, 1000);
     } catch (e) {
+        // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
         button.textContent = "Error";
         button.setAttribute("aria-label", "Error");
         button.removeAttribute('aria-busy');

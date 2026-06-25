@@ -40,6 +40,7 @@ async function updateTelemetry() {
 
                 // SECURITY: Use textContent and document.createElement to prevent XSS.
                 // Clear existing content
+                // Optimization: Assigning to textContent instead of innerHTML bypasses the HTML parser
                 hexElement.textContent = '';
 
                 // OPTIMIZATION: Use DocumentFragment to batch DOM insertions.
@@ -379,6 +380,7 @@ function updateStatusValue(elementId, newValue) {
     const strValue = String(newValue);
 
     if (element.textContent !== strValue) {
+        // Optimization: Use textContent instead of innerText to prevent layout thrashing (reflows)
         element.textContent = strValue;
 
         // Remove class if it exists to restart animation
