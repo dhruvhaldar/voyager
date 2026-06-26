@@ -91,6 +91,12 @@ async function updateTelemetry() {
                     hexElement.childNodes[focusedHexIndex].focus();
                 }
 
+                // Palette: Preserve keyboard focus for packet details tooltips
+                let focusedDetailsText = null;
+                if (document.activeElement && detailsElement.contains(document.activeElement) && document.activeElement.tagName === 'ABBR') {
+                    focusedDetailsText = document.activeElement.textContent;
+                }
+
                 // SECURITY: Use textContent and document.createElement to prevent XSS.
                 // Clear existing content
                 detailsElement.textContent = '';
@@ -140,6 +146,15 @@ async function updateTelemetry() {
                 detailsFragment.appendChild(pCrc);
 
                 detailsElement.appendChild(detailsFragment);
+
+                // Palette: Restore focus for packet details tooltips
+                if (focusedDetailsText) {
+                    const abbrs = Array.from(detailsElement.querySelectorAll('abbr'));
+                    const targetAbbr = abbrs.find(abbr => abbr.textContent === focusedDetailsText);
+                    if (targetAbbr) {
+                        targetAbbr.focus();
+                    }
+                }
             }
 
             // Always hide status if we have valid data (idempotent)
@@ -190,15 +205,18 @@ async function updateTelemetry() {
         console.error("Telemetry update failed:", e);
         const commStatus = document.getElementById('comm-status');
         if (commStatus) {
-            commStatus.textContent = '';
-            const abbrLos = document.createElement('abbr');
-            abbrLos.title = "Loss Of Signal";
-            abbrLos.tabIndex = 0;
-            abbrLos.textContent = "LOS";
-            commStatus.appendChild(abbrLos);
-            commStatus.appendChild(document.createTextNode(" (OFFLINE)"));
-            commStatus.classList.remove('status-ok');
-            commStatus.classList.add('status-err');
+            // Palette: Only update DOM if not already offline to prevent focus loss and thrashing
+            if (!commStatus.classList.contains('status-err')) {
+                commStatus.textContent = '';
+                const abbrLos = document.createElement('abbr');
+                abbrLos.title = "Loss Of Signal";
+                abbrLos.tabIndex = 0;
+                abbrLos.textContent = "LOS";
+                commStatus.appendChild(abbrLos);
+                commStatus.appendChild(document.createTextNode(" (OFFLINE)"));
+                commStatus.classList.remove('status-ok');
+                commStatus.classList.add('status-err');
+            }
         }
 
         const statusElement = document.getElementById('telemetry-status');
