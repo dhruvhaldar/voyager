@@ -9,10 +9,18 @@ with sync_playwright() as p:
     page.locator('#api-key-input').fill('voyager_admin_808')
     page.locator('button:has-text("Submit")').click()
     time.sleep(2)
-    # Get the title of the hovered element
-    title = page.locator('span.hex-byte').first.get_attribute('title')
-    print(f"Tooltip title: {title}")
-    page.locator('span.hex-byte').first.hover()
+
+    # Focus the first hex byte
+    page.locator('span.hex-byte').first.focus()
     time.sleep(1)
-    page.screenshot(path='screenshot3.png')
+    page.screenshot(path='screenshot_before.png')
+
+    # Wait a couple of seconds to let the next polling cycle hit and update the UI
+    time.sleep(3)
+    page.screenshot(path='screenshot_after.png')
+
+    # Verify it still has focus
+    has_focus = page.evaluate("document.activeElement === document.querySelector('.hex-byte')")
+    print(f"Has focus after update: {has_focus}")
+
     browser.close()

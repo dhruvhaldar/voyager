@@ -135,3 +135,7 @@
 ## 2026-06-25 - Precise Contextual Tooltips in Dense Data Views
 **Learning:** Generic tooltips in dense data visualizations (like "Primary Header" for every byte in a hex dump) fail to provide specific, actionable context. Users must still mentally map the hovered item back to its exact position and value.
 **Action:** Always enrich tooltips in dense data views with precise, contextual information (e.g., specific index/offset and exact value) to eliminate cognitive load and make the interactive feedback immediately useful.
+
+## 2026-06-26 - Keyboard Focus Loss in Live Data Views
+**Learning:** When live data views (like a hex dump) frequently re-render by clearing and rebuilding their inner HTML or text content, any keyboard focus on child elements is instantly lost and reset to the body. This forces keyboard-only and screen reader users to completely lose their place and navigate back to the data block every few seconds, making the interactive interface effectively unusable.
+**Action:** Always capture the state or index of the currently focused element (`document.activeElement`) within a live updating container *before* clearing the DOM, and immediately re-apply `.focus()` to the corresponding new element after re-rendering.

@@ -38,6 +38,12 @@ async function updateTelemetry() {
                 const bytes = data.hex.split(' ');
                 const oldBytes = oldPacketHex ? oldPacketHex.split(' ') : [];
 
+                // Palette: Preserve keyboard focus during live updates
+                let focusedHexIndex = -1;
+                if (document.activeElement && document.activeElement.classList.contains('hex-byte') && hexElement.contains(document.activeElement)) {
+                    focusedHexIndex = Array.from(hexElement.childNodes).indexOf(document.activeElement);
+                }
+
                 // SECURITY: Use textContent and document.createElement to prevent XSS.
                 // Clear existing content
                 // Optimization: Assigning to textContent instead of innerHTML bypasses the HTML parser
@@ -79,6 +85,11 @@ async function updateTelemetry() {
                 });
 
                 hexElement.appendChild(fragment);
+
+                // Palette: Restore focus if applicable
+                if (focusedHexIndex !== -1 && focusedHexIndex < hexElement.childNodes.length) {
+                    hexElement.childNodes[focusedHexIndex].focus();
+                }
 
                 // SECURITY: Use textContent and document.createElement to prevent XSS.
                 // Clear existing content
