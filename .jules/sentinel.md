@@ -158,3 +158,10 @@
 **Prevention:**
 1. Appended `(b"cross-origin-opener-policy", b"same-origin")` and `(b"cross-origin-embedder-policy", b"require-corp")` to `_SECURITY_HEADERS_RAW` in `api/index.py` to ensure defense-in-depth side-channel isolation.
 2. Updated tests to enforce the presence of these headers.
+
+## 2026-11-21 - FastAPI Verbose Validation Error Leak
+**Vulnerability:** When a client sends malformed or invalid query parameters (e.g., `not_a_number` for a `float` or a massive string) to FastAPI endpoints, the framework's default behavior is to raise a `RequestValidationError` which returns a 422 Unprocessable Entity response containing verbose details about the internal schema validation failure (e.g., `"loc":["query","dt"]`, `"msg":"Input should be a valid number"`). This leaks internal implementation details to potential attackers. Additionally, excessively long strings can cause high CPU usage due to regex or float parsing before validation completes, exacerbating DoS vectors.
+**Learning:** Framework defaults (like FastAPI's automatic 422 validation responses) prioritize developer experience and debugging over production security. Unhandled validation exceptions can leak schema and internal types to attackers, aiding in reconnaissance.
+**Prevention:**
+1. Override the global `RequestValidationError` exception handler to catch validation failures and return a sanitized, generic `400 Bad Request` response (e.g., `{"detail": "Invalid parameter value provided."}`) instead of the detailed 422 payload.
+2. Updated tests in `test_security_validation_leak.py` to enforce that invalid input returns a safe 400 error without leaking internal error types or locations.

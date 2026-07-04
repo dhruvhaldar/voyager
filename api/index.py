@@ -3,6 +3,7 @@ import os
 # Add project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from fastapi.exceptions import RequestValidationError
 from fastapi import FastAPI, HTTPException, status, Query, Request, Security, Depends
 from fastapi.security import APIKeyHeader
 from fastapi.staticfiles import StaticFiles
@@ -152,6 +153,17 @@ async def simulation_error_handler(request: Request, exc: SimulationError):
     # Sentinel Security Enhancement: Prevent internal exception stack traces
     # from leaking via 500 responses by catching domain SimulationErrors and
     # returning a sanitized 400 Bad Request.
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": "Invalid parameter value provided."}
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    # Sentinel Security Enhancement: Prevent FastAPI from leaking verbose
+    # validation errors (e.g. 422 Unprocessable Entity with internal schema info).
+    # Log the detailed error internally for debugging.
+    logging.error(f"Validation error: {exc}")
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content={"detail": "Invalid parameter value provided."}
