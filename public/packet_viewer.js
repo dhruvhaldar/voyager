@@ -2,6 +2,11 @@
 let lastPacketHex = null;
 
 async function updateTelemetry() {
+    // OPTIMIZATION: Pause polling when tab is inactive to save network bandwidth and backend load
+    if (document.hidden) {
+        return;
+    }
+
     try {
         // SECURITY: Inject API Key if available
         const apiKey = sessionStorage.getItem('voyager_api_key');

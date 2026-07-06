@@ -28,3 +28,7 @@
 ## 2026-07-13 - [DOM Manipulation Optimization: textContent vs innerText/innerHTML]
 **Learning:** Using `innerText` triggers synchronous layout calculations (reflows) because it accounts for CSS styling (like `display: none`), causing significant layout thrashing in high-frequency polling dashboards. Similarly, assigning to `innerHTML` forces the browser to invoke the HTML parser, adding unnecessary overhead when only updating text or clearing a node.
 **Action:** Always prefer `textContent` over `innerText` for getting or setting text in DOM nodes. When clearing elements, use `.textContent = ''` instead of `.innerHTML = ''` to bypass parsing overhead completely.
+
+## 2026-07-15 - [Pause Polling on Inactive Tabs]
+**Learning:** `setInterval` for polling API endpoints continues firing even when the user's tab is hidden/inactive, which unnecessarily consumes client CPU, network bandwidth, and server resources.
+**Action:** Always check `document.hidden` at the start of recurring polling functions and return early if true to pause execution when the tab is inactive.
