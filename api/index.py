@@ -163,7 +163,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     # Sentinel Security Enhancement: Prevent FastAPI from leaking verbose
     # validation errors (e.g. 422 Unprocessable Entity with internal schema info).
     # Log the detailed error internally for debugging.
-    logging.error(f"Validation error: {exc}")
+    logging.error(f"Validation error: {repr(str(exc))}")
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content={"detail": "Invalid parameter value provided."}
@@ -171,9 +171,12 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    logging.error(f"Unhandled exception: {exc}", exc_info=True)
-    # Sentinel Security Enhancement: Catch all unhandled exceptions to prevent
-    # FastAPI from leaking stack traces via 500 Internal Server Error responses.
+    # Sentinel Security Enhancement: Ensure we use exc_info=False to prevent the
+    # unescaped traceback (which includes the raw exception string with potentially
+    # malicious formatting characters) from being evaluated and printed by the logger.
+    logging.error(f"Unhandled exception: {repr(str(exc))}", exc_info=False)
+    # Catch all unhandled exceptions to prevent FastAPI from leaking stack traces
+    # via 500 Internal Server Error responses.
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"detail": "Internal Server Error"}

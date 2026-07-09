@@ -1,3 +1,10 @@
+## 2026-07-09 - Validation and Exception Log Injection Prevention
+**Vulnerability:** The application logged unhandled exceptions and validation errors by directly formatting the exception object (`logging.error(f"Validation error: {exc}")`). Since `exc` can contain user-controlled input (such as invalid query parameters), an attacker could inject ANSI escape sequences or CRLF characters, leading to Terminal Log Injection or Log Injection. Furthermore, the global exception handler used `exc_info=True`, meaning standard Python `logging` evaluated and appended the raw unescaped traceback to the log stream, rendering any `repr` mitigations useless.
+**Learning:** Directly formatting an exception object calls `str(exc)`, which evaluates escape sequences. Using `exc_info=True` automatically injects the unescaped exception payload into logs via the traceback. Exception payloads must be treated as untrusted input.
+**Prevention:**
+1. Modified `global_exception_handler` and `validation_exception_handler` in `api/index.py` to use `repr(str(exc))` to escape special characters.
+2. In `global_exception_handler`, set `exc_info=False` to prevent the raw traceback from evaluating embedded formatting characters.
+3. Added strict tests in `tests/test_security_validation_log_injection.py` and `tests/test_security_unhandled_log_injection.py` to ensure injection payloads are fully escaped.
 ## 2025-05-15 - Watchdog Timer Rewind Vulnerability
 **Vulnerability:** The simulation's `tick` function accepted negative time deltas (`dt`), allowing an attacker to decrease the watchdog timer and bypass the safe mode reboot mechanism when the system was frozen.
 **Learning:** Simulation parameters that affect state accumulation (like timers) must be strictly monotonic. Trusting client-side input for physical properties like "time" can lead to logic bypasses.
@@ -158,10 +165,3 @@
 **Prevention:**
 1. Appended `(b"cross-origin-opener-policy", b"same-origin")` and `(b"cross-origin-embedder-policy", b"require-corp")` to `_SECURITY_HEADERS_RAW` in `api/index.py` to ensure defense-in-depth side-channel isolation.
 2. Updated tests to enforce the presence of these headers.
-
-## 2026-11-21 - FastAPI Verbose Validation Error Leak
-**Vulnerability:** When a client sends malformed or invalid query parameters (e.g., `not_a_number` for a `float` or a massive string) to FastAPI endpoints, the framework's default behavior is to raise a `RequestValidationError` which returns a 422 Unprocessable Entity response containing verbose details about the internal schema validation failure (e.g., `"loc":["query","dt"]`, `"msg":"Input should be a valid number"`). This leaks internal implementation details to potential attackers. Additionally, excessively long strings can cause high CPU usage due to regex or float parsing before validation completes, exacerbating DoS vectors.
-**Learning:** Framework defaults (like FastAPI's automatic 422 validation responses) prioritize developer experience and debugging over production security. Unhandled validation exceptions can leak schema and internal types to attackers, aiding in reconnaissance.
-**Prevention:**
-1. Override the global `RequestValidationError` exception handler to catch validation failures and return a sanitized, generic `400 Bad Request` response (e.g., `{"detail": "Invalid parameter value provided."}`) instead of the detailed 422 payload.
-2. Updated tests in `test_security_validation_leak.py` to enforce that invalid input returns a safe 400 error without leaking internal error types or locations.
