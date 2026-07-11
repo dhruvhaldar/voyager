@@ -36,3 +36,7 @@
 ## 2026-07-20 - [In-Place List Mutation via Backward Iteration in Middleware]
 **Learning:** In high-frequency ASGI middleware, filtering a list of tuples (like HTTP headers) using a list comprehension (e.g. `[h for h in headers if h[0] != b"server"]`) needlessly allocates a new list object on every request.
 **Action:** When filtering or modifying a list in a hot path, iterate backwards over the list (`for i in range(len(headers) - 1, -1, -1):`) and use `del headers[i]` to remove elements in-place. This preserves index validity during iteration, avoids list allocations entirely, and is significantly faster.
+
+## 2026-07-22 - [Render-Blocking Scripts and Preload Scanner]
+**Learning:** Placing scripts at the end of the `<body>` prevents the browser's preload scanner from discovering them early, delaying resource fetching until the HTML parser reaches the bottom. Furthermore, synchronous scripts (without `defer` or `async`) block the main thread and HTML parsing.
+**Action:** Always place script tags in the `<head>` section and use the `defer` attribute. This allows the preload scanner to fetch scripts in parallel with parsing while guaranteeing they execute in order only after the DOM is fully built, significantly reducing First Contentful Paint (FCP) time.
