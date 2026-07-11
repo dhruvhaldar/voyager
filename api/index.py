@@ -220,12 +220,15 @@ class SecurityHeadersMiddleware:
                 headers_to_add = _API_SECURITY_HEADERS_RAW if is_api else _SECURITY_HEADERS_RAW
                 keys_to_add = _API_SECURITY_HEADERS_KEYS if is_api else _SECURITY_HEADERS_KEYS
 
-                # Optimization: Fast path disjoint checking to avoid set allocation
+                # Optimization: Fast path disjoint checking and Server header stripping in a single backwards pass
+                # Iterating backwards allows safe in-place deletion without allocating a new list.
                 overlap = False
-                for k, _ in headers:
-                    if k in keys_to_add:
+                for i in range(len(headers) - 1, -1, -1):
+                    k = headers[i][0]
+                    if k == b"server":
+                        del headers[i]
+                    elif not overlap and k in keys_to_add:
                         overlap = True
-                        break
 
                 if not overlap:
                     headers.extend(headers_to_add)
@@ -233,18 +236,8 @@ class SecurityHeadersMiddleware:
                     existing_keys = {k for k, _ in headers}
                     headers.extend([h for h in headers_to_add if h[0] not in existing_keys])
 
-                # Sentinel Security Enhancement: Strip Server header
-                # Optimization: Check-first approach before modifying list
-                has_server = False
-                for k, _ in headers:
-                    if k == b"server":
-                        has_server = True
-                        break
-
-                if has_server:
-                    message["headers"] = [(k, v) for k, v in headers if k != b"server"]
-                else:
-                    message["headers"] = headers
+                # Reassign back to the message dict, as the initial .get() might have returned an empty fallback list
+                message["headers"] = headers
 
             await send(message)
 

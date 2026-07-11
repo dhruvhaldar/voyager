@@ -32,3 +32,7 @@
 ## 2026-07-15 - [Pause Polling on Inactive Tabs]
 **Learning:** `setInterval` for polling API endpoints continues firing even when the user's tab is hidden/inactive, which unnecessarily consumes client CPU, network bandwidth, and server resources.
 **Action:** Always check `document.hidden` at the start of recurring polling functions and return early if true to pause execution when the tab is inactive.
+
+## 2026-07-20 - [In-Place List Mutation via Backward Iteration in Middleware]
+**Learning:** In high-frequency ASGI middleware, filtering a list of tuples (like HTTP headers) using a list comprehension (e.g. `[h for h in headers if h[0] != b"server"]`) needlessly allocates a new list object on every request.
+**Action:** When filtering or modifying a list in a hot path, iterate backwards over the list (`for i in range(len(headers) - 1, -1, -1):`) and use `del headers[i]` to remove elements in-place. This preserves index validity during iteration, avoids list allocations entirely, and is significantly faster.
