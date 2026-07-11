@@ -10,12 +10,17 @@ const svg = d3.select("#bus-vis")
     .attr("height", height)
     .attr("role", "img")
     .attr("aria-label", "CAN Bus Arbitration Timeline Visualization")
-    .attr("tabindex", "0")
-    .append("g")
+    .attr("tabindex", "0");
+
+// Accessibility: Provide semantic descriptions for screen readers
+svg.append("title").text("CAN Bus Arbitration Simulation");
+svg.append("desc").text("A logic analyzer timeline showing CAN bus arbitration. The Sun Sensor (ID 0x001) transmits its dominant priority bits and wins arbitration against the Camera (ID 0x100), which backs off and stops transmitting.");
+
+const g = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
 // Glow effect
-const defs = svg.append("defs");
+const defs = g.append("defs");
 const filter = defs.append("filter")
     .attr("id", "glow");
 
@@ -35,12 +40,12 @@ const y = d3.scaleLinear().range([height - margin.top - margin.bottom, 0]);
 const xAxis = d3.axisBottom(x).ticks(20).tickFormat(d => d + "ms");
 const yAxis = d3.axisLeft(y).ticks(2).tickFormat(d => d === 1 ? "REC (1)" : "DOM (0)");
 
-svg.append("g")
+g.append("g")
     .attr("class", "x-axis axis-label")
     .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
     .call(xAxis);
 
-svg.append("g")
+g.append("g")
     .attr("class", "y-axis axis-label")
     .call(yAxis);
 
@@ -48,12 +53,12 @@ svg.append("g")
 function make_x_gridlines() { return d3.axisBottom(x).ticks(20) }
 function make_y_gridlines() { return d3.axisLeft(y).ticks(2) }
 
-svg.append("g")
+g.append("g")
     .attr("class", "grid grid-line")
     .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
     .call(make_x_gridlines().tickSize(-(height - margin.top - margin.bottom)).tickFormat(""));
 
-svg.append("g")
+g.append("g")
     .attr("class", "grid grid-line")
     .call(make_y_gridlines().tickSize(-(width - margin.left - margin.right)).tickFormat(""));
 
@@ -102,13 +107,13 @@ const line = d3.line()
     .y(d => y(d.signal));
 
 // Add path with glow
-svg.append("path")
+g.append("path")
     .datum(data)
     .attr("class", "bus-path")
     .attr("d", line);
 
 // Add labels
-svg.append("text")
+g.append("text")
     .attr("class", "bus-title")
     .attr("x", (width - margin.left - margin.right) / 2)
     .attr("y", -5)

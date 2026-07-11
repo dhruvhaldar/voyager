@@ -139,3 +139,7 @@
 ## 2026-06-26 - Keyboard Focus Loss in Live Data Views
 **Learning:** When live data views (like a hex dump) frequently re-render by clearing and rebuilding their inner HTML or text content, any keyboard focus on child elements is instantly lost and reset to the body. This forces keyboard-only and screen reader users to completely lose their place and navigate back to the data block every few seconds, making the interactive interface effectively unusable.
 **Action:** Always capture the state or index of the currently focused element (`document.activeElement`) within a live updating container *before* clearing the DOM, and immediately re-apply `.focus()` to the corresponding new element after re-rendering.
+
+## 2024-05-24 - Accessible SVG Data Visualizations
+**Learning:** Complex data visualizations (like D3 charts) rendered as SVGs with `role="img"` often provide an `aria-label` but fail to describe the actual data or outcome shown. This leaves screen reader users knowing a chart exists, but not what it represents.
+**Action:** Always include semantic `<title>` and `<desc>` elements within static or complex SVG visualizations to provide a text-based summary of the data insights or visual flow for assistive technologies.
