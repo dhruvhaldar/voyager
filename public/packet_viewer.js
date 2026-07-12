@@ -242,8 +242,8 @@ async function updateTelemetry() {
                 const existingInput = statusElement.querySelector('input');
                 if (existingInput) {
                     // Re-enable if it was disabled during a failed connection attempt
-                    if (existingInput.disabled) {
-                        existingInput.disabled = false;
+                    if (existingInput.readOnly) {
+                        existingInput.readOnly = false;
                         existingInput.value = '';
 
                         // Palette: Inline validation feedback for rejected (invalid) key
@@ -261,7 +261,8 @@ async function updateTelemetry() {
 
                         const existingBtn = statusElement.querySelector('button');
                         if (existingBtn) {
-                            existingBtn.disabled = false;
+                            existingBtn.removeAttribute('aria-disabled');
+                            existingBtn.removeAttribute('aria-busy');
                             existingBtn.textContent = "Submit";
                         }
                     }
@@ -275,6 +276,10 @@ async function updateTelemetry() {
                 const form = document.createElement('form');
                 form.onsubmit = (e) => {
                     e.preventDefault();
+                    const btn = form.querySelector('button');
+                    if (btn && btn.getAttribute('aria-disabled') === 'true') {
+                        return; // Prevent multiple submissions
+                    }
                     submitKey();
                 };
 
@@ -300,8 +305,9 @@ async function updateTelemetry() {
                         sessionStorage.setItem('voyager_api_key', key);
                         // Provide immediate feedback
                         btn.textContent = "Connecting...";
-                        btn.disabled = true;
-                        input.disabled = true;
+                        btn.setAttribute('aria-disabled', 'true');
+                        btn.setAttribute('aria-busy', 'true');
+                        input.readOnly = true;
                         updateTelemetry();
                     } else {
                         // Palette: Inline validation feedback for empty input
