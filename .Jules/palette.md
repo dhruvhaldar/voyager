@@ -17,3 +17,7 @@
 ## 2024-05-15 - Responsive Layouts in Technical Dashboards
 **Learning:** Hardcoded multi-column grids (like `1fr 1fr`) or non-wrapping flex layouts in complex technical dashboards cause horizontal scrolling and poor usability on smaller screens (e.g., mobile viewports).
 **Action:** Always implement `@media` queries to switch to single-column layouts and allow flex items to wrap natively, ensuring data remains readable on all devices.
+
+## 2026-11-20 - Preserving Focus During Async Form Submissions
+**Learning:** When an input or button is natively disabled (`disabled=true`) during an async operation (like submitting an API key), it immediately loses keyboard focus. This creates a confusing "ghost focus" state for screen reader users and requires sighted keyboard users to manually tab back to the form if the submission fails or requires a retry.
+**Action:** Instead of disabling elements during async submissions, use `readonly="true"` for inputs and `aria-disabled="true"` paired with `aria-busy="true"` for buttons. This prevents further interaction while keeping the elements focusable, preserving context and location for all users.
